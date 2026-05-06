@@ -8,7 +8,7 @@ on:
 
 jobs:
   root-checks:
-    name: Root checks
+    name: 🛡️ Root Checks
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -40,7 +40,7 @@ jobs:
         run: bun run check:shell
 
   python-checks:
-    name: Python checks
+    name: 🧪 Python Checks
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -70,7 +70,7 @@ jobs:
         run: uv run pytest -v
 
   web-checks:
-    name: Web checks
+    name: 📦 Web Checks
     runs-on: ubuntu-latest
     defaults:
       run:
