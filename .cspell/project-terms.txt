@@ -1,1 +1,6 @@
+excinfo
+executemany
+executescript
+jobtech
 jobtriage
+timespec
