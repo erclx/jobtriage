@@ -1,0 +1,95 @@
+name: Verify
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  root-checks:
+    name: Root checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install root dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install shell tools
+        run: sudo apt-get install -y shfmt shellcheck
+
+      - name: Check formatting
+        run: bun run check:format
+
+      - name: Check spelling
+        run: bun run check:spell
+
+      - name: Check shell
+        run: bun run check:shell
+
+  python-checks:
+    name: Python checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Setup Python
+        run: uv python install
+
+      - name: Sync dependencies
+        run: uv sync --frozen --dev
+
+      - name: Lint
+        run: uv run ruff check .
+
+      - name: Format check
+        run: uv run ruff format --check .
+
+      - name: Tests
+        run: uv run pytest -v
+
+  web-checks:
+    name: Web checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install web dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Tests
+        run: bun run test:run
+
+      - name: Build
+        run: bun run build

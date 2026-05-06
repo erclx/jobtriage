@@ -1,0 +1,8 @@
+{
+  "**/*.{ts,tsx,js,jsx,mjs,json,jsonc,md,css,html,yaml,yml}": [
+    "prettier --write --ignore-path .gitignore --ignore-path .prettierignore",
+    "cspell --no-must-find-files"
+  ],
+  "**/*.md": "aitk indexes regen",
+  "**/*.sh": ["shfmt --write --indent 2", "shellcheck --severity=warning"]
+}
