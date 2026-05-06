@@ -35,6 +35,12 @@ bun run check
 
 # Web dev server
 cd web && bun run dev
+
+# Sweep Platsbanken into a local SQLite file (v0)
+cd python && uv run jobtriage sweep --employer 'Volvo' --db jobtriage.db
+
+# Record engagement state for an ad
+cd python && uv run jobtriage mark-status <ad-id> applied --note 'submitted via portal'
 ```
 
 ## Documentation

@@ -8,7 +8,7 @@ on:
 
 jobs:
   root-checks:
-    name: Root checks
+    name: 🛡️ Root Checks
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -18,6 +18,11 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
 
       - name: Install root dependencies
         run: bun install --frozen-lockfile
@@ -35,7 +40,7 @@ jobs:
         run: bun run check:shell
 
   python-checks:
-    name: Python checks
+    name: 🧪 Python Checks
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -61,11 +66,14 @@ jobs:
       - name: Format check
         run: uv run ruff format --check .
 
+      - name: Typecheck
+        run: uv run mypy .
+
       - name: Tests
         run: uv run pytest -v
 
   web-checks:
-    name: Web checks
+    name: 📦 Web Checks
     runs-on: ubuntu-latest
     defaults:
       run:
