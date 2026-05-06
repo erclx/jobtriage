@@ -1,3 +1,5 @@
+"""Sweep command: query JobTech and persist results into local SQLite."""
+
 import asyncio
 import logging
 from datetime import datetime

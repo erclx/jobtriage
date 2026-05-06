@@ -1,3 +1,5 @@
+"""Typer entry for the jobtriage CLI."""
+
 import typer
 
 from jobtriage.cli.mark_status import mark_status_command

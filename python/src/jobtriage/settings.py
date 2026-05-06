@@ -1,3 +1,5 @@
+"""Pydantic settings loaded from JOBTRIAGE_-prefixed environment variables."""
+
 from pathlib import Path
 
 from pydantic import Field

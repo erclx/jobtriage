@@ -1,3 +1,5 @@
+"""SQLite connection helper that applies the schema on open."""
+
 import sqlite3
 from importlib import resources
 from pathlib import Path

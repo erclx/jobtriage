@@ -1,3 +1,5 @@
+"""Command-line entry for the jobtriage package."""
+
 from jobtriage.cli import app
 
 if __name__ == '__main__':

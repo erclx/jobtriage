@@ -1,3 +1,5 @@
+"""Tests for the mark-status CLI command."""
+
 from pathlib import Path
 
 import pytest

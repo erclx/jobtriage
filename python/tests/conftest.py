@@ -1,3 +1,5 @@
+"""Shared pytest fixtures for jobtriage tests."""
+
 import sqlite3
 from collections.abc import Callable, Iterator
 from datetime import UTC, datetime, timedelta

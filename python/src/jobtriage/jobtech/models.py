@@ -1,3 +1,5 @@
+"""Pydantic models for the JobTech JobSearch API response subset."""
+
 from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field

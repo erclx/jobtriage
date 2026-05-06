@@ -1,3 +1,5 @@
+"""Tests for append-mostly ad ingestion."""
+
 import sqlite3
 from collections.abc import Callable
 from datetime import datetime

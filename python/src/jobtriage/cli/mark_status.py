@@ -1,3 +1,5 @@
+"""Mark-status command: append engagement state to a markdown log."""
+
 from pathlib import Path
 from typing import Annotated
 

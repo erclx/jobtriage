@@ -1,3 +1,5 @@
+"""Tests for the engagement log writer."""
+
 from datetime import date
 from pathlib import Path
 

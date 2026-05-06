@@ -1,3 +1,6 @@
+"""Project-rooted exception hierarchy for jobtriage."""
+
+
 class JobtriageError(Exception):
     pass
 

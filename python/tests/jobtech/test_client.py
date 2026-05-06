@@ -1,3 +1,5 @@
+"""Tests for the JobTech HTTPX client and search filter."""
+
 import json
 from datetime import UTC, datetime, timedelta
 

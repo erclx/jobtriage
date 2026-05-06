@@ -1,3 +1,5 @@
+"""Tests for the description chunker."""
+
 from jobtriage.storage.chunking import chunk_description
 
 

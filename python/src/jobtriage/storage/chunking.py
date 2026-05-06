@@ -1,3 +1,5 @@
+"""Paragraph-then-length chunker for ad description text."""
+
 import re
 
 DEFAULT_CHUNK_CHARS = 800

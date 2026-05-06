@@ -1,3 +1,5 @@
+"""Append engagement status rows to a markdown log file."""
+
 from datetime import date, datetime
 from enum import StrEnum
 from pathlib import Path

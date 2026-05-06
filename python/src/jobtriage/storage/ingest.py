@@ -1,3 +1,5 @@
+"""Append-mostly ingestion of JobTech ads with filter-scoped deactivation."""
+
 import hashlib
 import sqlite3
 from collections.abc import Iterable

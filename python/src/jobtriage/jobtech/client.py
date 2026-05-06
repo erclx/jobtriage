@@ -1,3 +1,5 @@
+"""Async HTTPX client for the JobTech JobSearch API with structured filters."""
+
 from collections.abc import AsyncIterator
 from dataclasses import dataclass
 from datetime import date, datetime

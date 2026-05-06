@@ -1,3 +1,5 @@
+"""Tests for the sweep CLI command."""
+
 from collections.abc import Callable
 from pathlib import Path
 
