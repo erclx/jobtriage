@@ -17,7 +17,7 @@ FastAPI backend, Python tools, and Typer CLI. The same Python modules power the 
 - `httpx` for the JobTech API client
 - `ruff` for lint and format, `mypy` for strict types, `pytest` for tests
 
-FastAPI, Typer, sqlite-vec, and the embedding model are not yet installed. They land per the v0 through v2 phases in [ARCHITECTURE.md](../.claude/ARCHITECTURE.md).
+Typer, httpx, pydantic, and pydantic-settings ship with v0. FastAPI, sqlite-vec, and the embedding model land in v1 and v2 per [ARCHITECTURE.md](../.claude/ARCHITECTURE.md).
 
 ## Layout
 
@@ -26,37 +26,41 @@ python/
 ├── src/
 │   └── jobtriage/
 │       ├── __init__.py
+│       ├── __main__.py         ← `python -m jobtriage` entrypoint
+│       ├── settings.py         ← pydantic-settings, env-prefixed JOBTRIAGE_
+│       ├── errors.py           ← project-rooted exception hierarchy
+│       ├── engagement.py       ← mark-status writer for the engagement log
 │       ├── api/                ← FastAPI app and routers (planned, v2)
-│       ├── tools/              ← JobTech client, retriever, matcher (planned, v0-v1)
-│       ├── storage/            ← SQLite + sqlite-vec + FTS5 (planned, v0)
-│       └── cli/                ← Typer entrypoint (planned, v0)
-├── tests/                      ← pytest tests
-│   └── test_smoke.py
+│       ├── jobtech/            ← async JobTech client + pydantic models
+│       ├── storage/            ← SQLite schema, chunker, append-mostly ingest
+│       └── cli/                ← Typer entrypoint with sweep + mark-status
+├── tests/                      ← pytest, mirrors src/ layout
 ├── scripts/
 │   └── verify.sh               ← Python verify (ruff, mypy, pytest)
 ├── .python-version             ← 3.12
-├── pyproject.toml              ← project + [dependency-groups] dev
+├── pyproject.toml              ← project + [dependency-groups] dev + hatchling
 ├── ruff.toml
 ├── mypy.ini
 ├── pytest.ini
 └── .coveragerc
 ```
 
-Only `src/jobtriage/__init__.py` exists today. Subpackages land at their phase per ARCHITECTURE.md.
+`api/` lands in v2. The `storage/` schema reserves a nullable `embedding` BLOB column on `ad_chunks` so v1 can backfill without a migration.
 
 ## Layer responsibilities
 
-- `tools/`: pure Python with no FastAPI coupling. The CLI imports these directly. The API layer wraps them as HTTP endpoints.
-- `api/`: thin FastAPI layer. One endpoint per TypeScript tool wrapper in `web/src/lib/tools/`.
-- `storage/`: SQLite schema, ingestion, hybrid retriever (dense + BM25 + reciprocal rank fusion).
-- `cli/`: Typer commands for sweeps, ingestion, and `mark-status` writes against a local engagement markdown file.
+- `jobtech/`: async httpx client and pydantic models for the JobTech `/search` API. The CLI imports these directly. The API layer (v2) will wrap them as HTTP endpoints.
+- `api/`: thin FastAPI layer. One endpoint per TypeScript tool wrapper in `web/src/lib/tools/` (planned, v2).
+- `storage/`: SQLite schema, paragraph-then-length chunker, append-mostly ingest with filter-scoped deactivation. Hybrid retriever (dense + BM25 + reciprocal rank fusion) lands in v1.
+- `engagement.py`: appends rows to a markdown engagement log. Single-writer file, no SQLite mirror per ARCHITECTURE.md.
+- `cli/`: Typer commands. `sweep` runs a structured filter and persists results. `mark-status` records engagement state.
 
 ## Conventions
 
 - Strict mypy. Annotate every function. `uv init --app` ships an unannotated `main()` that fails on first run.
 - Sidecar configs for ruff and mypy (`ruff.toml`, `mypy.ini`). pytest config lives inline under `[tool.pytest.ini_options]` in `pyproject.toml` because pytest has no sidecar precedence drift.
-- `[project.scripts]` exposes `jobtriage` as the CLI entrypoint once `cli/__init__.py` is wired (v0).
-- Tests live under `tests/` with `pythonpath = src`.
+- `[project.scripts]` exposes `jobtriage` as the CLI entrypoint, installed via the hatchling build backend.
+- Tests live under `tests/` with `pythonpath = src`. `asyncio_mode = "auto"` so `async def` tests run without per-test markers.
 
 ## Anti-patterns
 
