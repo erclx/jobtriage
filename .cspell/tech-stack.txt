@@ -1,5 +1,6 @@
 addopts
 aitk
+ascontiguousarray
 BYOK
 appuser
 asyncio
@@ -18,11 +19,14 @@ dotenv
 dotfolders
 dunder
 elif
+Embedder
+evals
 esac
 esbenp
 evenodd
 fastapi
 flake8
+frombuffer
 frontmatter
 htmlcov
 httpx
@@ -32,6 +36,7 @@ jsdom
 jsxSingleQuote
 kwargs
 labelledby
+linalg
 linecap
 linejoin
 lintstagedrc
@@ -60,6 +65,7 @@ pyproject
 pytest
 pythonpath
 PYTHONUNBUFFERED
+pyyaml
 qwen
 regen
 repr
@@ -79,8 +85,10 @@ Turbopack
 tabindex
 testpaths
 threadpool
+tobytes
 timonwong
 Typer
+UNINDEXED
 unrs
 venv
 virtualenv

@@ -2,6 +2,9 @@ chunker
 excinfo
 executemany
 executescript
+ingenjör
 jobtech
 jobtriage
+kundkontakt
+seniorroller
 timespec
