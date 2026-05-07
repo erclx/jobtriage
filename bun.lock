@@ -7,6 +7,7 @@
       "devDependencies": {
         "@commitlint/cli": "^20.5.3",
         "@commitlint/config-conventional": "^20.5.3",
+        "@cspell/dict-sv": "^2.3.2",
         "cspell": "^10.0.0",
         "husky": "^9.1.7",
         "lint-staged": "^16.2.5",
@@ -176,6 +177,8 @@
     "@cspell/dict-software-terms": ["@cspell/dict-software-terms@5.2.2", "", {}, "sha512-0CaYd6TAsKtEoA7tNswm1iptEblTzEe3UG8beG2cpSTHk7afWIVMtJLgXDv0f/Li67Lf3Z1Jf3JeXR7GsJ2TRw=="],
 
     "@cspell/dict-sql": ["@cspell/dict-sql@2.2.1", "", {}, "sha512-qDHF8MpAYCf4pWU8NKbnVGzkoxMNrFqBHyG/dgrlic5EQiKANCLELYtGlX5auIMDLmTf1inA0eNtv74tyRJ/vg=="],
+
+    "@cspell/dict-sv": ["@cspell/dict-sv@2.3.2", "", {}, "sha512-Es+nEM6v2JXk05SPBFgOEvlrHh5SIoqM2t2gET8BjvCsMBdpCcIREEOiESfX/8Rc2OiiTZXYCXhwa5WjsPmVMQ=="],
 
     "@cspell/dict-svelte": ["@cspell/dict-svelte@1.0.7", "", {}, "sha512-hGZsGqP0WdzKkdpeVLBivRuSNzOTvN036EBmpOwxH+FTY2DuUH7ecW+cSaMwOgmq5JFSdTcbTNFlNC8HN8lhaQ=="],
 

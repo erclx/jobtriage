@@ -44,8 +44,9 @@
 
 ## Spelling
 
-- When cspell flags a word, rewrite typos. Add real terms to the appropriate dictionary in `cspell.json`.
+- When cspell flags a word, rewrite typos. Add real terms to the right file under `.cspell/`: `companies.txt` for orgs and products, `people.txt` for person names, `tech-stack.txt` for tools and libs, `project-terms.txt` for everything else (jargon, acronyms, place names, project handles).
 - Keep dictionary files sorted alphabetically.
+- `@cspell/dict-sv` covers Swedish words. Do not add them to the custom txt files unless cspell still flags them after the dict is loaded.
 
 ## Snippets
 
