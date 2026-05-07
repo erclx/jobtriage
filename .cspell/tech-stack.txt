@@ -25,6 +25,7 @@ esac
 esbenp
 evenodd
 fastapi
+fintech
 flake8
 frombuffer
 frontmatter
@@ -52,6 +53,7 @@ noopener
 noreferrer
 ollama
 Ollama
+Onestream
 Otta
 ntvs
 parallelizable
@@ -98,3 +100,4 @@ wireframes
 worktree
 worktrees
 xlink
+Yocto
