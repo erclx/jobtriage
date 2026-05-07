@@ -12,12 +12,12 @@ FastAPI backend, Python tools, and Typer CLI. The same Python modules power the 
 - Python 3.12, managed with [uv](https://docs.astral.sh/uv/)
 - FastAPI for the HTTP layer
 - Typer for the CLI
-- SQLite plus `sqlite-vec` for vector storage, FTS5 for keyword index
-- `intfloat/multilingual-e5-base` for embeddings (v1)
+- SQLite for storage. FTS5 for the BM25 keyword index. A nullable `embedding` BLOB column on `ad_chunks` holds dense vectors, scored in-process via numpy cosine.
+- `intfloat/multilingual-e5-base` for embeddings (v1), via `sentence-transformers`
 - `httpx` for the JobTech API client
 - `ruff` for lint and format, `mypy` for strict types, `pytest` for tests
 
-Typer, httpx, pydantic, and pydantic-settings ship with v0. FastAPI, sqlite-vec, and the embedding model land in v1 and v2 per [ARCHITECTURE.md](../.claude/ARCHITECTURE.md).
+Typer, httpx, pydantic, and pydantic-settings shipped in v0. The hybrid retriever, embedder, and eval harness shipped in v1. FastAPI lands in v2 per [ARCHITECTURE.md](../.claude/ARCHITECTURE.md).
 
 ## Layout
 
@@ -33,7 +33,10 @@ python/
 │       ├── api/                ← FastAPI app and routers (planned, v2)
 │       ├── jobtech/            ← async JobTech client + pydantic models
 │       ├── storage/            ← SQLite schema, chunker, append-mostly ingest
-│       └── cli/                ← Typer entrypoint with sweep + mark-status
+│       ├── embeddings.py       ← multilingual-e5 wrapper with passage/query prefixes
+│       ├── retrieval.py        ← BM25, dense cosine, reciprocal rank fusion
+│       ├── evals/              ← golden-set loader and ablation harness
+│       └── cli/                ← Typer commands: sweep, mark-status, index, search, evaluate
 ├── tests/                      ← pytest, mirrors src/ layout
 ├── scripts/
 │   └── verify.sh               ← Python verify (ruff, mypy, pytest)
@@ -45,15 +48,18 @@ python/
 └── .coveragerc
 ```
 
-`api/` lands in v2. The `storage/` schema reserves a nullable `embedding` BLOB column on `ad_chunks` so v1 can backfill without a migration.
+`api/` lands in v2. The `storage/` schema reserves a nullable `embedding` BLOB column on `ad_chunks` that v1 backfills via the `index` command. An `ad_chunks_fts` virtual table mirrors chunk text under FTS5 for BM25 queries, kept in lockstep with chunk inserts and deletes.
 
 ## Layer responsibilities
 
 - `jobtech/`: async httpx client and pydantic models for the JobTech `/search` API. The CLI imports these directly. The API layer (v2) will wrap them as HTTP endpoints.
 - `api/`: thin FastAPI layer. One endpoint per TypeScript tool wrapper in `web/src/lib/tools/` (planned, v2).
-- `storage/`: SQLite schema, paragraph-then-length chunker, append-mostly ingest with filter-scoped deactivation. Hybrid retriever (dense + BM25 + reciprocal rank fusion) lands in v1.
+- `storage/`: SQLite schema, paragraph-then-length chunker, append-mostly ingest with filter-scoped deactivation. Ingest writes both `ad_chunks` and `ad_chunks_fts` rows together.
+- `embeddings.py`: `Embedder` Protocol plus `SentenceTransformerEmbedder` for multilingual-e5. Lazy-loads the model on first encode and applies the `passage:`/`query:` prefixes that e5 requires.
+- `retrieval.py`: `bm25_search` over FTS5, `dense_search` over the embedding column, `reciprocal_rank_fusion` (k=60 default), and `hybrid_search` that composes them.
+- `evals/`: pydantic-validated golden-set loader and a four-configuration runner (filter-only, bm25-only, dense-only, hybrid). Emits precision-at-k, recall@10, and p50/p95 latency.
 - `engagement.py`: appends rows to a markdown engagement log. Single-writer file, no SQLite mirror per ARCHITECTURE.md.
-- `cli/`: Typer commands. `sweep` runs a structured filter and persists results. `mark-status` records engagement state.
+- `cli/`: Typer commands. `sweep` ingests from JobTech, `index` backfills embeddings, `search` runs hybrid retrieval, `evaluate` runs the ablation harness, `mark-status` records engagement state.
 
 ## Conventions
 

@@ -36,8 +36,17 @@ bun run check
 # Web dev server
 cd web && bun run dev
 
-# Sweep Platsbanken into a local SQLite file (v0)
-cd python && uv run jobtriage sweep --employer 'Volvo' --db jobtriage.db
+# Sweep Platsbanken into a local SQLite file
+cd python && uv run jobtriage sweep --employer 'Volvo' --db ../var/jobtriage.db
+
+# Embed chunks with multilingual-e5-base (downloads ~280 MB on first run)
+cd python && uv run jobtriage index --db ../var/jobtriage.db
+
+# Hybrid search: BM25 + dense + reciprocal rank fusion
+cd python && uv run jobtriage search 'AI ingenjör Stockholm' --db ../var/jobtriage.db --top-k 5
+
+# Run the four-configuration retrieval ablation against the golden set
+cd python && uv run jobtriage evaluate --db ../var/jobtriage.db
 
 # Record engagement state for an ad
 cd python && uv run jobtriage mark-status <ad-id> applied --note 'submitted via portal'
