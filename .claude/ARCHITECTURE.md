@@ -26,7 +26,7 @@ Dense embeddings alone miss exact keyword matches like model names ("Mastra", "L
 
 ### SQLite over an external vector database
 
-`sqlite-vec` for vectors and FTS5 for keywords. One file, no extra service, ships embedded in the Fly.io image. External vector DBs add deploy complexity and a network hop. Active ad volume (low thousands at a time) sits well within SQLite's range.
+FTS5 for keywords and a numpy in-process cosine over a chunk-level embedding column for vectors. One file, no extra service, ships embedded in the Fly.io image. External vector DBs add deploy complexity and a network hop. Active ad volume (low thousands at a time) sits well within SQLite's range, and brute-force scan is sub-millisecond at that size. `sqlite-vec` stays on the path for when corpus growth makes brute force unprofitable.
 
 ### Two-folder repo over a workspace monorepo
 
@@ -55,7 +55,7 @@ The CLI's `mark-status` command writes to a local `engagements/log.md` (or any m
 ## Risks / open questions
 
 - **Tool-call trace UI density** (decide at v4): expandable trees open by default (educational, busy) versus collapsed (cleaner) versus behind a toggle.
-- **Multilingual embedding ablation timing** (decide at v1): run the comparison locally on a 50-query Swedish golden set, or cite published numbers in the README. Running locally is more credible but burns dev time.
+- **Multilingual embedding ablation timing**: deferred to v1.5. v1 ships with `multilingual-e5-base` only and the four-configuration hybrid ablation. The model comparison (e5-base vs e5-large vs English-only) runs through the same harness once the golden set carries live ad ids.
 - **Eval cadence** (decide at v2): nightly via GitHub Actions cron is the likely call, but burns API budget on the maintainer's capped key.
 - **Ad corpus freshness in deploy** (decide at v5): rebuild the SQLite file and redeploy nightly, or run ingestion inside the container with a persistent Fly.io volume.
-- **Reranker on or off by default** (decide at v1): cross-encoder rerank improves precision but doubles inference latency. Decide based on the eval harness numbers.
+- **Reranker on or off by default**: shipped off and deferred out of v1. The retrieval module exposes a clean seam so a cross-encoder rerank can land later without churn. Decision flips at the start of v2 once `evaluate` produces baseline precision numbers against a real golden set.

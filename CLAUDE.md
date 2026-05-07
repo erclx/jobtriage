@@ -16,6 +16,11 @@
 - Do not add features the user did not ask for.
 - When rewriting a section, preserve existing code blocks, tables, and grouped examples unless the user asked to remove them.
 
+## Shipping
+
+- After implementing a feature, run `bun run check` plus the test suite for the surfaces you touched. Fix what fails before opening a PR.
+- After implementing a feature, run it end-to-end against real data (live API, populated database, deployed surface) and paste the output into the PR body under a `Live smoke` section. If a live run is impossible, say so explicitly instead of claiming success.
+
 ## Indexes
 
 - When a folder has an `index.md`, check it before reading individual files in that folder.
@@ -25,10 +30,11 @@
 ## Markdown
 
 - When editing any markdown file, follow `standards/prose.md`.
+- When editing `README.md`, also follow `standards/readme.md`. Keep it user-facing. Technical detail belongs in `docs/` or `.claude/`.
 
 ## Commands
 
-- Run `bun run check` before committing. Full script reference in `docs/development.md`.
+- `bun run check` runs the full verify cascade. Full script reference in `docs/development.md`.
 
 ## Key paths
 
@@ -38,8 +44,9 @@
 
 ## Spelling
 
-- When cspell flags a word, rewrite typos. Add real terms to the appropriate dictionary in `cspell.json`.
+- When cspell flags a word, rewrite typos. Add real terms to the right file under `.cspell/`: `companies.txt` for orgs and products, `people.txt` for person names, `tech-stack.txt` for tools and libs, `project-terms.txt` for everything else (jargon, acronyms, place names, project handles).
 - Keep dictionary files sorted alphabetically.
+- `@cspell/dict-sv` covers Swedish words. Do not add them to the custom txt files unless cspell still flags them after the dict is loaded.
 
 ## Snippets
 

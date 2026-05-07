@@ -1,0 +1,121 @@
+queries:
+  - query: 'Python data pipelines fintech'
+    expected_ad_ids: ['30688390', '30745422']
+    note: 'Klarna Senior Python and Data Engineer roles'
+  - query: 'iOS Swift mobile developer'
+    expected_ad_ids: ['30841841']
+    note: 'Spotify iOS Developer'
+  - query: 'Yocto Linux distribution embedded'
+    expected_ad_ids: ['30982995', '30983013', '30983023']
+    note: 'Ericsson Linux/Test Engineer Yocto roles'
+  - query: 'machine learning engineer tech lead'
+    expected_ad_ids: ['30966965']
+    note: 'Volvo Senior ML Engineer / Tech Lead'
+  - query: 'AI ingenjör maskininlärning'
+    expected_ad_ids: ['30966965']
+    note: 'Swedish phrasing for the Volvo ML role'
+  - query: 'senior data engineer building data platforms'
+    expected_ad_ids: ['30745422', '31000998', '30990642', '30950670']
+    note: 'Klarna and Volvo data engineering roles'
+  - query: 'data analyst customer market intelligence'
+    expected_ad_ids: ['30964682']
+    note: 'Volvo Data Analyst Customer Experience and Market Intelligence'
+  - query: 'compliance certification engineer regulations'
+    expected_ad_ids: ['30919929']
+    note: 'Volvo Compliance and Certification Engineer'
+  - query: 'test engineer function control'
+    expected_ad_ids: ['30981430', '30980045', '31003451', '30982995']
+    note: 'Test engineer roles across Volvo Cars, Volvo Group, and Ericsson'
+  - query: 'software engineer connected vehicle'
+    expected_ad_ids: ['30944958']
+    note: 'Volvo Cars Software Engineer'
+  - query: 'product manager fintech consumer'
+    expected_ad_ids: ['30897197', '30991419']
+    note: 'Klarna Product Manager openings'
+  - query: 'graduate program silicon hardware'
+    expected_ad_ids: ['30979272', '30979294']
+    note: 'Ericsson Silicon Academy entry-level program in Kista and Lund'
+  - query: 'head of manufacturing strategy'
+    expected_ad_ids: ['30933598']
+    note: 'Volvo Head of Manufacturing Engineering Eskilstuna'
+  - query: 'intern technical coordinator'
+    expected_ad_ids: ['30999897', '30999901']
+    note: 'Volvo intern roles, technical coordinator and digital support'
+  - query: 'autonomous transport system integration'
+    expected_ad_ids: ['30866658']
+    note: 'Volvo Autonomous Solutions Principal System Integration Lead'
+  - query: 'battery factory engineer Torslanda'
+    expected_ad_ids: ['30973371', '30999903', '30990642']
+    note: 'Volvo Cars battery factory roles'
+  - query: 'electronics design hardware engineer'
+    expected_ad_ids: ['30966094']
+    note: 'Volvo Cars Electronics Design Engineer'
+  - query: 'senior buyer procurement automotive'
+    expected_ad_ids: ['30980656']
+    note: 'Volvo Cars Senior Buyer'
+  - query: 'venture capital investment associate'
+    expected_ad_ids: ['30998713']
+    note: 'Volvo Car Tech Fund Investment Associate / Manager'
+  - query: 'EPM Onestream financial planning architect'
+    expected_ad_ids: ['30982737']
+    note: 'Volvo Cars EPM Architect Onestream'
+  - query: 'logistics coordinator manufacturing'
+    expected_ad_ids: ['30961482']
+    note: 'Volvo Logistics Coordinator Eskilstuna'
+  - query: 'head of legal intellectual property'
+    expected_ad_ids: ['30944946', '30944948']
+    note: 'Volvo Head of IP Legal and Head of Legal Global Functions'
+  - query: 'engineer scalable distributed systems Stockholm'
+    expected_ad_ids: ['30825386', '30688390']
+    note: 'Klarna senior engineering roles in Stockholm'
+  - query: 'biltekniker familjeföretag'
+    expected_ad_ids: ['30852599']
+    note: 'Stig Ericsson Bil Biltekniker'
+  - query: 'bilförsäljare auktoriserad återförsäljare'
+    expected_ad_ids: ['30959144']
+    note: 'Stig Ericsson Bil Bilförsäljare'
+  - query: 'svetsare Volvo Construction Equipment'
+    expected_ad_ids: ['30819425']
+    note: 'Montico svetsare till Volvo CE Braås'
+  - query: 'målare tillverkningsindustri'
+    expected_ad_ids: ['30910013']
+    note: 'Montico målare till Volvo Construction Equipment'
+  - query: 'teknisk förvaltare fastighetsbolag'
+    expected_ad_ids: ['30895011']
+    note: 'Isaksson Rekrytering teknisk förvaltare Lennart Ericsson Fastigheter'
+  - query: 'underhållsingenjör batterifabrik'
+    expected_ad_ids: ['30973371', '30999903']
+    note: 'Volvo Cars underhållsingenjör batterifabriken roles'
+  - query: 'fastighetsansvarig Volvo Bussar'
+    expected_ad_ids: ['30982755']
+    note: 'Volvo Fastighetsansvarig Volvo Bussar Borås'
+  - query: 'manager product preparation Volvo Buses'
+    expected_ad_ids: ['30999027']
+    note: 'Volvo Buses Manager Product Preparation Uddevalla'
+  - query: 'ledare underhåll'
+    expected_ad_ids: ['30974767']
+    note: 'Volvo Cars Ledare inom Underhåll'
+  - query: 'operatör montör Volvo Reman'
+    expected_ad_ids: ['30964790']
+    note: 'Volvo Reman Flen montörer och operatörer'
+  - query: 'maskinskötare gjuteri casting'
+    expected_ad_ids: ['30991708']
+    note: 'Volvo Cars Maskinskötare Gjuteri Casting'
+  - query: 'pricing analyst coordinator'
+    expected_ad_ids: ['30974420']
+    note: 'Volvo Pricing Analyst and Coordinator'
+  - query: 'electrical designer customer projects energy'
+    expected_ad_ids: ['30991360']
+    note: 'Volvo Energy Electrical Designer Engineer'
+  - query: 'engine application engineer combustion'
+    expected_ad_ids: ['30962462']
+    note: 'Volvo Engine Application Engineer'
+  - query: 'system engineer machine functions'
+    expected_ad_ids: ['30951713', '30964968']
+    note: 'Volvo System Engineer roles in Växjö and Eskilstuna'
+  - query: 'underhållstekniker Volvo Cars Floby'
+    expected_ad_ids: ['30933620']
+    note: 'Volvo Cars Floby underhållstekniker'
+  - query: 'service owner cloud platform'
+    expected_ad_ids: ['30955728']
+    note: 'Volvo Service Owner role'

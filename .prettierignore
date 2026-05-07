@@ -9,3 +9,5 @@ python/.venv/
 python/.pytest_cache/
 python/.ruff_cache/
 python/uv.lock
+.mypy_cache/
+.coverage_cache/

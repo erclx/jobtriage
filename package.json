@@ -4,6 +4,7 @@
   "devDependencies": {
     "@commitlint/cli": "^20.5.3",
     "@commitlint/config-conventional": "^20.5.3",
+    "@cspell/dict-sv": "^2.3.2",
     "cspell": "^10.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.5",

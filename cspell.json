@@ -1,8 +1,19 @@
 {
   "version": "0.2",
-  "language": "en",
+  "language": "en,sv",
   "useGitignore": true,
+  "import": ["@cspell/dict-sv/cspell-ext.json"],
   "dictionaryDefinitions": [
+    {
+      "name": "companies",
+      "path": ".cspell/companies.txt",
+      "addWords": true
+    },
+    {
+      "name": "people",
+      "path": ".cspell/people.txt",
+      "addWords": true
+    },
     {
       "name": "project-terms",
       "path": ".cspell/project-terms.txt",
@@ -14,6 +25,6 @@
       "addWords": true
     }
   ],
-  "dictionaries": ["project-terms", "tech-stack"],
+  "dictionaries": ["companies", "people", "project-terms", "sv", "tech-stack"],
   "ignorePaths": [".cspell/**", ".git/**", "bun.lock", "**/uv.lock"]
 }
