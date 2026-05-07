@@ -29,11 +29,14 @@ Local dev workflow for this monorepo. Two stack folders sit beside a thin orches
 
 `check` runs on every `git push` via the husky `pre-push` hook. `next build` and Playwright e2e stay out of the cascade by design. The previous scaffold ran `next build` in `pre-push` and froze under WSL2. CI now runs the build on every PR instead. Run `cd web && bun run build` and `cd web && bun run test:e2e` manually before opening a PR if you want full parity.
 
+The python verify also regenerates `python/openapi.json` and fails if the working copy drifts. After backend changes that move endpoints or schemas, the regeneration is automatic. Commit the diff alongside the source change.
+
 ## Root scripts
 
 | Command                | Purpose                                                                  |
 | ---------------------- | ------------------------------------------------------------------------ |
 | `bun run check`        | Full cascade. Asserts format, spell, shell, python, and web checks pass. |
+| `bun run dev:api`      | FastAPI backend with `--reload` on `http://127.0.0.1:8000`.              |
 | `bun run format`       | Auto-fix prettier and shfmt formatting.                                  |
 | `bun run check:format` | Assert prettier and shfmt are clean.                                     |
 | `bun run check:spell`  | Assert cspell passes against dictionaries.                               |
@@ -63,13 +66,14 @@ Run from `web/` after `cd web`.
 
 Run from `python/` after `cd python`.
 
-| Command                  | Purpose             |
-| ------------------------ | ------------------- |
-| `uv run ruff check .`    | Lint.               |
-| `uv run ruff format .`   | Auto-format.        |
-| `uv run mypy .`          | Strict typecheck.   |
-| `uv run pytest -v`       | Tests.              |
-| `bash scripts/verify.sh` | Full python verify. |
+| Command                  | Purpose                   |
+| ------------------------ | ------------------------- |
+| `uv run ruff check .`    | Lint.                     |
+| `uv run ruff format .`   | Auto-format.              |
+| `uv run mypy .`          | Strict typecheck.         |
+| `uv run pytest -v`       | Tests.                    |
+| `bash scripts/verify.sh` | Full python verify.       |
+| `uv run jobtriage-api`   | Start the FastAPI server. |
 
 ## Shell scripts
 

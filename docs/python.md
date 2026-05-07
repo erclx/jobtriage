@@ -17,7 +17,7 @@ FastAPI backend, Python tools, and Typer CLI. The same Python modules power the 
 - `httpx` for the JobTech API client
 - `ruff` for lint and format, `mypy` for strict types, `pytest` for tests
 
-Typer, httpx, pydantic, and pydantic-settings shipped in v0. The hybrid retriever, embedder, and eval harness shipped in v1. FastAPI lands in v2 per [ARCHITECTURE.md](../.claude/ARCHITECTURE.md).
+Typer, httpx, pydantic, and pydantic-settings shipped in v0. The hybrid retriever, embedder, and eval harness shipped in v1. FastAPI shipped in v2 per [ARCHITECTURE.md](../.claude/ARCHITECTURE.md).
 
 ## Layout
 
@@ -30,7 +30,7 @@ python/
 │       ├── settings.py         ← pydantic-settings, env-prefixed JOBTRIAGE_
 │       ├── errors.py           ← project-rooted exception hierarchy
 │       ├── engagement.py       ← mark-status writer for the engagement log
-│       ├── api/                ← FastAPI app and routers (planned, v2)
+│       ├── api/                ← FastAPI app, routers, schemas, dependencies
 │       ├── jobtech/            ← async JobTech client + pydantic models
 │       ├── storage/            ← SQLite schema, chunker, append-mostly ingest
 │       ├── embeddings.py       ← multilingual-e5 wrapper with passage/query prefixes
@@ -39,7 +39,10 @@ python/
 │       └── cli/                ← Typer commands: sweep, mark-status, index, search, evaluate
 ├── tests/                      ← pytest, mirrors src/ layout
 ├── scripts/
-│   └── verify.sh               ← Python verify (ruff, mypy, pytest)
+│   ├── verify.sh               ← Python verify (ruff, mypy, pytest, openapi freshness)
+│   ├── serve.sh                ← `bun run dev:api` runner, uvicorn with `--reload`
+│   └── export_openapi.py       ← regenerates `openapi.json`, called from verify.sh
+├── openapi.json                ← FastAPI schema, regenerated and gated by verify.sh
 ├── .python-version             ← 3.12
 ├── pyproject.toml              ← project + [dependency-groups] dev + hatchling
 ├── ruff.toml
@@ -48,12 +51,12 @@ python/
 └── .coveragerc
 ```
 
-`api/` lands in v2. The `storage/` schema reserves a nullable `embedding` BLOB column on `ad_chunks` that v1 backfills via the `index` command. An `ad_chunks_fts` virtual table mirrors chunk text under FTS5 for BM25 queries, kept in lockstep with chunk inserts and deletes.
+The `storage/` schema reserves a nullable `embedding` BLOB column on `ad_chunks` that v1 backfills via the `index` command. An `ad_chunks_fts` virtual table mirrors chunk text under FTS5 for BM25 queries, kept in lockstep with chunk inserts and deletes.
 
 ## Layer responsibilities
 
-- `jobtech/`: async httpx client and pydantic models for the JobTech `/search` API. The CLI imports these directly. The API layer (v2) will wrap them as HTTP endpoints.
-- `api/`: thin FastAPI layer. One endpoint per TypeScript tool wrapper in `web/src/lib/tools/` (planned, v2).
+- `jobtech/`: async httpx client and pydantic models for the JobTech `/search` API. The CLI imports these directly. The HTTP layer wraps the retrieval primitives, not this client.
+- `api/`: thin FastAPI layer. `app_factory()` mounts `routers/health.py` and `routers/jobs.py`. The lifespan warms the embedder once on startup. `POST /v1/jobs/search` and `POST /v1/jobs/semantic` map to the v3 frontend's `searchJobs` and `semanticSearch` tools. The CLI keeps importing the Python tools directly without going through HTTP.
 - `storage/`: SQLite schema, paragraph-then-length chunker, append-mostly ingest with filter-scoped deactivation. Ingest writes both `ad_chunks` and `ad_chunks_fts` rows together.
 - `embeddings.py`: `Embedder` Protocol plus `SentenceTransformerEmbedder` for multilingual-e5. Lazy-loads the model on first encode and applies the `passage:`/`query:` prefixes that e5 requires.
 - `retrieval.py`: `bm25_search` over FTS5, `dense_search` over the embedding column, `reciprocal_rank_fusion` (k=60 default), and `hybrid_search` that composes them.
@@ -79,16 +82,18 @@ python/
 
 Run from `python/` after `cd python`.
 
-| Command                  | Purpose                            |
-| ------------------------ | ---------------------------------- |
-| `uv sync`                | Install dependencies into `.venv/` |
-| `uv add <pkg>`           | Add a runtime dependency           |
-| `uv add --dev <pkg>`     | Add a dev dependency               |
-| `uv run ruff check .`    | Lint                               |
-| `uv run ruff format .`   | Auto-format                        |
-| `uv run mypy .`          | Strict typecheck                   |
-| `uv run pytest -v`       | Tests                              |
-| `bash scripts/verify.sh` | Full python verify                 |
+| Command                                   | Purpose                            |
+| ----------------------------------------- | ---------------------------------- |
+| `uv sync`                                 | Install dependencies into `.venv/` |
+| `uv add <pkg>`                            | Add a runtime dependency           |
+| `uv add --dev <pkg>`                      | Add a dev dependency               |
+| `uv run ruff check .`                     | Lint                               |
+| `uv run ruff format .`                    | Auto-format                        |
+| `uv run mypy .`                           | Strict typecheck                   |
+| `uv run pytest -v`                        | Tests                              |
+| `bash scripts/verify.sh`                  | Full python verify                 |
+| `uv run jobtriage-api`                    | Start the FastAPI server           |
+| `uv run python scripts/export_openapi.py` | Regenerate `openapi.json`          |
 
 ## Deploy
 
