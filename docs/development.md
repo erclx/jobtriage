@@ -48,19 +48,34 @@ The python verify also regenerates `python/openapi.json` and fails if the workin
 
 Run from `web/` after `cd web`.
 
-| Command                 | Purpose                             |
-| ----------------------- | ----------------------------------- |
-| `bun run dev`           | Next dev server with hot reload.    |
-| `bun run build`         | Production build.                   |
-| `bun run start`         | Serve the production build.         |
-| `bun run lint`          | ESLint, zero warnings allowed.      |
-| `bun run lint:fix`      | Auto-fix ESLint issues.             |
-| `bun run typecheck`     | `tsc --noEmit`.                     |
-| `bun run test`          | Vitest in watch mode.               |
-| `bun run test:run`      | Vitest once with verbose reporter.  |
-| `bun run test:coverage` | Vitest with coverage.               |
-| `bun run test:e2e`      | Playwright end-to-end.              |
-| `bun run check`         | Web verify (typecheck, lint, test). |
+| Command                 | Purpose                                          |
+| ----------------------- | ------------------------------------------------ |
+| `bun run dev`           | Next dev server with hot reload. See note below. |
+| `bun run build`         | Production build.                                |
+| `bun run start`         | Serve the production build.                      |
+| `bun run lint`          | ESLint, zero warnings allowed.                   |
+| `bun run lint:fix`      | Auto-fix ESLint issues.                          |
+| `bun run typecheck`     | `tsc --noEmit`.                                  |
+| `bun run test`          | Vitest in watch mode.                            |
+| `bun run test:run`      | Vitest once with verbose reporter.               |
+| `bun run test:coverage` | Vitest with coverage.                            |
+| `bun run test:e2e`      | Playwright end-to-end.                           |
+| `bun run check`         | Web verify (typecheck, lint, test).              |
+
+## Local smoke
+
+To open the chat surface against the real backend on `http://localhost:3000`:
+
+```bash
+# terminal 1
+bun run dev:api
+
+# terminal 2
+cd web
+bun run build && bun run start
+```
+
+Do not use `bun run dev`. Turbopack's file watcher walks the AI Elements + shadcn dep tree and freezes WSL2 (vercel/next.js #87796, #91161, #66326). The Playwright `webServer` runs `build && start` for the same reason. Hot reload is not available locally on this machine. Rebuild after each edit.
 
 ## Python commands
 
