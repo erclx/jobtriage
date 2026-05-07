@@ -1,0 +1,10 @@
+queries:
+  - query: 'machine learning ingenjör Stockholm'
+    expected_ad_ids: ['seed-ml-stockholm-1']
+    note: 'Seed query, replace with live ad ids after a real sweep into the corpus'
+  - query: 'AI engineer remote Sweden'
+    expected_ad_ids: ['seed-ai-remote-1']
+    note: 'Seed query for keyword + region intent'
+  - query: 'seniorroller med kundkontakt'
+    expected_ad_ids: ['seed-senior-customer-1']
+    note: 'Seed query for semantic-led retrieval'

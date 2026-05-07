@@ -30,3 +30,10 @@ CREATE TABLE IF NOT EXISTS ad_chunks (
     embedding BLOB,
     PRIMARY KEY (ad_id, chunk_index)
 );
+
+CREATE VIRTUAL TABLE IF NOT EXISTS ad_chunks_fts USING fts5(
+    chunk_text,
+    ad_id UNINDEXED,
+    chunk_index UNINDEXED,
+    tokenize = 'unicode61'
+);

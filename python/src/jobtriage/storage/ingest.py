@@ -45,7 +45,7 @@ def ingest_ads(
         else:
             conn.execute(_UPDATE_AD, row)
             if existing['description_hash'] != description_hash:
-                conn.execute('DELETE FROM ad_chunks WHERE ad_id = ?', (ad.id,))
+                _delete_chunks(conn, ad.id)
                 _write_chunks(conn, ad.id, description)
             updated += 1
 
@@ -133,6 +133,15 @@ def _write_chunks(conn: sqlite3.Connection, ad_id: str, description: str) -> Non
         'INSERT INTO ad_chunks (ad_id, chunk_index, chunk_text) VALUES (?, ?, ?)',
         [(ad_id, index, text) for index, text in enumerate(chunks)],
     )
+    conn.executemany(
+        'INSERT INTO ad_chunks_fts (chunk_text, ad_id, chunk_index) VALUES (?, ?, ?)',
+        [(text, ad_id, index) for index, text in enumerate(chunks)],
+    )
+
+
+def _delete_chunks(conn: sqlite3.Connection, ad_id: str) -> None:
+    conn.execute('DELETE FROM ad_chunks WHERE ad_id = ?', (ad_id,))
+    conn.execute('DELETE FROM ad_chunks_fts WHERE ad_id = ?', (ad_id,))
 
 
 def _deactivate_missing(

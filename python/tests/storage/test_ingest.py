@@ -81,6 +81,35 @@ def test_chunks_rewrite_only_when_description_changes(
     assert [row['chunk_text'] for row in chunks_after_change] == ['two']
 
 
+def test_fts_index_tracks_chunk_writes(
+    memory_db: sqlite3.Connection, make_ad: AdFactory
+) -> None:
+    ingest_ads(
+        memory_db,
+        [make_ad(ad_id='a', description_text='Stockholm AI engineer')],
+        filter_signature=SIGNATURE,
+    )
+
+    rows = memory_db.execute(
+        'SELECT ad_id FROM ad_chunks_fts WHERE ad_chunks_fts MATCH ?', ('Stockholm',)
+    ).fetchall()
+    assert {row['ad_id'] for row in rows} == {'a'}
+
+    ingest_ads(
+        memory_db,
+        [make_ad(ad_id='a', description_text='Göteborg backend role')],
+        filter_signature=SIGNATURE,
+    )
+    stale = memory_db.execute(
+        'SELECT ad_id FROM ad_chunks_fts WHERE ad_chunks_fts MATCH ?', ('Stockholm',)
+    ).fetchall()
+    assert stale == []
+    fresh = memory_db.execute(
+        'SELECT ad_id FROM ad_chunks_fts WHERE ad_chunks_fts MATCH ?', ('Göteborg',)
+    ).fetchall()
+    assert {row['ad_id'] for row in fresh} == {'a'}
+
+
 def test_missing_ads_are_deactivated_within_same_filter(
     memory_db: sqlite3.Connection, make_ad: AdFactory
 ) -> None:
