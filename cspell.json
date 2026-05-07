@@ -26,5 +26,12 @@
     }
   ],
   "dictionaries": ["companies", "people", "project-terms", "sv", "tech-stack"],
-  "ignorePaths": [".cspell/**", ".git/**", "bun.lock", "**/uv.lock"]
+  "ignorePaths": [
+    ".cspell/**",
+    ".git/**",
+    "**/bun.lock",
+    "**/uv.lock",
+    "web/src/components/ai-elements/**",
+    "web/src/components/ui/**"
+  ]
 }

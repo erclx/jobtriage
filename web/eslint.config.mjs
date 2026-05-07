@@ -10,7 +10,14 @@ import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
 export default defineConfig([
-  globalIgnores(['.next', 'node_modules', '.claude', 'coverage']),
+  globalIgnores([
+    '.next',
+    'node_modules',
+    '.claude',
+    'coverage',
+    'src/components/ai-elements/**',
+    'src/components/ui/**',
+  ]),
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
