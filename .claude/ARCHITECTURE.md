@@ -18,7 +18,7 @@ The CLI sits beside layers 4 and 5, importing the Python modules directly with n
 
 ### Vercel AI SDK over Claude Agent SDK
 
-The agent loop runs in the browser. Tool registration, streaming, and tool-call traces all come from the AI SDK. Provider switching is a one-line change between `ollama-ai-provider` and `@ai-sdk/anthropic`. The Claude Agent SDK would push the loop server-side, complicating tool-trace rendering and adding a service to operate.
+The chat shell runs in the browser via `useChat`, with `streamText` on a thin Next.js route handler that forwards the user-supplied Anthropic key via `Authorization: Bearer`. Tool registration, streaming, and tool-call traces all come from the AI SDK. Provider switching is a one-line change between `ollama-ai-provider` and `@ai-sdk/anthropic`. The Claude Agent SDK would push the loop into a long-running service, complicating tool-trace rendering and adding ops surface.
 
 ### Hybrid retrieval over single-mode
 
@@ -39,6 +39,8 @@ The maintainer cannot fund every visitor's API spend. End users supply their own
 ### Local Ollama for development
 
 `qwen3-coder:30b` via Ollama drives the entire agent loop in dev. Zero API spend during the bulk of the build. Anthropic only for the deployed demo and for nightly eval smoke tests on a capped maintainer key. Tradeoff: local model quality differs from Claude. The eval harness compares both runs to catch prompt-portability issues before deploy.
+
+The provider switch is exposed in the UI. The BYOK gate offers two paths: paste an Anthropic key, or click "Use local Ollama" to route through `ollama-ai-provider-v2`. The chosen provider is persisted in browser sessionStorage and forwarded to `/api/chat` via the `x-jobtriage-provider` header. The route handler instantiates the matching provider per request. The Ollama model id is `qwen3-coder:30b` by default and overridable through the `OLLAMA_MODEL_ID` environment variable so a workstation can A/B against other local models without a code edit.
 
 ### Tool decomposition over a single-prompt agent
 
