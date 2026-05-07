@@ -8,8 +8,6 @@ web/coverage/
 python/.venv/
 python/.pytest_cache/
 python/.ruff_cache/
+python/uv.lock
 .mypy_cache/
 .coverage_cache/
-python/.mypy_cache/
-python/.coverage_cache/
-python/uv.lock
