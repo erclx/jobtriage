@@ -56,6 +56,6 @@ The CLI's `mark-status` command writes to a local `engagements/log.md` (or any m
 
 - **Tool-call trace UI density** (decide at v4): expandable trees open by default (educational, busy) versus collapsed (cleaner) versus behind a toggle.
 - **Multilingual embedding ablation timing**: deferred to v1.5. v1 ships with `multilingual-e5-base` only and the four-configuration hybrid ablation. The model comparison (e5-base vs e5-large vs English-only) runs through the same harness once the golden set carries live ad ids.
-- **Eval cadence** (decide at v2): nightly via GitHub Actions cron is the likely call, but burns API budget on the maintainer's capped key.
+- **Eval cadence**: resolved at v2. Nightly via GitHub Actions cron at 03:00 UTC, with a `workflow_dispatch` escape hatch. The current eval harness is pure retrieval and does not call an LLM, so the API-budget concern does not apply yet. When v3 introduces LLM tool calls, split the LLM-eval subset into a dispatch-only or weekly job to cap the maintainer key.
 - **Ad corpus freshness in deploy** (decide at v5): rebuild the SQLite file and redeploy nightly, or run ingestion inside the container with a persistent Fly.io volume.
 - **Reranker on or off by default**: shipped off and deferred out of v1. The retrieval module exposes a clean seam so a cross-encoder rerank can land later without churn. Decision flips at the start of v2 once `evaluate` produces baseline precision numbers against a real golden set.
