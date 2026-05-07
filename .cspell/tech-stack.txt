@@ -8,6 +8,7 @@ axios
 bradlc
 bunx
 changelogithub
+cmdk
 charliermarsh
 commitlint
 conftest
@@ -53,6 +54,7 @@ njsproj
 noopener
 noreferrer
 ollama
+oxlint
 Ollama
 Otta
 ntvs
@@ -77,7 +79,9 @@ ruff
 setattr
 scannability
 serviceworker
+shadcn
 shellcheck
+shiki
 shfmt
 sidepanel
 subfolders
