@@ -3,6 +3,7 @@ name = "jobtriage"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
+    "fastapi>=0.115.0",
     "httpx>=0.28.0",
     "numpy>=2.2.0",
     "pydantic>=2.10.0",
@@ -10,10 +11,12 @@ dependencies = [
     "pyyaml>=6.0.2",
     "sentence-transformers>=3.3.0",
     "typer>=0.15.0",
+    "uvicorn[standard]>=0.32.0",
 ]
 
 [project.scripts]
 jobtriage = "jobtriage.cli:app"
+jobtriage-api = "jobtriage.api.__main__:run"
 
 [build-system]
 requires = ["hatchling"]

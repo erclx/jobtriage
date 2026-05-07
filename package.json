@@ -18,6 +18,7 @@
     "check:shell": "find scripts python/scripts web/scripts -name '*.sh' -exec shellcheck --severity=warning {} +",
     "check": "./scripts/verify.sh",
     "clean": "./scripts/clean.sh",
+    "dev:api": "./python/scripts/serve.sh --reload",
     "update": "./scripts/update.sh"
   }
 }
