@@ -1,0 +1,45 @@
+name: Nightly Eval
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  retrieval-eval:
+    name: 📊 Retrieval Eval
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Setup Python
+        run: uv python install
+
+      - name: Sync dependencies
+        run: uv sync --frozen --dev
+
+      # TODO(v3): split llm-eval into a dispatch-only job once LLM tools land,
+      # so the maintainer key is not burned every night.
+      - name: Run retrieval eval
+        run: |
+          if [ -f jobtriage.db ]; then
+            uv run python -m jobtriage.cli evaluate --json-out eval-results.json
+          else
+            echo "no corpus checked into CI; skipping eval until v5 deploy build"
+          fi
+
+      - name: Upload eval results
+        if: always() && hashFiles('python/eval-results.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results
+          path: python/eval-results.json
