@@ -1,21 +1,14 @@
 # jobtriage
 
-A free-form chat agent over the Swedish JobTech (Platsbanken) job board. Combines structured API filters, hybrid retrieval over Swedish description text, and per-session profile reasoning to answer questions like "which Stockholm AI roles mention agentic systems and have a deadline before next Friday".
+A free-form chat agent over the Swedish JobTech jobs board. Ask questions like "which Stockholm AI roles mention agentic systems and have a deadline before next Friday" and get ranked answers with deadlines, employer, and a one-line rationale per ad. A daily-use CLI mirrors the chat tools.
 
 ## Features
 
-- Structured search by occupation code, region, employer, deadline
-- Hybrid retrieval over Swedish ad descriptions (dense + BM25 + reciprocal rank fusion)
-- Per-session profile match with rationale
-- Triage batch, compare roles, deadline watch, and CLI status tracking
-- Tool-call traces visible in the chat UI
-
-## Layout
-
-- `web/`: Next.js 16 app with the agent loop in the browser via the Vercel AI SDK
-- `python/`: FastAPI backend wrapping the tools, plus a Typer CLI
-- `docs/`: development workflow and CI reference
-- `.claude/`: planning docs
+- Free-form chat over the Swedish JobTech (Platsbanken) corpus
+- Profile-aware ranking from a markdown profile pasted at chat time
+- Triage workflow: shortlist, mark applied, mark declined, watch deadlines
+- Side-by-side comparison of multiple ads against the same criteria
+- Daily-use CLI mirrors every chat tool
 
 ## Installation
 
@@ -42,7 +35,7 @@ cd python && uv run jobtriage sweep --employer 'Volvo' --db ../var/jobtriage.db
 # Embed chunks with multilingual-e5-base (downloads ~280 MB on first run)
 cd python && uv run jobtriage index --db ../var/jobtriage.db
 
-# Hybrid search: BM25 + dense + reciprocal rank fusion
+# Hybrid search across keyword and semantic match
 cd python && uv run jobtriage search 'AI ingenjör Stockholm' --db ../var/jobtriage.db --top-k 5
 
 # Run the four-configuration retrieval ablation against the golden set
@@ -51,6 +44,17 @@ cd python && uv run jobtriage evaluate --db ../var/jobtriage.db
 # Record engagement state for an ad
 cd python && uv run jobtriage mark-status <ad-id> applied --note 'submitted via portal'
 ```
+
+## Hybrid retrieval ablation
+
+40-query Swedish golden set against a 59-ad corpus from Spotify, Klarna, Volvo Group, Volvo Cars, and Ericsson. Embeddings from `intfloat/multilingual-e5-base`. Reproduce via `uv run jobtriage evaluate`.
+
+| Configuration | precision@1 | precision@5 | precision@10 | recall@10 | p50 ms | p95 ms |
+| ------------- | ----------- | ----------- | ------------ | --------- | ------ | ------ |
+| filter-only   | 0.025       | 0.020       | 0.018        | 0.113     | 0.0    | 0.0    |
+| bm25-only     | 0.775       | 0.255       | 0.135        | 0.963     | 0.2    | 0.3    |
+| dense-only    | 0.850       | 0.250       | 0.138        | 0.969     | 5.6    | 7.8    |
+| hybrid        | 0.825       | 0.255       | 0.135        | 0.963     | 5.8    | 7.3    |
 
 ## Documentation
 
