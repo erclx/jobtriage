@@ -29,6 +29,7 @@ fintech
 flake8
 frombuffer
 frontmatter
+healthz
 htmlcov
 httpx
 iconify
@@ -91,6 +92,7 @@ timonwong
 Typer
 UNINDEXED
 unrs
+uvicorn
 venv
 virtualenv
 vitest

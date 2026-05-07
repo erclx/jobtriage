@@ -15,6 +15,7 @@ node_modules/
 .claude/memory/
 .claude/plans/
 .claude/review/
+.claude/scheduled_tasks.lock
 .claude/worktrees/
 .claude/TASKS.md
 

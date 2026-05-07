@@ -11,8 +11,16 @@ GitHub Actions workflow for this monorepo. Three parallel jobs mirror the local 
 
 - Pull requests targeting `main`
 - `workflow_dispatch` (manual run from the Actions tab)
+- Nightly cron at 03:00 UTC for the eval workflow
 
-## Jobs
+## Workflows
+
+| File                           | Trigger                          | Purpose                                   |
+| ------------------------------ | -------------------------------- | ----------------------------------------- |
+| `.github/workflows/verify.yml` | PR + workflow_dispatch           | Format, lint, types, tests, build         |
+| `.github/workflows/eval.yml`   | Nightly cron + workflow_dispatch | Retrieval ablation against the golden set |
+
+## Verify jobs
 
 Defined in `.github/workflows/verify.yml`. All jobs must pass before merge. Jobs run in parallel for speed.
 
@@ -45,6 +53,10 @@ Runs in `web/` with `bun`.
 | Lint      | `bun run lint`      | ESLint passes with zero warnings |
 | Tests     | `bun run test:run`  | Vitest exits 0                   |
 | Build     | `bun run build`     | Next production build succeeds   |
+
+## Eval job
+
+Defined in `.github/workflows/eval.yml`. Runs nightly at 03:00 UTC and on `workflow_dispatch`. Skips when no SQLite corpus is present in the runner. Once v3 introduces LLM tool calls into the harness, the LLM-eval subset splits into a dispatch-only or weekly job to cap maintainer-key spend.
 
 ## Running CI locally
 

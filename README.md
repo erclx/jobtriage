@@ -29,6 +29,9 @@ bun run check
 # Web dev server
 cd web && bun run dev
 
+# FastAPI backend (serves the Python tools to the web app)
+bun run dev:api
+
 # Sweep Platsbanken into a local SQLite file
 cd python && uv run jobtriage sweep --employer 'Volvo' --db ../var/jobtriage.db
 
@@ -55,6 +58,19 @@ cd python && uv run jobtriage mark-status <ad-id> applied --note 'submitted via 
 | bm25-only     | 0.775       | 0.255       | 0.135        | 0.963     | 0.2    | 0.3    |
 | dense-only    | 0.850       | 0.250       | 0.138        | 0.969     | 5.6    | 7.8    |
 | hybrid        | 0.825       | 0.255       | 0.135        | 0.963     | 5.8    | 7.3    |
+
+## HTTP API
+
+The FastAPI app at `python/src/jobtriage/api/` exposes the tools the web frontend calls. `bun run dev:api` starts it on `http://127.0.0.1:8000`.
+
+| Method + path            | Tool             | Behavior                                        |
+| ------------------------ | ---------------- | ----------------------------------------------- |
+| `POST /v1/jobs/search`   | `searchJobs`     | Structured filter over the local SQLite corpus. |
+| `POST /v1/jobs/semantic` | `semanticSearch` | Hybrid keyword and dense retrieval.             |
+| `GET /healthz`           | -                | Runtime configuration smoke.                    |
+| `GET /openapi.json`      | -                | Schema for type generation.                     |
+
+The same OpenAPI schema is checked in at `python/openapi.json` and refreshed by the verify cascade. The CLI imports the same Python modules directly without going through HTTP.
 
 ## Documentation
 
