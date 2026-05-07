@@ -57,7 +57,10 @@
             "title": "Webpage Url"
           }
         },
-        "required": ["ad_id", "headline"],
+        "required": [
+          "ad_id",
+          "headline"
+        ],
         "title": "AdSummary",
         "type": "object"
       },
@@ -90,7 +93,11 @@
             "type": "string"
           }
         },
-        "required": ["status", "db_path", "model_name"],
+        "required": [
+          "status",
+          "db_path",
+          "model_name"
+        ],
         "title": "HealthResponse",
         "type": "object"
       },
@@ -143,7 +150,9 @@
             "type": "array"
           }
         },
-        "required": ["results"],
+        "required": [
+          "results"
+        ],
         "title": "JobSearchResponse",
         "type": "object"
       },
@@ -207,7 +216,11 @@
             "title": "Webpage Url"
           }
         },
-        "required": ["ad_id", "headline", "score"],
+        "required": [
+          "ad_id",
+          "headline",
+          "score"
+        ],
         "title": "RankedAd",
         "type": "object"
       },
@@ -228,7 +241,9 @@
             "type": "integer"
           }
         },
-        "required": ["query"],
+        "required": [
+          "query"
+        ],
         "title": "SemanticSearchRequest",
         "type": "object"
       },
@@ -243,7 +258,9 @@
             "type": "array"
           }
         },
-        "required": ["results"],
+        "required": [
+          "results"
+        ],
         "title": "SemanticSearchResponse",
         "type": "object"
       },
@@ -279,7 +296,11 @@
             "type": "string"
           }
         },
-        "required": ["loc", "msg", "type"],
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
         "title": "ValidationError",
         "type": "object"
       }
@@ -308,7 +329,9 @@
           }
         },
         "summary": "Healthz",
-        "tags": ["health"]
+        "tags": [
+          "health"
+        ]
       }
     },
     "/v1/jobs/search": {
@@ -347,7 +370,9 @@
           }
         },
         "summary": "Search Jobs",
-        "tags": ["jobs"]
+        "tags": [
+          "jobs"
+        ]
       }
     },
     "/v1/jobs/semantic": {
@@ -386,7 +411,9 @@
           }
         },
         "summary": "Semantic Search",
-        "tags": ["jobs"]
+        "tags": [
+          "jobs"
+        ]
       }
     }
   }
