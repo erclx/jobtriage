@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 
 import { AdCard } from './ad-card'
@@ -61,5 +62,43 @@ describe('AdCard', () => {
     )
 
     expect(screen.getByText('Today')).toBeInTheDocument()
+  })
+
+  it('clamps the matched-variant excerpt and toggles via Read more', async () => {
+    const user = userEvent.setup()
+    const longExcerpt =
+      'Build agents in Stockholm with Azure ML and Mastra. ' +
+      'You will own retrieval, evals, and the agent loop. '.repeat(8)
+    render(
+      <AdCard
+        ad={makeAd({ description_excerpt: longExcerpt })}
+        variant="matched"
+      />,
+    )
+
+    const excerpt = screen.getByText(/Build agents in Stockholm/)
+    expect(excerpt.className).toContain('line-clamp-4')
+    const toggle = screen.getByRole('button', { name: /Read more/i })
+    expect(toggle).toHaveAttribute('aria-expanded', 'false')
+
+    await user.click(toggle)
+
+    expect(excerpt.className).not.toContain('line-clamp-4')
+    expect(screen.getByRole('button', { name: /Read less/i })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    )
+  })
+
+  it('does not render a read-more toggle on non-matched variants', () => {
+    render(
+      <AdCard
+        ad={makeAd({ description_excerpt: 'Build agents in Stockholm.' })}
+      />,
+    )
+
+    expect(
+      screen.queryByRole('button', { name: /Read more/i }),
+    ).not.toBeInTheDocument()
   })
 })

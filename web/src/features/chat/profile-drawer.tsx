@@ -12,6 +12,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { SESSION_KEYS } from '@/features/chat/storage-keys'
 import { useSessionValue } from '@/features/chat/use-session-value'
+import { EXAMPLE_PROFILE } from '@/lib/agent/example-profile'
 import { cn } from '@/lib/utils'
 
 interface ProfileDrawerProps {
@@ -52,6 +53,10 @@ export function ProfileDrawer({ onProfileChange }: ProfileDrawerProps) {
     onProfileChange('')
   }
 
+  function handleLoadExample() {
+    setDraft(EXAMPLE_PROFILE)
+  }
+
   return (
     <Collapsible
       open={open}
@@ -82,11 +87,23 @@ export function ProfileDrawer({ onProfileChange }: ProfileDrawerProps) {
         />
       </CollapsibleTrigger>
       <CollapsibleContent className="space-y-3 px-3 pb-3">
-        <p className="text-xs text-muted-foreground">
-          Paste markdown describing your role, location, must-haves, or
-          deal-breakers. Forwarded with every chat turn. Held only in this
-          browser tab and never persisted on the server.
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="text-xs text-muted-foreground">
+            Paste markdown describing your role, location, must-haves, or
+            deal-breakers. Forwarded with every chat turn. Held only in this
+            browser tab and never persisted on the server.
+          </p>
+          {draft.length === 0 ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleLoadExample}
+            >
+              Load example
+            </Button>
+          ) : null}
+        </div>
         <Textarea
           value={draft}
           onChange={(event) => setDraft(event.target.value)}

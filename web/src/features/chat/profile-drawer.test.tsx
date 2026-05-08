@@ -39,6 +39,21 @@ describe('ProfileDrawer', () => {
     expect(await screen.findByText(/14 chars saved/i)).toBeInTheDocument()
   })
 
+  it('loads the example profile into the textarea and marks it dirty', async () => {
+    const user = userEvent.setup()
+    render(<ProfileDrawer onProfileChange={() => undefined} />)
+
+    await user.click(screen.getByRole('button', { name: /^Profile/i }))
+    await user.click(screen.getByRole('button', { name: /Load example/i }))
+
+    const textarea = screen.getByRole('textbox') as HTMLTextAreaElement
+    expect(textarea.value).toContain('Senior AI engineer')
+    expect(screen.getByText(/Unsaved changes/i)).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /Load example/i }),
+    ).not.toBeInTheDocument()
+  })
+
   it('clears the profile and informs the parent', async () => {
     window.sessionStorage.setItem(SESSION_KEYS.profile, 'cached profile')
     const user = userEvent.setup()
