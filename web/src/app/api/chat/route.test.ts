@@ -158,6 +158,6 @@ describe('POST /api/chat', () => {
     )
 
     const callArg = streamTextMock.mock.calls[0][0] as { system: string }
-    expect(callArg.system).not.toContain('USER PROFILE')
+    expect(callArg.system).not.toContain('--- USER PROFILE')
   })
 })

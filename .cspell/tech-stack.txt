@@ -36,6 +36,7 @@ httpx
 iconify
 intfloat
 jsdom
+julianday
 jsxSingleQuote
 kwargs
 labelledby

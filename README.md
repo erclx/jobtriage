@@ -66,18 +66,22 @@ The web app at `web/` ships a Next.js 16 chat surface built on AI Elements and t
 - Paste an Anthropic API key. Held in browser sessionStorage and forwarded to `/api/chat` via a Bearer header. Never persisted on disk.
 - Click "Use local Ollama" to route the agent loop through `qwen3-coder:30b` on `localhost:11434`. Override the model id with `OLLAMA_MODEL_ID`.
 
-A profile drawer accepts optional markdown describing the user. The drawer's contents stay in sessionStorage and ride along on every request to be appended into the system prompt server-side. The two registered tools, `searchJobs` and `semanticSearch`, post to the FastAPI endpoints below and surface inline tool-call traces above each assistant reply. Theme defaults to system preference with a sun-and-moon toggle in the chat header.
+A profile drawer accepts optional markdown describing the user. The drawer's contents stay in sessionStorage and ride along on every request to be appended into the system prompt server-side. Seven registered tools post to the FastAPI endpoints below: `searchJobs`, `semanticSearch`, `matchProfile`, `triageBatch`, `compareRoles`, `deadlineWatch`, and `trackStatus`. Tool results render as structured ad cards (employer, deadline, snippet, link) above a per-call trace tree. The trace tree is collapsed by default with a one-line summary header so the transcript reads cleanly. Expand a header to inspect input and output JSON. Theme defaults to system preference with a sun-and-moon toggle in the chat header.
 
 ## HTTP API
 
 The FastAPI app at `python/src/jobtriage/api/` exposes the tools the web frontend calls. `bun run dev:api` starts it on `http://127.0.0.1:8000`.
 
-| Method + path            | Tool             | Behavior                                        |
-| ------------------------ | ---------------- | ----------------------------------------------- |
-| `POST /v1/jobs/search`   | `searchJobs`     | Structured filter over the local SQLite corpus. |
-| `POST /v1/jobs/semantic` | `semanticSearch` | Hybrid keyword and dense retrieval.             |
-| `GET /healthz`           | -                | Runtime configuration smoke.                    |
-| `GET /openapi.json`      | -                | Schema for type generation.                     |
+| Method + path                | Tool                           | Behavior                                                                |
+| ---------------------------- | ------------------------------ | ----------------------------------------------------------------------- |
+| `POST /v1/jobs/search`       | `searchJobs`                   | Structured filter over the local SQLite corpus.                         |
+| `POST /v1/jobs/semantic`     | `semanticSearch`               | Hybrid keyword and dense retrieval.                                     |
+| `POST /v1/jobs/details`      | `matchProfile`, `compareRoles` | Description excerpts for one or more ad ids.                            |
+| `POST /v1/jobs/triage`       | `triageBatch`                  | Hybrid retrieval plus description excerpts in one round trip.           |
+| `POST /v1/jobs/deadline`     | `deadlineWatch`                | Active ads with deadlines inside a window of days, ordered by soonest.  |
+| `GET /v1/engagements/status` | `trackStatus`                  | Engagement-log entries for one ad id. Empty list when no record exists. |
+| `GET /healthz`               | -                              | Runtime configuration smoke.                                            |
+| `GET /openapi.json`          | -                              | Schema for type generation.                                             |
 
 The same OpenAPI schema is checked in at `python/openapi.json` and refreshed by the verify cascade. The CLI imports the same Python modules directly without going through HTTP.
 

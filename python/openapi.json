@@ -1,6 +1,85 @@
 {
   "components": {
     "schemas": {
+      "AdDetail": {
+        "additionalProperties": false,
+        "properties": {
+          "ad_id": {
+            "title": "Ad Id",
+            "type": "string"
+          },
+          "application_deadline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Application Deadline"
+          },
+          "description_excerpt": {
+            "title": "Description Excerpt",
+            "type": "string"
+          },
+          "employer_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Employer Name"
+          },
+          "headline": {
+            "title": "Headline",
+            "type": "string"
+          },
+          "municipality": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Municipality"
+          },
+          "occupation_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Occupation Label"
+          },
+          "webpage_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Webpage Url"
+          }
+        },
+        "required": [
+          "ad_id",
+          "headline",
+          "description_excerpt"
+        ],
+        "title": "AdDetail",
+        "type": "object"
+      },
       "AdSummary": {
         "additionalProperties": false,
         "properties": {
@@ -64,6 +143,169 @@
         "title": "AdSummary",
         "type": "object"
       },
+      "DeadlineAd": {
+        "additionalProperties": false,
+        "properties": {
+          "ad_id": {
+            "title": "Ad Id",
+            "type": "string"
+          },
+          "application_deadline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Application Deadline"
+          },
+          "days_until_deadline": {
+            "title": "Days Until Deadline",
+            "type": "integer"
+          },
+          "employer_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Employer Name"
+          },
+          "headline": {
+            "title": "Headline",
+            "type": "string"
+          },
+          "municipality": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Municipality"
+          },
+          "webpage_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Webpage Url"
+          }
+        },
+        "required": [
+          "ad_id",
+          "headline",
+          "days_until_deadline"
+        ],
+        "title": "DeadlineAd",
+        "type": "object"
+      },
+      "DeadlineRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "region": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region"
+          },
+          "top_k": {
+            "default": 10,
+            "maximum": 50.0,
+            "minimum": 1.0,
+            "title": "Top K",
+            "type": "integer"
+          },
+          "window_days": {
+            "default": 14,
+            "maximum": 365.0,
+            "minimum": 1.0,
+            "title": "Window Days",
+            "type": "integer"
+          }
+        },
+        "title": "DeadlineRequest",
+        "type": "object"
+      },
+      "DeadlineResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/DeadlineAd"
+            },
+            "title": "Results",
+            "type": "array"
+          }
+        },
+        "required": [
+          "results"
+        ],
+        "title": "DeadlineResponse",
+        "type": "object"
+      },
+      "EngagementEntry": {
+        "additionalProperties": false,
+        "properties": {
+          "note": {
+            "default": "",
+            "title": "Note",
+            "type": "string"
+          },
+          "recorded_on": {
+            "title": "Recorded On",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "recorded_on",
+          "status"
+        ],
+        "title": "EngagementEntry",
+        "type": "object"
+      },
+      "EngagementStatusResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "ad_id": {
+            "title": "Ad Id",
+            "type": "string"
+          },
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/EngagementEntry"
+            },
+            "title": "Entries",
+            "type": "array"
+          }
+        },
+        "required": [
+          "ad_id",
+          "entries"
+        ],
+        "title": "EngagementStatusResponse",
+        "type": "object"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -99,6 +341,42 @@
           "model_name"
         ],
         "title": "HealthResponse",
+        "type": "object"
+      },
+      "JobDetailsRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "ad_ids": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Ad Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "ad_ids"
+        ],
+        "title": "JobDetailsRequest",
+        "type": "object"
+      },
+      "JobDetailsResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/AdDetail"
+            },
+            "title": "Results",
+            "type": "array"
+          }
+        },
+        "required": [
+          "results"
+        ],
+        "title": "JobDetailsResponse",
         "type": "object"
       },
       "JobSearchRequest": {
@@ -264,6 +542,119 @@
         "title": "SemanticSearchResponse",
         "type": "object"
       },
+      "TriageRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "maxLength": 512,
+            "minLength": 1,
+            "title": "Query",
+            "type": "string"
+          },
+          "top_k": {
+            "default": 5,
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Top K",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "title": "TriageRequest",
+        "type": "object"
+      },
+      "TriageResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/TriagedAd"
+            },
+            "title": "Results",
+            "type": "array"
+          }
+        },
+        "required": [
+          "results"
+        ],
+        "title": "TriageResponse",
+        "type": "object"
+      },
+      "TriagedAd": {
+        "additionalProperties": false,
+        "properties": {
+          "ad_id": {
+            "title": "Ad Id",
+            "type": "string"
+          },
+          "application_deadline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Application Deadline"
+          },
+          "description_excerpt": {
+            "title": "Description Excerpt",
+            "type": "string"
+          },
+          "employer_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Employer Name"
+          },
+          "headline": {
+            "title": "Headline",
+            "type": "string"
+          },
+          "municipality": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Municipality"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "webpage_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Webpage Url"
+          }
+        },
+        "required": [
+          "ad_id",
+          "headline",
+          "score",
+          "description_excerpt"
+        ],
+        "title": "TriagedAd",
+        "type": "object"
+      },
       "ValidationError": {
         "properties": {
           "ctx": {
@@ -331,6 +722,132 @@
         "summary": "Healthz",
         "tags": [
           "health"
+        ]
+      }
+    },
+    "/v1/engagements/status": {
+      "get": {
+        "operationId": "engagement_status_v1_engagements_status_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "ad_id",
+            "required": true,
+            "schema": {
+              "maxLength": 128,
+              "minLength": 1,
+              "title": "Ad Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EngagementStatusResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Engagement Status",
+        "tags": [
+          "engagements"
+        ]
+      }
+    },
+    "/v1/jobs/deadline": {
+      "post": {
+        "operationId": "deadline_watch_v1_jobs_deadline_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeadlineRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeadlineResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Deadline Watch",
+        "tags": [
+          "jobs"
+        ]
+      }
+    },
+    "/v1/jobs/details": {
+      "post": {
+        "operationId": "fetch_job_details_v1_jobs_details_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JobDetailsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobDetailsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Fetch Job Details",
+        "tags": [
+          "jobs"
         ]
       }
     },
@@ -411,6 +928,47 @@
           }
         },
         "summary": "Semantic Search",
+        "tags": [
+          "jobs"
+        ]
+      }
+    },
+    "/v1/jobs/triage": {
+      "post": {
+        "operationId": "triage_v1_jobs_triage_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TriageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TriageResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Triage",
         "tags": [
           "jobs"
         ]

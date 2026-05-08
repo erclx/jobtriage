@@ -56,12 +56,12 @@ The `storage/` schema reserves a nullable `embedding` BLOB column on `ad_chunks`
 ## Layer responsibilities
 
 - `jobtech/`: async httpx client and pydantic models for the JobTech `/search` API. The CLI imports these directly. The HTTP layer wraps the retrieval primitives, not this client.
-- `api/`: thin FastAPI layer. `app_factory()` mounts `routers/health.py` and `routers/jobs.py`. The lifespan warms the embedder once on startup. `POST /v1/jobs/search` and `POST /v1/jobs/semantic` map to the v3 frontend's `searchJobs` and `semanticSearch` tools. The CLI keeps importing the Python tools directly without going through HTTP.
+- `api/`: thin FastAPI layer. `app_factory()` mounts `routers/health.py`, `routers/jobs.py`, and `routers/engagements.py`. The lifespan warms the embedder once on startup. `POST /v1/jobs/search` and `POST /v1/jobs/semantic` back the `searchJobs` and `semanticSearch` tools. `POST /v1/jobs/details` returns description excerpts for one or more ad ids and serves both `matchProfile` and `compareRoles`. `POST /v1/jobs/triage` runs hybrid retrieval and returns ranked ads with description excerpts in one call for `triageBatch`. `POST /v1/jobs/deadline` filters active ads by application-deadline window for `deadlineWatch`. `GET /v1/engagements/status` reads the markdown engagement log via `engagement.read_status` for `trackStatus`. The CLI keeps importing the Python tools directly without going through HTTP.
 - `storage/`: SQLite schema, paragraph-then-length chunker, append-mostly ingest with filter-scoped deactivation. Ingest writes both `ad_chunks` and `ad_chunks_fts` rows together.
 - `embeddings.py`: `Embedder` Protocol plus `SentenceTransformerEmbedder` for multilingual-e5. Lazy-loads the model on first encode and applies the `passage:`/`query:` prefixes that e5 requires.
 - `retrieval.py`: `bm25_search` over FTS5, `dense_search` over the embedding column, `reciprocal_rank_fusion` (k=60 default), and `hybrid_search` that composes them.
 - `evals/`: pydantic-validated golden-set loader and a four-configuration runner (filter-only, bm25-only, dense-only, hybrid). Emits precision-at-k, recall@10, and p50/p95 latency.
-- `engagement.py`: appends rows to a markdown engagement log. Single-writer file, no SQLite mirror per ARCHITECTURE.md.
+- `engagement.py`: `record_status` appends rows to a markdown engagement log, `read_status` parses entries for one ad id. Single-writer file, no SQLite mirror per ARCHITECTURE.md.
 - `cli/`: Typer commands. `sweep` ingests from JobTech, `index` backfills embeddings, `search` runs hybrid retrieval, `evaluate` runs the ablation harness, `mark-status` records engagement state.
 
 ## Conventions

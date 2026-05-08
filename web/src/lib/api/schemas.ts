@@ -42,11 +42,100 @@ export const SemanticSearchResponseSchema = z
   })
   .strict()
 
+export const AdDetailSchema = AdSummarySchema.extend({
+  description_excerpt: z.string(),
+  occupation_label: z.string().nullable().optional(),
+}).strict()
+
+export const TriagedAdSchema = RankedAdSchema.extend({
+  description_excerpt: z.string(),
+}).strict()
+
+export const DeadlineAdSchema = AdSummarySchema.extend({
+  days_until_deadline: z.number().int().min(0),
+}).strict()
+
+export const JobDetailsRequestSchema = z
+  .object({
+    ad_ids: z.array(z.string().min(1)).min(1).max(10),
+  })
+  .strict()
+
+export const JobDetailsResponseSchema = z
+  .object({
+    results: z.array(AdDetailSchema),
+  })
+  .strict()
+
+export const TriageRequestSchema = z
+  .object({
+    query: z.string().min(1).max(512),
+    top_k: z.number().int().min(1).max(10).default(5),
+  })
+  .strict()
+
+export const TriageResponseSchema = z
+  .object({
+    results: z.array(TriagedAdSchema),
+  })
+  .strict()
+
+export const DeadlineRequestSchema = z
+  .object({
+    window_days: z.number().int().min(1).max(365).default(14),
+    region: z.string().min(1).optional(),
+    top_k: z.number().int().min(1).max(50).default(10),
+  })
+  .strict()
+
+export const DeadlineResponseSchema = z
+  .object({
+    results: z.array(DeadlineAdSchema),
+  })
+  .strict()
+
+export const EngagementEntrySchema = z
+  .object({
+    recorded_on: z.string(),
+    status: z.string(),
+    note: z.string(),
+  })
+  .strict()
+
+export const EngagementStatusRequestSchema = z
+  .object({
+    ad_id: z.string().min(1),
+  })
+  .strict()
+
+export const EngagementStatusResponseSchema = z
+  .object({
+    ad_id: z.string(),
+    entries: z.array(EngagementEntrySchema),
+  })
+  .strict()
+
 export type AdSummary = z.infer<typeof AdSummarySchema>
 export type RankedAd = z.infer<typeof RankedAdSchema>
+export type AdDetail = z.infer<typeof AdDetailSchema>
+export type TriagedAd = z.infer<typeof TriagedAdSchema>
+export type DeadlineAd = z.infer<typeof DeadlineAdSchema>
 export type JobSearchRequest = z.input<typeof JobSearchRequestSchema>
 export type JobSearchResponse = z.infer<typeof JobSearchResponseSchema>
 export type SemanticSearchRequest = z.input<typeof SemanticSearchRequestSchema>
 export type SemanticSearchResponse = z.infer<
   typeof SemanticSearchResponseSchema
+>
+export type JobDetailsRequest = z.input<typeof JobDetailsRequestSchema>
+export type JobDetailsResponse = z.infer<typeof JobDetailsResponseSchema>
+export type TriageRequest = z.input<typeof TriageRequestSchema>
+export type TriageResponse = z.infer<typeof TriageResponseSchema>
+export type DeadlineRequest = z.input<typeof DeadlineRequestSchema>
+export type DeadlineResponse = z.infer<typeof DeadlineResponseSchema>
+export type EngagementEntry = z.infer<typeof EngagementEntrySchema>
+export type EngagementStatusRequest = z.input<
+  typeof EngagementStatusRequestSchema
+>
+export type EngagementStatusResponse = z.infer<
+  typeof EngagementStatusResponseSchema
 >

@@ -80,9 +80,10 @@ export async function POST(request: NextRequest): Promise<Response> {
     return jsonError(400, 'Invalid chat request payload')
   }
 
+  const today = new Date().toISOString().slice(0, 10)
   const result = streamText({
     model: resolved.model,
-    system: buildSystemPrompt(parsed.data.profile),
+    system: buildSystemPrompt(parsed.data.profile, today),
     messages: await convertToModelMessages(
       parsed.data.messages as Parameters<typeof convertToModelMessages>[0],
     ),
