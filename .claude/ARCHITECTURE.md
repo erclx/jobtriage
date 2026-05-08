@@ -48,6 +48,8 @@ The Ollama branch sets `num_ctx` to 8192 by default via `providerOptions`, overr
 
 Seven distinct tools with focused responsibilities: `searchJobs`, `semanticSearch`, `matchProfile`, `triageBatch`, `compareRoles`, `deadlineWatch`, `trackStatus`. RAG lives only inside `semanticSearch` and `triageBatch`, where description-text semantics earn it. Other tools call the API or the matcher directly. Tool-call traces in the chat UI make reasoning auditable.
 
+The TypeScript wrappers map onto five FastAPI endpoints. `searchJobs` and `semanticSearch` keep their v2 endpoints (`/v1/jobs/search`, `/v1/jobs/semantic`). `matchProfile` and `compareRoles` share `/v1/jobs/details`, which returns description excerpts so the LLM scores fit against the system-prompt profile block. `triageBatch` calls `/v1/jobs/triage`, which runs hybrid retrieval and returns ranked ads with description excerpts in one round trip. `deadlineWatch` calls `/v1/jobs/deadline`, which filters active ads by application deadline window. `trackStatus` calls `GET /v1/engagements/status`, which reads the markdown engagement log via `read_status` and returns an empty list on the deployed image (where no log is mounted).
+
 ### Per-session profile input over a hardcoded profile
 
 Profile markdown is a tool input, not embedded in the deploy image. The web pastes profile content into chat (browser sessionStorage). The CLI accepts a `--profile <path>` flag pointing at any local markdown file. No personal data baked into the public repo or the deployed container.
@@ -58,7 +60,7 @@ The CLI's `mark-status` command writes to a local `engagements/log.md` (or any m
 
 ## Risks / open questions
 
-- **Tool-call trace UI density** (decide at v4): expandable trees open by default (educational, busy) versus collapsed (cleaner) versus behind a toggle.
+- **Tool-call trace UI density**: resolved at v4. Cards always render above the trace tree. The trace tree is collapsed by default behind a one-line summary header like `Triaged batch · Completed`. Recruiters get a clean transcript by default. Engineers expand per-tool to inspect inputs and outputs.
 - **Multilingual embedding ablation timing**: deferred to v1.5. v1 ships with `multilingual-e5-base` only and the four-configuration hybrid ablation. The model comparison (e5-base vs e5-large vs English-only) runs through the same harness once the golden set carries live ad ids.
 - **Eval cadence**: resolved at v2. Nightly via GitHub Actions cron at 03:00 UTC, with a `workflow_dispatch` escape hatch. The current eval harness is pure retrieval and does not call an LLM, so the API-budget concern does not apply yet. When v3 introduces LLM tool calls, split the LLM-eval subset into a dispatch-only or weekly job to cap the maintainer key.
 - **Ad corpus freshness in deploy** (decide at v5): rebuild the SQLite file and redeploy nightly, or run ingestion inside the container with a persistent Fly.io volume.

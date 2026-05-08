@@ -37,7 +37,11 @@ web/
 │   │   ├── api-key-gate.tsx            ← BYOK or local-Ollama gate
 │   │   ├── chat-screen.tsx             ← top-level useChat shell
 │   │   ├── profile-drawer.tsx          ← per-session profile markdown
-│   │   ├── tool-trace.tsx              ← AI Elements Tool wrapper
+│   │   ├── tool-trace.tsx              ← cards above the collapsed AI Elements Tool
+│   │   ├── ad-card.tsx                 ← structured ad card (employer, deadline, snippet, link)
+│   │   ├── ad-card-list.tsx            ← list wrapper with loading/empty/error states
+│   │   ├── ad-card-types.ts            ← shared union for card shape and variant
+│   │   ├── engagement-status.tsx       ← trackStatus entries or "Not tracked yet" empty
 │   │   ├── empty-state.tsx             ← seed-query suggestions
 │   │   ├── seed-queries.ts             ← suggestion strings
 │   │   ├── storage-keys.ts             ← session storage keys plus provider type
