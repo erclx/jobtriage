@@ -23,7 +23,7 @@ export function ToolTrace({ part }: ToolTraceProps) {
     <Tool defaultOpen>
       <ToolHeader {...headerProps} />
       <ToolContent>
-        <ToolInput input={part.input} />
+        {part.state !== 'input-streaming' && <ToolInput input={part.input} />}
         <ToolOutput
           output={part.state === 'output-available' ? part.output : undefined}
           errorText={part.state === 'output-error' ? part.errorText : undefined}
