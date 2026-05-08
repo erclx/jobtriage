@@ -26,8 +26,8 @@ cd ../python && uv sync
 # Verify everything
 bun run check
 
-# Web dev server
-cd web && bun run dev
+# Web on http://localhost:3000 (production build, see docs/development.md for why)
+cd web && bun run build && bun run start
 
 # FastAPI backend (serves the Python tools to the web app)
 bun run dev:api
@@ -58,6 +58,15 @@ cd python && uv run jobtriage mark-status <ad-id> applied --note 'submitted via 
 | bm25-only     | 0.775       | 0.255       | 0.135        | 0.963     | 0.2    | 0.3    |
 | dense-only    | 0.850       | 0.250       | 0.138        | 0.969     | 5.6    | 7.8    |
 | hybrid        | 0.825       | 0.255       | 0.135        | 0.963     | 5.8    | 7.3    |
+
+## Chat surface
+
+The web app at `web/` ships a Next.js 16 chat surface built on AI Elements and the Vercel AI SDK. The first turn surfaces a gate with two paths:
+
+- Paste an Anthropic API key. Held in browser sessionStorage and forwarded to `/api/chat` via a Bearer header. Never persisted on disk.
+- Click "Use local Ollama" to route the agent loop through `qwen3-coder:30b` on `localhost:11434`. Override the model id with `OLLAMA_MODEL_ID`.
+
+A profile drawer accepts optional markdown describing the user. The drawer's contents stay in sessionStorage and ride along on every request to be appended into the system prompt server-side. The two registered tools, `searchJobs` and `semanticSearch`, post to the FastAPI endpoints below and surface inline tool-call traces above each assistant reply. Theme defaults to system preference with a sun-and-moon toggle in the chat header.
 
 ## HTTP API
 

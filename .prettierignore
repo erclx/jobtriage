@@ -1,10 +1,16 @@
 bun.lock
+web/bun.lock
 web/.next/
 web/next-env.d.ts
 web/tsconfig.json
+web/tsconfig.tsbuildinfo
 web/playwright-report/
+web/playwright/.cache/
 web/test-results/
 web/coverage/
+web/node_modules/
+web/src/components/ai-elements/
+web/src/components/ui/
 python/.venv/
 python/.pytest_cache/
 python/.ruff_cache/
