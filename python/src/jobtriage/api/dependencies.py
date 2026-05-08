@@ -3,6 +3,7 @@
 import sqlite3
 from collections.abc import Iterator
 from functools import lru_cache
+from pathlib import Path
 from typing import cast
 
 from fastapi import Request
@@ -35,6 +36,11 @@ def get_embedder(request: Request) -> Embedder:
     if embedder is None:
         raise RuntimeError('embedder is not initialized; check app lifespan')
     return cast(Embedder, embedder)
+
+
+def get_engagement_log_path(request: Request) -> Path:
+    settings = cast(Settings, request.app.state.settings)
+    return settings.engagement_log_path
 
 
 def build_embedder(model_name: str = DEFAULT_MODEL_NAME) -> Embedder:

@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from jobtriage.api.dependencies import build_embedder, get_settings
-from jobtriage.api.routers import health, jobs
+from jobtriage.api.routers import engagements, health, jobs
 from jobtriage.embeddings import DEFAULT_MODEL_NAME, Embedder
 from jobtriage.errors import JobTechAPIError
 
@@ -56,6 +56,7 @@ def app_factory(*, embedder: Embedder | None = None) -> FastAPI:
 
     app.include_router(health.router)
     app.include_router(jobs.router)
+    app.include_router(engagements.router)
 
     @app.exception_handler(JobTechAPIError)
     async def _jobtech_error_handler(_: Request, exc: JobTechAPIError) -> JSONResponse:
