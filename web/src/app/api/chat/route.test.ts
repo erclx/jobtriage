@@ -118,6 +118,37 @@ describe('POST /api/chat', () => {
     expect(response.headers.get('x-stream')).toBe('1')
   })
 
+  it('should pass num_ctx provider options on the Ollama branch', async () => {
+    mockStreamResult()
+    await POST(
+      buildRequest({
+        authorization: null,
+        provider: 'ollama',
+        body: { messages: [] },
+      }) as Parameters<typeof POST>[0],
+    )
+
+    const callArg = streamTextMock.mock.calls[0][0] as {
+      providerOptions?: { ollama?: { options?: { num_ctx?: number } } }
+    }
+    expect(callArg.providerOptions?.ollama?.options?.num_ctx).toBe(8192)
+  })
+
+  it('should not pass Ollama provider options on the Anthropic branch', async () => {
+    mockStreamResult()
+    await POST(
+      buildRequest({
+        authorization: 'Bearer sk-ant-abc',
+        body: { messages: [] },
+      }) as Parameters<typeof POST>[0],
+    )
+
+    const callArg = streamTextMock.mock.calls[0][0] as {
+      providerOptions?: unknown
+    }
+    expect(callArg.providerOptions).toBeUndefined()
+  })
+
   it('omits the profile block when no profile is supplied', async () => {
     mockStreamResult()
     await POST(

@@ -21,9 +21,10 @@ const ChatRequestSchema = z.object({
 })
 
 const ANTHROPIC_MODEL_ID = 'claude-sonnet-4-5'
-const OLLAMA_MODEL_ID = process.env.OLLAMA_MODEL_ID ?? 'gemma4-26b-64k:latest'
+const OLLAMA_MODEL_ID = process.env.OLLAMA_MODEL_ID ?? 'qwen3-coder:30b'
 const OLLAMA_BASE_URL =
   process.env.OLLAMA_BASE_URL ?? 'http://localhost:11434/api'
+const OLLAMA_NUM_CTX = Number(process.env.OLLAMA_NUM_CTX ?? '8192')
 
 function jsonError(status: number, message: string): Response {
   return new Response(JSON.stringify({ error: message }), {
@@ -34,6 +35,7 @@ function jsonError(status: number, message: string): Response {
 
 interface ResolvedProvider {
   model: LanguageModel
+  providerName: 'anthropic' | 'ollama'
   redactSecret?: string
 }
 
@@ -42,7 +44,7 @@ function resolveProvider(request: NextRequest): ResolvedProvider | Response {
 
   if (provider === 'ollama') {
     const ollama = createOllama({ baseURL: OLLAMA_BASE_URL })
-    return { model: ollama(OLLAMA_MODEL_ID) }
+    return { model: ollama(OLLAMA_MODEL_ID), providerName: 'ollama' }
   }
 
   const authHeader = request.headers.get('authorization') ?? ''
@@ -53,7 +55,11 @@ function resolveProvider(request: NextRequest): ResolvedProvider | Response {
     return jsonError(401, 'Missing Authorization: Bearer <Anthropic key>')
   }
   const anthropic = createAnthropic({ apiKey })
-  return { model: anthropic(ANTHROPIC_MODEL_ID), redactSecret: apiKey }
+  return {
+    model: anthropic(ANTHROPIC_MODEL_ID),
+    providerName: 'anthropic',
+    redactSecret: apiKey,
+  }
 }
 
 export async function POST(request: NextRequest): Promise<Response> {
@@ -82,6 +88,9 @@ export async function POST(request: NextRequest): Promise<Response> {
     ),
     tools: jobtriageTools,
     stopWhen: stepCountIs(5),
+    ...(resolved.providerName === 'ollama' && {
+      providerOptions: { ollama: { options: { num_ctx: OLLAMA_NUM_CTX } } },
+    }),
   })
 
   return result.toUIMessageStreamResponse({

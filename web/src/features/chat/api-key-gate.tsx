@@ -126,7 +126,7 @@ export function ApiKeyGate({ children }: ApiKeyGateProps) {
           onClick={handleUseOllama}
         >
           <CpuIcon className="size-4" aria-hidden />
-          Use local Ollama (gemma4-26b-64k)
+          Use local Ollama
         </Button>
       </div>
     </div>
