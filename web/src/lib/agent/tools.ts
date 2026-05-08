@@ -23,7 +23,7 @@ export const jobtriageTools = {
   }),
   semanticSearch: tool({
     description:
-      'Hybrid retrieval (BM25 + dense embeddings + reciprocal rank fusion) over indexed Swedish description text. Use when the user describes the role in natural language, names skills, technologies, or seniority. Returns ranked ads with relevance scores.',
+      'Hybrid retrieval (BM25 + dense embeddings + reciprocal rank fusion) over indexed Swedish description text. Returns ranked ad metadata WITHOUT description excerpts. Prefer triageBatch for almost every query, since triageBatch returns the same ranking PLUS excerpts in one call. Use this only when the user wants a bare list and explicitly does not want per-ad reasoning.',
     inputSchema: SemanticSearchRequestSchema,
     execute: async (input, { abortSignal }) => {
       return api.semanticSearch(input, { signal: abortSignal })
@@ -39,7 +39,7 @@ export const jobtriageTools = {
   }),
   triageBatch: tool({
     description:
-      'Run hybrid retrieval and return the top ads with description excerpts in one call. Use when the user wants a sweep + per-ad triage in a single turn. Default top_k is 5 to fit local-model context windows.',
+      'Hybrid retrieval that returns ranked ads WITH description excerpts in one round trip. This is the default tool for any "find me ads about X" or "find X and tell me which fits best" intent, since the excerpts let you reason about per-ad fit against the USER PROFILE without a follow-up tool call. Default top_k is 5 to fit local-model context windows.',
     inputSchema: TriageRequestSchema,
     execute: async (input, { abortSignal }) => {
       return api.triageBatch(input, { signal: abortSignal })
@@ -55,7 +55,7 @@ export const jobtriageTools = {
   }),
   deadlineWatch: tool({
     description:
-      'List active ads whose application deadline falls within the next window_days, ordered by soonest. Use when the user asks about expiring or time-sensitive ads. Optional region filter.',
+      'List active ads whose application deadline falls within the next window_days, ordered by soonest. Use when the user asks about expiring or time-sensitive ads. The optional region argument must be a JobTech region concept id like "reg-vastra", not a city name. Omit region whenever the user mentions a city, since city names live on the municipality field, not region. Read the current date from the system prompt rather than guessing.',
     inputSchema: DeadlineRequestSchema,
     execute: async (input, { abortSignal }) => {
       return api.deadlineWatch(input, { signal: abortSignal })
