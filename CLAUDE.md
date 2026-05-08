@@ -15,17 +15,22 @@
 - On simplification requests, edit only what the user named.
 - Do not add features the user did not ask for.
 - When rewriting a section, preserve existing code blocks, tables, and grouped examples unless the user asked to remove them.
+- This is a public repo. Do not write personal names into READMEs, `docs/`, `.claude/` planning docs, source comments, or commit messages. Use neutral phrasing like "the user", "a recruiter", or "a local file". Brief content under `.tmp/` is local context, not output.
+- Do not cite `.claude/` paths (TASKS.md, plans, review, .tmp) from PR bodies, READMEs, or other artifacts a reviewer reads. Inline the context or use neutral phrasing like "queued as a follow-up".
 
 ## Testing the agent
 
 - When you need to verify agent behavior (tool selection, prompt edits, model output, SSE shape), drive the running stack directly via `curl -X POST http://localhost:3000/api/chat`. Do not ask the user to open the browser and paste prompts unless the test requires visual rendering. Probe multiple times to surface non-determinism, since local Ollama is sampling-noisy.
 - A minimal probe body: `{"messages":[{"id":"u1","role":"user","parts":[{"type":"text","text":"<prompt>"}]}],"profile":null}` with header `x-jobtriage-provider: ollama` for the local path or `Authorization: Bearer sk-ant-...` for the deployed Anthropic path.
 - Read tool-call ordering with `grep -oE '"toolName":"[a-zA-Z]+"'` and final text with `grep -oE '"delta":"[^"]*"'`. The user runs visual checks (card layout, overflow, theme contrast).
+- Before loading a local model, start `scripts/monitor.sh` and check host RAM via PowerShell. Override `num_ctx` to 8192 via `OLLAMA_NUM_CTX` or route `providerOptions`. Ollama's default 131k allocates a KV cache that spills WSL2 into Windows host RAM on 30B-class models. Abort if host is already at 80%.
+- When a model ignores a prompt rule across 3-5 curl probes at the working temperature, stop tightening the prompt. Document it as a known limitation in the PR body and queue a model-swap or guard-rail follow-up instead.
 
 ## Shipping
 
 - After implementing a feature, run `bun run check` plus the test suite for the surfaces you touched. Fix what fails before opening a PR.
 - After implementing a feature, run it end-to-end against real data (live API, populated database, deployed surface) and paste the output into the PR body under a `Live smoke` section. If a live run is impossible, say so explicitly instead of claiming success.
+- Keep PR bodies evergreen. Beyond the `## Live smoke` block, run logs, follow-up notes, and polish narratives go into PR comments via `gh pr comment`, not the body.
 
 ## Indexes
 
@@ -35,12 +40,13 @@
 
 ## Markdown
 
-- When editing any markdown file, follow `standards/prose.md`.
-- When editing `README.md`, also follow `standards/readme.md`. Keep it user-facing. Technical detail belongs in `docs/` or `.claude/`.
+- Before writing or editing an artifact with a matching standard in `prompts/` or `standards/` (bash scripts, READMEs, PRs, commits, branches, snippets, skills, prose), read that file first and follow it.
+- When editing `README.md`, follow `standards/readme.md`. Keep it user-facing. Technical detail belongs in `docs/` or `.claude/`.
 
 ## Commands
 
 - `bun run check` runs the full verify cascade. Full script reference in `docs/development.md`.
+- Do not run `bun run dev`. The script is disabled. Run `./scripts/restart.sh` for any local server need. It kills stale `next-server` and Playwright zombies, rebuilds, starts the server in the background with logs at `.claude/.tmp/restart/server.log`, and verifies the listening pid changed. Do not rely on `lsof -ti:3000`, it can miss `next-server`.
 
 ## Key paths
 

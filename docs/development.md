@@ -31,6 +31,8 @@ Local dev workflow for this monorepo. Two stack folders sit beside a thin orches
 
 The python verify also regenerates `python/openapi.json` and fails if the working copy drifts. After backend changes that move endpoints or schemas, the regeneration is automatic. Commit the diff alongside the source change.
 
+When adding a regen-and-gate pattern (FastAPI OpenAPI export, codegen, schema dumps), append the artifact path to `.prettierignore` in the same commit. Otherwise prettier and the regen disagree on layout and the freshness check fails on every push.
+
 ## Root scripts
 
 | Command                | Purpose                                                                  |
@@ -48,19 +50,19 @@ The python verify also regenerates `python/openapi.json` and fails if the workin
 
 Run from `web/` after `cd web`.
 
-| Command                 | Purpose                                          |
-| ----------------------- | ------------------------------------------------ |
-| `bun run dev`           | Next dev server with hot reload. See note below. |
-| `bun run build`         | Production build.                                |
-| `bun run start`         | Serve the production build.                      |
-| `bun run lint`          | ESLint, zero warnings allowed.                   |
-| `bun run lint:fix`      | Auto-fix ESLint issues.                          |
-| `bun run typecheck`     | `tsc --noEmit`.                                  |
-| `bun run test`          | Vitest in watch mode.                            |
-| `bun run test:run`      | Vitest once with verbose reporter.               |
-| `bun run test:coverage` | Vitest with coverage.                            |
-| `bun run test:e2e`      | Playwright end-to-end.                           |
-| `bun run check`         | Web verify (typecheck, lint, test).              |
+| Command                 | Purpose                                                         |
+| ----------------------- | --------------------------------------------------------------- |
+| `bun run dev`           | Disabled. Prints a pointer to `scripts/restart.sh` and exits 1. |
+| `bun run build`         | Production build.                                               |
+| `bun run start`         | Serve the production build.                                     |
+| `bun run lint`          | ESLint, zero warnings allowed.                                  |
+| `bun run lint:fix`      | Auto-fix ESLint issues.                                         |
+| `bun run typecheck`     | `tsc --noEmit`.                                                 |
+| `bun run test`          | Vitest in watch mode.                                           |
+| `bun run test:run`      | Vitest once with verbose reporter.                              |
+| `bun run test:coverage` | Vitest with coverage.                                           |
+| `bun run test:e2e`      | Playwright end-to-end.                                          |
+| `bun run check`         | Web verify (typecheck, lint, test).                             |
 
 ## Local smoke
 
@@ -71,11 +73,12 @@ To open the chat surface against the real backend on `http://localhost:3000`:
 bun run dev:api
 
 # terminal 2
-cd web
-bun run build && bun run start
+./scripts/restart.sh
 ```
 
-Do not use `bun run dev`. Turbopack's file watcher walks the AI Elements + shadcn dep tree and freezes WSL2 (vercel/next.js #87796, #91161, #66326). The Playwright `webServer` runs `build && start` for the same reason. Hot reload is not available locally on this machine. Rebuild after each edit.
+`scripts/restart.sh` kills any stale `next-server` and Playwright zombies, rebuilds, starts the production server in the background, and verifies the listening pid changed before returning. Logs land at `.claude/.tmp/restart/server.log`. Re-run after each edit.
+
+Do not use `bun run dev`. The script is disabled at the package level and exits 1. Turbopack's file watcher walks the AI Elements + shadcn dep tree and freezes WSL2 (vercel/next.js #87796, #91161, #66326). The Playwright `webServer` runs `build && start` for the same reason. Hot reload is not available locally on this machine.
 
 ## Hardware monitor
 
