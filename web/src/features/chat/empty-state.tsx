@@ -2,7 +2,7 @@
 
 import { SparklesIcon } from 'lucide-react'
 
-import { Suggestion, Suggestions } from '@/components/ai-elements/suggestion'
+import { Button } from '@/components/ui/button'
 import { SEED_QUERIES } from '@/features/chat/seed-queries'
 
 interface EmptyStateProps {
@@ -21,15 +21,21 @@ export function EmptyState({ onSelect }: EmptyStateProps) {
           Free-form chat over Swedish Platsbanken ads. Try one of these:
         </p>
       </div>
-      <Suggestions>
+      <div className="flex w-full max-w-2xl flex-wrap items-center justify-center gap-2">
         {SEED_QUERIES.map((query) => (
-          <Suggestion
+          <Button
             key={query}
-            suggestion={query}
+            type="button"
+            variant="outline"
+            size="sm"
+            className="max-w-full cursor-pointer truncate whitespace-normal rounded-full px-4 text-left"
             onClick={() => onSelect(query)}
-          />
+            title={query}
+          >
+            {query}
+          </Button>
         ))}
-      </Suggestions>
+      </div>
     </div>
   )
 }

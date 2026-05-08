@@ -16,6 +16,12 @@
 - Do not add features the user did not ask for.
 - When rewriting a section, preserve existing code blocks, tables, and grouped examples unless the user asked to remove them.
 
+## Testing the agent
+
+- When you need to verify agent behavior (tool selection, prompt edits, model output, SSE shape), drive the running stack directly via `curl -X POST http://localhost:3000/api/chat`. Do not ask the user to open the browser and paste prompts unless the test requires visual rendering. Probe multiple times to surface non-determinism, since local Ollama is sampling-noisy.
+- A minimal probe body: `{"messages":[{"id":"u1","role":"user","parts":[{"type":"text","text":"<prompt>"}]}],"profile":null}` with header `x-jobtriage-provider: ollama` for the local path or `Authorization: Bearer sk-ant-...` for the deployed Anthropic path.
+- Read tool-call ordering with `grep -oE '"toolName":"[a-zA-Z]+"'` and final text with `grep -oE '"delta":"[^"]*"'`. The user runs visual checks (card layout, overflow, theme contrast).
+
 ## Shipping
 
 - After implementing a feature, run `bun run check` plus the test suite for the surfaces you touched. Fix what fails before opening a PR.
@@ -40,6 +46,7 @@
 
 - `src/`: [description]
 - `.claude/`: planning docs (requirements, architecture, wireframes, design, tasks)
+- `.claude/evals/agent-conversations.md`: numbered manual prompts for chat surface testing, seed fixture for the v6 agent-eval harness. Each case lists expected tools, expected behavior, and known regression alarms. Run before opening a chat-touching PR.
 - `.claude/review/`: gitignored scratch for review and UI-test output, overwritten on each run
 
 ## Spelling

@@ -1,7 +1,7 @@
 'use client'
 
-import { ChevronDownIcon, UserRoundIcon } from 'lucide-react'
-import { useState } from 'react'
+import { CheckIcon, ChevronDownIcon, UserRoundIcon } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -24,14 +24,26 @@ export function ProfileDrawer({ onProfileChange }: ProfileDrawerProps) {
   const [stored, setStored, clearStored] = useSessionValue(SESSION_KEYS.profile)
   const [draft, setDraft] = useState(stored)
   const [open, setOpen] = useState(false)
+  const [justSaved, setJustSaved] = useState(false)
+  const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const dirty = draft !== stored
   const overLimit = draft.length > MAX_PROFILE_CHARS
+  const headerHint = headerHintFor(stored, draft, dirty)
+
+  useEffect(() => {
+    return () => {
+      if (savedTimer.current) clearTimeout(savedTimer.current)
+    }
+  }, [])
 
   function handleSave() {
     if (overLimit) return
     setStored(draft)
     onProfileChange(draft)
+    setJustSaved(true)
+    if (savedTimer.current) clearTimeout(savedTimer.current)
+    savedTimer.current = setTimeout(() => setJustSaved(false), 2500)
   }
 
   function handleClear() {
@@ -50,10 +62,15 @@ export function ProfileDrawer({ onProfileChange }: ProfileDrawerProps) {
         <div className="flex items-center gap-2">
           <UserRoundIcon className="size-4 text-muted-foreground" aria-hidden />
           <span className="font-medium">Profile</span>
-          <span className="text-xs text-muted-foreground">
-            {stored
-              ? `${stored.length.toLocaleString()} chars saved`
-              : 'optional, sent with each request'}
+          <span
+            className={cn(
+              'text-xs',
+              dirty
+                ? 'text-amber-600 dark:text-amber-400'
+                : 'text-muted-foreground',
+            )}
+          >
+            {headerHint}
           </span>
         </div>
         <ChevronDownIcon
@@ -88,7 +105,24 @@ export function ProfileDrawer({ onProfileChange }: ProfileDrawerProps) {
             {draft.length.toLocaleString()} /{' '}
             {MAX_PROFILE_CHARS.toLocaleString()} chars
           </span>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
+            {dirty && !overLimit ? (
+              <span
+                className="text-xs text-amber-600 dark:text-amber-400"
+                aria-live="polite"
+              >
+                Unsaved changes
+              </span>
+            ) : justSaved ? (
+              <span
+                className="inline-flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400"
+                role="status"
+                aria-live="polite"
+              >
+                <CheckIcon className="size-3.5" aria-hidden />
+                Saved
+              </span>
+            ) : null}
             <Button
               type="button"
               variant="ghost"
@@ -111,4 +145,18 @@ export function ProfileDrawer({ onProfileChange }: ProfileDrawerProps) {
       </CollapsibleContent>
     </Collapsible>
   )
+}
+
+function headerHintFor(stored: string, draft: string, dirty: boolean): string {
+  if (dirty) {
+    const draftCount = draft.length.toLocaleString()
+    if (stored) {
+      return `${stored.length.toLocaleString()} chars saved, ${draftCount} unsaved`
+    }
+    return `${draftCount} chars unsaved`
+  }
+  if (stored) {
+    return `${stored.length.toLocaleString()} chars saved`
+  }
+  return 'optional, sent with each request'
 }

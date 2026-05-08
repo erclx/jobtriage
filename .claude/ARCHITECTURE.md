@@ -65,3 +65,11 @@ The CLI's `mark-status` command writes to a local `engagements/log.md` (or any m
 - **Eval cadence**: resolved at v2. Nightly via GitHub Actions cron at 03:00 UTC, with a `workflow_dispatch` escape hatch. The current eval harness is pure retrieval and does not call an LLM, so the API-budget concern does not apply yet. When v3 introduces LLM tool calls, split the LLM-eval subset into a dispatch-only or weekly job to cap the maintainer key.
 - **Ad corpus freshness in deploy** (decide at v5): rebuild the SQLite file and redeploy nightly, or run ingestion inside the container with a persistent Fly.io volume.
 - **Reranker on or off by default**: shipped off and deferred out of v1. The retrieval module exposes a clean seam so a cross-encoder rerank can land later without churn. Decision flips at the start of v2 once `evaluate` produces baseline precision numbers against a real golden set.
+
+### RRF score floor at the triage and semantic boundaries
+
+Hybrid retrieval has no zero-result floor by default, so adversarial queries return tangentially-relevant ads at very low RRF scores. The v4.2 audit caught this on a "quantum welding theologian" prompt that surfaced ten Volvo ads at score around 0.03. A score floor at the API boundary suppresses noise without changing the underlying ranking math. Exposed as the `JOBTRIAGE_RRF_FLOOR` setting (default 0.025) since RRF scores are corpus-size-dependent and a hardcoded threshold locks future tuning. Applied at `triageBatch` and `semanticSearch` only. `filter_only_search` is left untouched since it is supposed to return recent ads regardless of relevance score.
+
+### JobTech concept-id format validation at the API boundary
+
+`searchJobs` accepts an `occupation_concept_id` filter that maps to JobTech's taxonomy nanoid format (4-3-3 alphanumeric segments separated by underscores, e.g. `X9jv_K2b_m48`). The v4.2 audit caught the agent fabricating ids like `occupation-12345` on adversarial prompts. The fabricated id silently returned empty results because no constraint enforced the format. The fix validates the format at the `JobSearchRequest` schema and returns a 422 with an actionable message. The model recovers from a structured error into a different tool, instead of looking like the corpus has no matches.

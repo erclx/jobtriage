@@ -31,6 +31,13 @@ vi.mock('@/components/ai-elements/conversation', () => ({
   ConversationScrollButton: () => null,
 }))
 
+vi.mock('use-stick-to-bottom', () => ({
+  useStickToBottomContext: () => ({
+    isAtBottom: true,
+    scrollToBottom: () => {},
+  }),
+}))
+
 vi.mock('@/components/ai-elements/message', () => ({
   Message: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="message">{children}</div>

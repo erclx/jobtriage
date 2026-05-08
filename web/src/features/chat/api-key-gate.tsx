@@ -60,9 +60,8 @@ export function ApiKeyGate({ children }: ApiKeyGateProps) {
               Bring your own Anthropic key
             </h1>
             <p className="text-sm text-muted-foreground">
-              jobtriage routes your chat through Claude with the key you supply.
-              Held in this browser tab&apos;s sessionStorage and sent only to
-              the jobtriage server route. Never persisted on disk.
+              Held in this browser tab and sent only to the jobtriage server.
+              Never written to disk.
             </p>
           </header>
 
@@ -119,15 +118,20 @@ export function ApiKeyGate({ children }: ApiKeyGateProps) {
           <div className="h-px flex-1 bg-border" />
         </div>
 
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full"
-          onClick={handleUseOllama}
-        >
-          <CpuIcon className="size-4" aria-hidden />
-          Use local Ollama
-        </Button>
+        <div className="space-y-2">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={handleUseOllama}
+          >
+            <CpuIcon className="size-4" aria-hidden />
+            Use local Ollama
+          </Button>
+          <p className="text-center text-xs text-muted-foreground">
+            Requires Ollama with qwen3-coder:30b on localhost:11434.
+          </p>
+        </div>
       </div>
     </div>
   )
