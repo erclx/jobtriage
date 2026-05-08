@@ -39,6 +39,7 @@ When adding a regen-and-gate pattern (FastAPI OpenAPI export, codegen, schema du
 | ---------------------- | ------------------------------------------------------------------------ |
 | `bun run check`        | Full cascade. Asserts format, spell, shell, python, and web checks pass. |
 | `bun run dev:api`      | FastAPI backend with `--reload` on `http://127.0.0.1:8000`.              |
+| `bun run restart:web`  | Kill stale `next-server`, rebuild, and serve on `http://localhost:3000`. |
 | `bun run format`       | Auto-fix prettier and shfmt formatting.                                  |
 | `bun run check:format` | Assert prettier and shfmt are clean.                                     |
 | `bun run check:spell`  | Assert cspell passes against dictionaries.                               |
@@ -50,19 +51,19 @@ When adding a regen-and-gate pattern (FastAPI OpenAPI export, codegen, schema du
 
 Run from `web/` after `cd web`.
 
-| Command                 | Purpose                                                         |
-| ----------------------- | --------------------------------------------------------------- |
-| `bun run dev`           | Disabled. Prints a pointer to `scripts/restart.sh` and exits 1. |
-| `bun run build`         | Production build.                                               |
-| `bun run start`         | Serve the production build.                                     |
-| `bun run lint`          | ESLint, zero warnings allowed.                                  |
-| `bun run lint:fix`      | Auto-fix ESLint issues.                                         |
-| `bun run typecheck`     | `tsc --noEmit`.                                                 |
-| `bun run test`          | Vitest in watch mode.                                           |
-| `bun run test:run`      | Vitest once with verbose reporter.                              |
-| `bun run test:coverage` | Vitest with coverage.                                           |
-| `bun run test:e2e`      | Playwright end-to-end.                                          |
-| `bun run check`         | Web verify (typecheck, lint, test).                             |
+| Command                 | Purpose                                                          |
+| ----------------------- | ---------------------------------------------------------------- |
+| `bun run dev`           | Disabled. Prints a pointer to `bun run restart:web` and exits 1. |
+| `bun run build`         | Production build.                                                |
+| `bun run start`         | Serve the production build.                                      |
+| `bun run lint`          | ESLint, zero warnings allowed.                                   |
+| `bun run lint:fix`      | Auto-fix ESLint issues.                                          |
+| `bun run typecheck`     | `tsc --noEmit`.                                                  |
+| `bun run test`          | Vitest in watch mode.                                            |
+| `bun run test:run`      | Vitest once with verbose reporter.                               |
+| `bun run test:coverage` | Vitest with coverage.                                            |
+| `bun run test:e2e`      | Playwright end-to-end.                                           |
+| `bun run check`         | Web verify (typecheck, lint, test).                              |
 
 ## Local smoke
 
@@ -73,10 +74,10 @@ To open the chat surface against the real backend on `http://localhost:3000`:
 bun run dev:api
 
 # terminal 2
-./scripts/restart.sh
+bun run restart:web
 ```
 
-`scripts/restart.sh` kills any stale `next-server` and Playwright zombies, rebuilds, starts the production server in the background, and verifies the listening pid changed before returning. Logs land at `.claude/.tmp/restart/server.log`. Re-run after each edit.
+`bun run restart:web` calls `scripts/restart.sh`, which kills any stale `next-server` and Playwright zombies, rebuilds, starts the production server in the background, and verifies the listening pid changed before returning. Logs land at `.claude/.tmp/restart/server.log`. Re-run after each edit.
 
 Do not use `bun run dev`. The script is disabled at the package level and exits 1. Turbopack's file watcher walks the AI Elements + shadcn dep tree and freezes WSL2 (vercel/next.js #87796, #91161, #66326). The Playwright `webServer` runs `build && start` for the same reason. Hot reload is not available locally on this machine.
 

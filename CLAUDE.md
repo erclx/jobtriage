@@ -46,7 +46,7 @@
 ## Commands
 
 - `bun run check` runs the full verify cascade. Full script reference in `docs/development.md`.
-- Do not run `bun run dev`. The script is disabled. Run `./scripts/restart.sh` for any local server need. It kills stale `next-server` and Playwright zombies, rebuilds, starts the server in the background with logs at `.claude/.tmp/restart/server.log`, and verifies the listening pid changed. Do not rely on `lsof -ti:3000`, it can miss `next-server`.
+- Do not run `bun run dev`. The script is disabled. Run `bun run restart:web` from the repo root for any local server need. It kills stale `next-server` and Playwright zombies, rebuilds, starts the server in the background with logs at `.claude/.tmp/restart/server.log`, and verifies the listening pid changed. Do not rely on `lsof -ti:3000`, it can miss `next-server`.
 
 ## Key paths
 
