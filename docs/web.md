@@ -105,7 +105,7 @@ web/
 The chat surface supports two providers, chosen at the gate and persisted in browser sessionStorage:
 
 - Anthropic via `@ai-sdk/anthropic`. The user's `sk-ant-...` key is forwarded as a Bearer header on each request and never persisted server-side.
-- Local Ollama via `ollama-ai-provider-v2`. No key required. Defaults to `qwen3-coder:30b` against `localhost:11434`. Override the model id with `OLLAMA_MODEL_ID` and the base URL with `OLLAMA_BASE_URL`.
+- Local Ollama via `ollama-ai-provider-v2`. No key required. Defaults to `qwen3-coder:30b` against `localhost:11434` with a context window of 8192 tokens. Override the model id with `OLLAMA_MODEL_ID`, the base URL with `OLLAMA_BASE_URL`, and the context window with `OLLAMA_NUM_CTX`. The bounded context keeps KV cache out of host RAM on WSL2.
 
 The route handler at `src/app/api/chat/route.ts` reads the `x-jobtriage-provider` request header to pick the provider per request. Both branches share the same tool registry and system prompt.
 

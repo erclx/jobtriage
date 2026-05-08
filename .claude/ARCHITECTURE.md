@@ -42,6 +42,8 @@ The maintainer cannot fund every visitor's API spend. End users supply their own
 
 The provider switch is exposed in the UI. The BYOK gate offers two paths: paste an Anthropic key, or click "Use local Ollama" to route through `ollama-ai-provider-v2`. The chosen provider is persisted in browser sessionStorage and forwarded to `/api/chat` via the `x-jobtriage-provider` header. The route handler instantiates the matching provider per request. The Ollama model id is `qwen3-coder:30b` by default and overridable through the `OLLAMA_MODEL_ID` environment variable so a workstation can A/B against other local models without a code edit.
 
+The Ollama branch sets `num_ctx` to 8192 by default via `providerOptions`, overridable through `OLLAMA_NUM_CTX`. Ollama's stock 131k context window allocates a KV cache that spills past WSL2's memory cap into Windows host RAM under inference, freezing the desktop. The 8192 floor fits the agent loop with multi-turn tool calls and keeps the cache resident in VRAM.
+
 ### Tool decomposition over a single-prompt agent
 
 Seven distinct tools with focused responsibilities: `searchJobs`, `semanticSearch`, `matchProfile`, `triageBatch`, `compareRoles`, `deadlineWatch`, `trackStatus`. RAG lives only inside `semanticSearch` and `triageBatch`, where description-text semantics earn it. Other tools call the API or the matcher directly. Tool-call traces in the chat UI make reasoning auditable.
