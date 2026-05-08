@@ -184,29 +184,20 @@ describe('ChatScreen', () => {
     expect(sendMessage).toHaveBeenCalledWith({ text: 'what is up' })
   })
 
-  it('confirms before clearing the provider on Switch provider', async () => {
+  it('forwards Switch provider clicks to the parent without clearing storage', async () => {
     setupChat()
     window.sessionStorage.setItem(SESSION_KEYS.provider, 'anthropic')
+    const onSwitchProvider = vi.fn()
     const user = userEvent.setup()
 
-    render(<ChatScreen />)
+    render(<ChatScreen onSwitchProvider={onSwitchProvider} />)
 
     await user.click(screen.getByRole('button', { name: /Switch provider/i }))
-    expect(
-      screen.getByRole('dialog', { name: /Switch provider/i }),
-    ).toBeInTheDocument()
+
+    expect(onSwitchProvider).toHaveBeenCalledTimes(1)
     expect(window.sessionStorage.getItem(SESSION_KEYS.apiKey)).toBe(
       'sk-ant-test',
     )
-
-    await user.click(screen.getByRole('button', { name: /^Cancel$/ }))
-    expect(window.sessionStorage.getItem(SESSION_KEYS.apiKey)).toBe(
-      'sk-ant-test',
-    )
-
-    await user.click(screen.getByRole('button', { name: /Switch provider/i }))
-    await user.click(screen.getByRole('button', { name: /^Switch$/ }))
-    expect(window.sessionStorage.getItem(SESSION_KEYS.apiKey)).toBeNull()
   })
 
   it('surfaces the error from useChat', () => {

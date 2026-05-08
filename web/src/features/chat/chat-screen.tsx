@@ -26,16 +26,6 @@ import {
 } from '@/components/ai-elements/prompt-input'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
 import { EmptyState } from '@/features/chat/empty-state'
 import { isToolPart } from '@/features/chat/is-tool-part'
 import { ProfileDrawer } from '@/features/chat/profile-drawer'
@@ -70,15 +60,16 @@ function getRequestBody(): { profile: string | null } {
   return { profile: latestProfile || null }
 }
 
-export function ChatScreen() {
-  const [, , clearStoredKey] = useSessionValue(SESSION_KEYS.apiKey)
-  const [, , clearStoredProvider] = useSessionValue(SESSION_KEYS.provider)
+interface ChatScreenProps {
+  onSwitchProvider?: () => void
+}
+
+export function ChatScreen({ onSwitchProvider }: ChatScreenProps = {}) {
   const [storedProfile] = useSessionValue(SESSION_KEYS.profile)
 
-  const handleResetProvider = useCallback(() => {
-    clearStoredKey()
-    clearStoredProvider()
-  }, [clearStoredKey, clearStoredProvider])
+  const handleSwitchProvider = useCallback(() => {
+    onSwitchProvider?.()
+  }, [onSwitchProvider])
 
   useEffect(() => {
     latestProfile = storedProfile
@@ -152,39 +143,15 @@ export function ChatScreen() {
         </div>
         <div className="flex items-center gap-1">
           <ThemeToggle />
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button type="button" variant="ghost" size="sm">
-                <LogOutIcon className="size-4" aria-hidden />
-                Switch provider
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Switch provider?</DialogTitle>
-                <DialogDescription>
-                  Your current chat will reset and you will pick a provider
-                  again. Your saved profile stays.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button type="button" variant="outline">
-                    Cancel
-                  </Button>
-                </DialogClose>
-                <DialogClose asChild>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    onClick={handleResetProvider}
-                  >
-                    Switch
-                  </Button>
-                </DialogClose>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={handleSwitchProvider}
+          >
+            <LogOutIcon className="size-4" aria-hidden />
+            Switch provider
+          </Button>
         </div>
       </header>
 

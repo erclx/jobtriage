@@ -2,7 +2,7 @@
 
 import { CpuIcon, KeyRoundIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,18 +11,58 @@ import { useSessionValue } from '@/features/chat/use-session-value'
 
 interface ApiKeyGateProps {
   children: ReactNode
+  switchRequested?: boolean
+  onResolveSwitch?: () => void
 }
 
-export function ApiKeyGate({ children }: ApiKeyGateProps) {
+export function ApiKeyGate({
+  children,
+  switchRequested = false,
+  onResolveSwitch,
+}: ApiKeyGateProps) {
   const [storedKey, setStoredKey] = useSessionValue(SESSION_KEYS.apiKey)
   const [storedProvider, setStoredProvider] = useSessionValue(
     SESSION_KEYS.provider,
   )
   const [draft, setDraft] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null)
 
-  if (storedProvider === 'ollama' || storedKey) {
+  const hasStoredProvider = storedProvider === 'ollama' || Boolean(storedKey)
+  const showGate = !hasStoredProvider || switchRequested
+  const isSwitchOverlay = switchRequested && hasStoredProvider
+
+  useEffect(() => {
+    if (!isSwitchOverlay) return
+
+    previouslyFocusedRef.current =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null
+    inputRef.current?.focus()
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key !== 'Escape') return
+      event.preventDefault()
+      setDraft('')
+      setError(null)
+      onResolveSwitch?.()
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      previouslyFocusedRef.current?.focus?.()
+    }
+  }, [isSwitchOverlay, onResolveSwitch])
+
+  if (!showGate) {
     return <>{children}</>
+  }
+
+  function resolveSwitch() {
+    onResolveSwitch?.()
   }
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -39,10 +79,18 @@ export function ApiKeyGate({ children }: ApiKeyGateProps) {
     setError(null)
     setStoredProvider('anthropic')
     setStoredKey(trimmed)
+    resolveSwitch()
   }
 
   function handleUseOllama() {
     setStoredProvider(OLLAMA_MARKER)
+    resolveSwitch()
+  }
+
+  function handleCancelSwitch() {
+    setDraft('')
+    setError(null)
+    resolveSwitch()
   }
 
   return (
@@ -73,6 +121,7 @@ export function ApiKeyGate({ children }: ApiKeyGateProps) {
               Anthropic API key
             </label>
             <Input
+              ref={inputRef}
               id="anthropic-key"
               type="password"
               inputMode="text"
@@ -132,6 +181,17 @@ export function ApiKeyGate({ children }: ApiKeyGateProps) {
             Requires Ollama with qwen3-coder:30b on localhost:11434.
           </p>
         </div>
+
+        {switchRequested && hasStoredProvider ? (
+          <Button
+            type="button"
+            variant="ghost"
+            className="w-full"
+            onClick={handleCancelSwitch}
+          >
+            Cancel and keep current provider
+          </Button>
+        ) : null}
       </div>
     </div>
   )

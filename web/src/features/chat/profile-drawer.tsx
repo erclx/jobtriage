@@ -63,7 +63,7 @@ export function ProfileDrawer({ onProfileChange }: ProfileDrawerProps) {
       onOpenChange={setOpen}
       className="rounded-md border bg-card"
     >
-      <CollapsibleTrigger className="flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm">
+      <CollapsibleTrigger className="flex w-full items-center justify-between gap-2 rounded-md px-3 py-2 text-left text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
         <div className="flex items-center gap-2">
           <UserRoundIcon className="size-4 text-muted-foreground" aria-hidden />
           <span className="font-medium">Profile</span>
@@ -86,77 +86,79 @@ export function ProfileDrawer({ onProfileChange }: ProfileDrawerProps) {
           aria-hidden
         />
       </CollapsibleTrigger>
-      <CollapsibleContent className="space-y-3 px-3 pb-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-xs text-muted-foreground">
-            Paste markdown describing your role, location, must-haves, or
-            deal-breakers. Forwarded with every chat turn. Held only in this
-            browser tab and never persisted on the server.
-          </p>
-          {draft.length === 0 ? (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleLoadExample}
-            >
-              Load example
-            </Button>
-          ) : null}
-        </div>
-        <Textarea
-          value={draft}
-          onChange={(event) => setDraft(event.target.value)}
-          placeholder="## Role&#10;Senior AI engineer&#10;## Must-haves&#10;..."
-          rows={8}
-          aria-invalid={overLimit ? 'true' : 'false'}
-          className="font-mono text-xs"
-        />
-        <div className="flex items-center justify-between gap-2">
-          <span
-            className={cn(
-              'text-xs',
-              overLimit ? 'text-destructive' : 'text-muted-foreground',
-            )}
-          >
-            {draft.length.toLocaleString()} /{' '}
-            {MAX_PROFILE_CHARS.toLocaleString()} chars
-          </span>
-          <div className="flex items-center gap-2">
-            {dirty && !overLimit ? (
-              <span
-                className="text-xs text-amber-600 dark:text-amber-400"
-                aria-live="polite"
+      <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
+        <div className="space-y-3 px-3 pb-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-xs text-muted-foreground">
+              Paste markdown describing your role, location, must-haves, or
+              deal-breakers. Forwarded with every chat turn. Held only in this
+              browser tab and never persisted on the server.
+            </p>
+            {draft.length === 0 ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleLoadExample}
               >
-                Unsaved changes
-              </span>
-            ) : justSaved ? (
-              <span
-                className="inline-flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400"
-                role="status"
-                aria-live="polite"
-              >
-                <CheckIcon className="size-3.5" aria-hidden />
-                Saved
-              </span>
+                Load example
+              </Button>
             ) : null}
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={handleClear}
-              disabled={!stored && !draft}
+          </div>
+          <Textarea
+            value={draft}
+            onChange={(event) => setDraft(event.target.value)}
+            placeholder="## Role&#10;Senior AI engineer&#10;## Must-haves&#10;..."
+            rows={8}
+            aria-invalid={overLimit ? 'true' : 'false'}
+            className="font-mono text-xs"
+          />
+          <div className="flex items-center justify-between gap-2">
+            <span
+              className={cn(
+                'text-xs',
+                overLimit ? 'text-destructive' : 'text-muted-foreground',
+              )}
             >
-              Clear
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              onClick={handleSave}
-              disabled={!dirty || overLimit}
-            >
-              Save
-            </Button>
+              {draft.length.toLocaleString()} /{' '}
+              {MAX_PROFILE_CHARS.toLocaleString()} chars
+            </span>
+            <div className="flex items-center gap-2">
+              {dirty && !overLimit ? (
+                <span
+                  className="text-xs text-amber-600 dark:text-amber-400"
+                  aria-live="polite"
+                >
+                  Unsaved changes
+                </span>
+              ) : justSaved ? (
+                <span
+                  className="inline-flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <CheckIcon className="size-3.5" aria-hidden />
+                  Saved
+                </span>
+              ) : null}
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleClear}
+                disabled={!stored && !draft}
+              >
+                Clear
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                onClick={handleSave}
+                disabled={!dirty || overLimit}
+              >
+                Save
+              </Button>
+            </div>
           </div>
         </div>
       </CollapsibleContent>
