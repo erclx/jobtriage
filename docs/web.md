@@ -59,7 +59,10 @@ web/
 │   └── test/setup.ts                   ← Vitest globals
 ├── e2e/chat.spec.ts                    ← Playwright happy path with mocked /api/chat
 ├── public/                             ← Static assets
-├── scripts/verify.sh                   ← Web verify (typecheck, lint, test)
+├── scripts/
+│   ├── verify.sh                       ← Web verify (typecheck, lint, test)
+│   ├── audit.ts                        ← Playwright + tsx harness, drives 8 prompts through live Ollama
+│   └── audit-static.ts                 ← Captures BYOK gate, empty state, profile drawer states
 ├── components.json                     ← shadcn config
 ├── eslint.config.mjs
 ├── next.config.ts

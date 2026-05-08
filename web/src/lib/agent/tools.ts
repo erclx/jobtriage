@@ -15,7 +15,7 @@ import {
 export const jobtriageTools = {
   searchJobs: tool({
     description:
-      'Structured filter against the JobTech JobSearch API. Use when the user constrains by employer, region, or occupation taxonomy code (concept id). Returns ad metadata only — no description text. Pair with semanticSearch when both filter and semantic intent are present.',
+      'Structured filter against the JobTech JobSearch API. Use ONLY when the user or a prior tool result supplied a real JobTech concept id. Concept ids are 12-char nanoids in the form "X9jv_K2b_m48" (4-3-3 alphanumeric segments). Never invent or paraphrase a concept id; if you do not have one, use semanticSearch or triageBatch instead. Returns ad metadata only, no description text.',
     inputSchema: JobSearchRequestSchema,
     execute: async (input, { abortSignal }) => {
       return api.searchJobs(input, { signal: abortSignal })
@@ -47,7 +47,7 @@ export const jobtriageTools = {
   }),
   compareRoles: tool({
     description:
-      'Fetch detail (employer, deadline, description excerpt) for two or more ads in parallel. Use when the user names multiple ad_ids and asks for a side-by-side comparison. Pass at least two ad_ids; ten max.',
+      'Compare two or more ads side by side: fetches employer, deadline, and description excerpt per ad in parallel. Anchor on the verb "compare". Use this whenever the user asks to compare, contrast, or pick between roles. Typical chain: call triageBatch first to surface candidate ad_ids, then call compareRoles on the top two or three. Do not re-run retrieval as a fake comparison. Pass at least two ad_ids; ten max.',
     inputSchema: JobDetailsRequestSchema,
     execute: async (input, { abortSignal }) => {
       return api.getJobDetails(input, { signal: abortSignal })
@@ -55,7 +55,7 @@ export const jobtriageTools = {
   }),
   deadlineWatch: tool({
     description:
-      'List active ads whose application deadline falls within the next window_days, ordered by soonest. Use when the user asks about expiring or time-sensitive ads. The optional region argument must be a JobTech region concept id like "reg-vastra", not a city name. Omit region whenever the user mentions a city, since city names live on the municipality field, not region. Read the current date from the system prompt rather than guessing.',
+      'List active ads whose application deadline falls within the next window_days, ordered by soonest. Inputs are window_days (1-365, required) and region (optional JobTech region concept id like "reg-vastra"). This tool has NO query, employer, or keyword field; it is a pure deadline filter. For semantic deadline queries ("agentic roles expiring this month") chain semanticSearch or triageBatch first, then deadlineWatch on the surfaced corpus mentally. Omit region whenever the user mentions a city, since city names live on the municipality field, not region. Read the current date from the system prompt rather than guessing.',
     inputSchema: DeadlineRequestSchema,
     execute: async (input, { abortSignal }) => {
       return api.deadlineWatch(input, { signal: abortSignal })

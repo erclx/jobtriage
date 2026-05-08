@@ -32,7 +32,7 @@ def seeded_db(tmp_path: Path, make_ad: AdFactory) -> Iterator[Path]:
             description_text='Build agents in Stockholm with Azure',
             municipality='Stockholm',
             region='reg-stockholm',
-            occupation_concept_id='occ-ai',
+            occupation_concept_id='X9jv_K2b_m48',
         ),
         make_ad(
             ad_id='goteborg',
@@ -40,7 +40,7 @@ def seeded_db(tmp_path: Path, make_ad: AdFactory) -> Iterator[Path]:
             description_text='Backend role in Göteborg',
             municipality='Göteborg',
             region='reg-vastra',
-            occupation_concept_id='occ-backend',
+            occupation_concept_id='n2kJ_qFK_x2K',
         ),
     ]
     ingest_ads(conn, ads, filter_signature='sig', now=datetime(2026, 5, 1))

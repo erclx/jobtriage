@@ -1,9 +1,10 @@
 'use client'
 
 import { useChat } from '@ai-sdk/react'
-import { DefaultChatTransport } from 'ai'
+import { DefaultChatTransport, type UIMessage } from 'ai'
 import { LogOutIcon } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useStickToBottomContext } from 'use-stick-to-bottom'
 
 import {
   Conversation,
@@ -102,8 +103,8 @@ export function ChatScreen() {
   }, [])
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <header className="flex items-center justify-between gap-4 border-b px-4 py-3">
+    <div className="flex h-screen flex-col overflow-hidden bg-background">
+      <header className="flex shrink-0 items-center justify-between gap-4 border-b px-4 py-3">
         <div>
           <h1 className="text-lg font-semibold">jobtriage</h1>
           <p className="text-xs text-muted-foreground">
@@ -124,8 +125,10 @@ export function ChatScreen() {
         </div>
       </header>
 
-      <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-3 px-4 py-4">
-        <ProfileDrawer onProfileChange={handleProfileChange} />
+      <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col gap-3 px-4 py-4">
+        <div className="shrink-0">
+          <ProfileDrawer onProfileChange={handleProfileChange} />
+        </div>
 
         <div className="flex min-h-0 flex-1 flex-col rounded-lg border bg-card">
           {messages.length === 0 ? (
@@ -134,7 +137,7 @@ export function ChatScreen() {
             </div>
           ) : (
             <Conversation className="flex-1">
-              <ConversationContent>
+              <ConversationContent className="pb-8">
                 {messages.map((message) => (
                   <Message from={message.role} key={message.id}>
                     <MessageContent>
@@ -160,6 +163,7 @@ export function ChatScreen() {
                   </Message>
                 ))}
               </ConversationContent>
+              <StreamingAutoScroll messages={messages} />
               <ConversationScrollButton />
             </Conversation>
           )}
@@ -173,7 +177,7 @@ export function ChatScreen() {
             </div>
           ) : null}
 
-          <div className="border-t p-3">
+          <div className="shrink-0 border-t p-3">
             <PromptInput
               onSubmit={(message) => {
                 const text = message.text.trim()
@@ -203,4 +207,35 @@ export function ChatScreen() {
       </div>
     </div>
   )
+}
+
+interface StreamingAutoScrollProps {
+  messages: readonly UIMessage[]
+}
+
+function StreamingAutoScroll({ messages }: StreamingAutoScrollProps) {
+  const { isAtBottom, scrollToBottom } = useStickToBottomContext()
+  const fingerprint = useMemo(
+    () =>
+      messages
+        .map((message) =>
+          message.parts
+            .map((part) => {
+              if (part.type === 'text') return `t:${part.text.length}`
+              if ('state' in part) return `s:${String(part.state)}`
+              return part.type
+            })
+            .join('|'),
+        )
+        .join('||'),
+    [messages],
+  )
+
+  useEffect(() => {
+    if (isAtBottom) {
+      void scrollToBottom()
+    }
+  }, [fingerprint, isAtBottom, scrollToBottom])
+
+  return null
 }

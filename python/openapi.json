@@ -391,7 +391,7 @@
                 "type": "null"
               }
             ],
-            "description": "JobTech occupation concept id to filter by.",
+            "description": "JobTech occupation concept id to filter by. Format: 4-3-3 alphanumeric segments separated by underscores (e.g. \"X9jv_K2b_m48\").",
             "title": "Occupation Concept Id"
           },
           "region": {
