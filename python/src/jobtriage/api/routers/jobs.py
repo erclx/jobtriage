@@ -7,7 +7,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.concurrency import run_in_threadpool
 
-from jobtriage.api.dependencies import get_db_connection, get_embedder
+from jobtriage.api.dependencies import get_db_connection, get_embedder, get_settings
 from jobtriage.api.schemas import (
     AdDetail,
     AdSummary,
@@ -27,6 +27,7 @@ from jobtriage.api.schemas import (
 )
 from jobtriage.embeddings import Embedder
 from jobtriage.retrieval import filter_only_search, hybrid_search
+from jobtriage.settings import Settings
 
 router = APIRouter(prefix='/v1/jobs', tags=['jobs'])
 
@@ -57,6 +58,7 @@ async def semantic_search(
     payload: SemanticSearchRequest,
     conn: Annotated[sqlite3.Connection, Depends(get_db_connection)],
     embedder: Annotated[Embedder, Depends(get_embedder)],
+    settings: Annotated[Settings, Depends(get_settings)],
 ) -> SemanticSearchResponse:
     ranked = await run_in_threadpool(
         hybrid_search,
@@ -65,6 +67,7 @@ async def semantic_search(
         embedder,
         payload.top_k,
     )
+    above_floor = [ad for ad in ranked if ad.score >= settings.rrf_floor]
     return SemanticSearchResponse(
         results=[
             RankedAd(
@@ -76,7 +79,7 @@ async def semantic_search(
                 application_deadline=ad.application_deadline,
                 webpage_url=ad.webpage_url,
             )
-            for ad in ranked
+            for ad in above_floor
         ]
     )
 
@@ -95,6 +98,7 @@ async def triage(
     payload: TriageRequest,
     conn: Annotated[sqlite3.Connection, Depends(get_db_connection)],
     embedder: Annotated[Embedder, Depends(get_embedder)],
+    settings: Annotated[Settings, Depends(get_settings)],
 ) -> TriageResponse:
     ranked = await run_in_threadpool(
         hybrid_search,
@@ -103,10 +107,11 @@ async def triage(
         embedder,
         payload.top_k,
     )
-    if not ranked:
+    above_floor = [ad for ad in ranked if ad.score >= settings.rrf_floor]
+    if not above_floor:
         return TriageResponse(results=[])
 
-    ad_ids = [ad.ad_id for ad in ranked]
+    ad_ids = [ad.ad_id for ad in above_floor]
     excerpts = await run_in_threadpool(_first_chunks, conn, ad_ids)
     return TriageResponse(
         results=[
@@ -120,7 +125,7 @@ async def triage(
                 webpage_url=ad.webpage_url,
                 description_excerpt=excerpts.get(ad.ad_id, ''),
             )
-            for ad in ranked
+            for ad in above_floor
         ]
     )
 

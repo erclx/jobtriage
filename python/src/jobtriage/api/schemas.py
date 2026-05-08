@@ -1,11 +1,17 @@
 """Request and response models for the FastAPI HTTP layer."""
 
-from pydantic import BaseModel, ConfigDict, Field
+import re
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 MAX_TOP_K = 50
 MAX_TRIAGE_TOP_K = 10
 MAX_DETAILS = 10
 MAX_DEADLINE_WINDOW_DAYS = 365
+
+# JobTech taxonomy concept ids are 12-char nanoids, 4-3-3 segments separated by
+# underscores (e.g. "X9jv_K2b_m48"). Reject inputs the agent fabricated.
+JOBTECH_CONCEPT_ID = re.compile(r'^[A-Za-z0-9]{4}_[A-Za-z0-9]{3}_[A-Za-z0-9]{3}$')
 
 
 class JobSearchRequest(BaseModel):
@@ -13,13 +19,30 @@ class JobSearchRequest(BaseModel):
 
     occupation_concept_id: str | None = Field(
         default=None,
-        description='JobTech occupation concept id to filter by.',
+        description=(
+            'JobTech occupation concept id to filter by. Format: '
+            '4-3-3 alphanumeric segments separated by underscores '
+            '(e.g. "X9jv_K2b_m48").'
+        ),
     )
     region: str | None = Field(
         default=None,
         description='JobTech region concept id to filter by.',
     )
     top_k: int = Field(default=10, ge=1, le=MAX_TOP_K)
+
+    @field_validator('occupation_concept_id')
+    @classmethod
+    def _check_concept_id(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        if not JOBTECH_CONCEPT_ID.match(value):
+            raise ValueError(
+                'occupation_concept_id must be a 12-char JobTech concept id '
+                "(e.g. 'X9jv_K2b_m48'). Pass an id from a prior tool result "
+                'rather than inventing one.'
+            )
+        return value
 
 
 class SemanticSearchRequest(BaseModel):

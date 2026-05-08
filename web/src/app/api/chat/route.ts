@@ -97,10 +97,20 @@ export async function POST(request: NextRequest): Promise<Response> {
   return result.toUIMessageStreamResponse({
     sendReasoning: true,
     onError: (error) => {
-      const message = error instanceof Error ? error.message : 'Stream error'
+      const message = extractErrorMessage(error)
       return resolved.redactSecret
         ? message.replaceAll(resolved.redactSecret, '[redacted]')
         : message
     },
   })
+}
+
+function extractErrorMessage(error: unknown): string {
+  if (error instanceof Error && error.message) return error.message
+  if (typeof error === 'string' && error) return error
+  if (error && typeof error === 'object') {
+    const candidate = (error as { message?: unknown }).message
+    if (typeof candidate === 'string' && candidate) return candidate
+  }
+  return 'Streaming failed before completion'
 }
