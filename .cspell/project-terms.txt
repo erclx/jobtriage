@@ -3,6 +3,7 @@ agentiska
 Borås
 Braås
 chunker
+codegen
 collapsibles
 colour
 excinfo

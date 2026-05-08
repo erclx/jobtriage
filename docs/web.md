@@ -92,20 +92,20 @@ web/
 
 ## Scripts
 
-| Command                 | Purpose                                                               |
-| ----------------------- | --------------------------------------------------------------------- |
-| `bun run dev`           | Next dev server. Avoid on WSL2, see [development.md](development.md). |
-| `bun run build`         | Production build                                                      |
-| `bun run start`         | Serve the production build                                            |
-| `bun run lint`          | ESLint, zero warnings                                                 |
-| `bun run lint:fix`      | Auto-fix ESLint                                                       |
-| `bun run typecheck`     | `tsc --noEmit`                                                        |
-| `bun run test`          | Vitest watch                                                          |
-| `bun run test:run`      | Vitest once                                                           |
-| `bun run test:coverage` | Vitest with coverage                                                  |
-| `bun run test:e2e`      | Playwright                                                            |
-| `bun run check`         | Full web verify                                                       |
-| `bun run screenshot`    | Capture screenshots                                                   |
+| Command                 | Purpose                                                                                               |
+| ----------------------- | ----------------------------------------------------------------------------------------------------- |
+| `bun run dev`           | Disabled. Run `bun run restart:web` from the repo root instead, see [development.md](development.md). |
+| `bun run build`         | Production build                                                                                      |
+| `bun run start`         | Serve the production build                                                                            |
+| `bun run lint`          | ESLint, zero warnings                                                                                 |
+| `bun run lint:fix`      | Auto-fix ESLint                                                                                       |
+| `bun run typecheck`     | `tsc --noEmit`                                                                                        |
+| `bun run test`          | Vitest watch                                                                                          |
+| `bun run test:run`      | Vitest once                                                                                           |
+| `bun run test:coverage` | Vitest with coverage                                                                                  |
+| `bun run test:e2e`      | Playwright                                                                                            |
+| `bun run check`         | Full web verify                                                                                       |
+| `bun run screenshot`    | Capture screenshots                                                                                   |
 
 ## Provider switching
 

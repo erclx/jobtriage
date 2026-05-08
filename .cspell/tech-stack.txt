@@ -53,6 +53,7 @@ networkidle
 numpy
 njsproj
 noheader
+nohup
 noopener
 noreferrer
 nounits
@@ -64,6 +65,7 @@ ntvs
 parallelizable
 pathlib
 pipefail
+pkill
 Platsbanken
 pycache
 pydantic
@@ -94,6 +96,7 @@ Turbopack
 tabindex
 testpaths
 threadpool
+tlnp
 tobytes
 timonwong
 Typer

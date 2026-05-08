@@ -1,6 +1,7 @@
 'use client'
 
 import { CalendarIcon, ExternalLinkIcon } from 'lucide-react'
+import { useState } from 'react'
 
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
@@ -13,6 +14,10 @@ interface AdCardProps {
 }
 
 export function AdCard({ ad, variant = 'default' }: AdCardProps) {
+  const [excerptExpanded, setExcerptExpanded] = useState(false)
+  const isMatched = variant === 'matched'
+  const hasExcerpt = Boolean(ad.description_excerpt)
+
   return (
     <article
       data-testid="ad-card"
@@ -47,10 +52,27 @@ export function AdCard({ ad, variant = 'default' }: AdCardProps) {
         ) : null}
       </p>
 
-      {ad.description_excerpt ? (
-        <p className="text-xs leading-relaxed text-foreground/90">
-          {ad.description_excerpt}
-        </p>
+      {hasExcerpt ? (
+        <div className="flex flex-col gap-1">
+          <p
+            className={cn(
+              'text-xs leading-relaxed text-foreground/90',
+              isMatched && !excerptExpanded && 'line-clamp-4',
+            )}
+          >
+            {ad.description_excerpt}
+          </p>
+          {isMatched ? (
+            <button
+              type="button"
+              onClick={() => setExcerptExpanded((value) => !value)}
+              className="w-fit rounded-sm text-xs font-medium text-primary underline-offset-2 outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
+              aria-expanded={excerptExpanded}
+            >
+              {excerptExpanded ? 'Read less' : 'Read more'}
+            </button>
+          ) : null}
+        </div>
       ) : null}
 
       {ad.webpage_url ? (
@@ -58,7 +80,7 @@ export function AdCard({ ad, variant = 'default' }: AdCardProps) {
           href={ad.webpage_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex w-fit items-center gap-1 text-xs font-medium text-primary underline-offset-2 hover:underline focus-visible:underline"
+          className="inline-flex w-fit items-center gap-1 rounded-sm text-xs font-medium text-primary underline-offset-2 outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
         >
           Open on Platsbanken
           <ExternalLinkIcon className="size-3" aria-hidden />

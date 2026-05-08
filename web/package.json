@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "echo 'bun run dev is disabled. Run bun run restart:web from the repo root.' && exit 1",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",

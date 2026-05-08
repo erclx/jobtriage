@@ -85,7 +85,7 @@ Spans the top of every chat surface. Does not appear on the BYOK gate.
 
 ### Behavior
 
-- `Switch provider` clears the stored key and provider. Returns the user to the BYOK gate. Does not confirm. Anonymous, single-session.
+- `Switch provider` opens a confirm dialog. Cancel keeps the current session. Confirm clears the stored key and provider and returns the user to the BYOK gate. The saved profile stays. Anonymous, single-session.
 - The moon icon toggles between light, dark, and system. Tooltip on hover names the next state.
 - Subtitle stays visible at all viewport widths. The header does not shrink to a logo bar.
 
@@ -109,6 +109,7 @@ Sits above the chat surface inside the chat column. Always rendered, collapsed b
 | Paste markdown describing your role, location, must-haves, |
 | or deal-breakers. Forwarded with every chat turn. Held     |
 | only in this browser tab and never persisted on the server.|
+| [ Load example ]                                           |
 | +--------------------------------------------------------+ |
 | | ## Role                                                | |
 | | Senior AI engineer                                     | |
@@ -118,6 +119,8 @@ Sits above the chat surface inside the chat column. Always rendered, collapsed b
 | 0 / 20,000 chars                       [Clear]   [ Save  ] |
 +------------------------------------------------------------+
 ```
+
+`Load example` is only shown when the draft is empty. It fills the textarea with a short example profile and marks the draft dirty. The user clicks `Save` to persist.
 
 ### Open with unsaved draft
 
@@ -171,6 +174,7 @@ Shown after the gate is passed and before the first message.
 
 ### Behavior
 
+- The empty state stacks the sparkle, headline, seed chips, and prompt input as one vertically-centered block inside the chat card. After the first message the prompt slides to the bottom and pins for the rest of the session.
 - Seed chip rows wrap when they do not fit the column. Long chips truncate with an ellipsis. Hovering or focusing reveals the full text via the title attribute.
 - Clicking a chip submits the chat turn directly. No intermediate edit step.
 
@@ -242,9 +246,12 @@ The right-hand pill reads `Today`, `1 day left`, ..., `N days left`. The pill is
 | Open on Platsbanken ↗                                |
 | Description excerpt: "Build agents in Stockholm      |
 | with Azure ML and Mastra..."                         |
+| Read more                                            |
 | Occupation label: Software developer                 |
 +------------------------------------------------------+
 ```
+
+The description excerpt clamps to four lines by default. `Read more` expands the full excerpt inline and flips to `Read less`. Other variants render the excerpt unclamped without a toggle.
 
 ### Empty list
 

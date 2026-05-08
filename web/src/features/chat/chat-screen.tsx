@@ -60,15 +60,16 @@ function getRequestBody(): { profile: string | null } {
   return { profile: latestProfile || null }
 }
 
-export function ChatScreen() {
-  const [, , clearStoredKey] = useSessionValue(SESSION_KEYS.apiKey)
-  const [, , clearStoredProvider] = useSessionValue(SESSION_KEYS.provider)
+interface ChatScreenProps {
+  onSwitchProvider?: () => void
+}
+
+export function ChatScreen({ onSwitchProvider }: ChatScreenProps = {}) {
   const [storedProfile] = useSessionValue(SESSION_KEYS.profile)
 
-  const handleResetProvider = useCallback(() => {
-    clearStoredKey()
-    clearStoredProvider()
-  }, [clearStoredKey, clearStoredProvider])
+  const handleSwitchProvider = useCallback(() => {
+    onSwitchProvider?.()
+  }, [onSwitchProvider])
 
   useEffect(() => {
     latestProfile = storedProfile
@@ -102,6 +103,35 @@ export function ChatScreen() {
     latestProfile = next
   }, [])
 
+  const isEmpty = messages.length === 0
+
+  const promptInput = (
+    <PromptInput
+      onSubmit={(message) => {
+        const text = message.text.trim()
+        if (!text) return
+        void sendMessage({ text })
+        setInput('')
+      }}
+    >
+      <PromptInputBody>
+        <PromptInputTextarea
+          value={input}
+          placeholder="Ask about Swedish job ads..."
+          onChange={(event) => setInput(event.target.value)}
+        />
+      </PromptInputBody>
+      <PromptInputFooter>
+        <PromptInputTools />
+        <PromptInputSubmit
+          status={status}
+          disabled={!isStreaming && input.trim() === ''}
+          onClick={isStreaming ? () => stop() : undefined}
+        />
+      </PromptInputFooter>
+    </PromptInput>
+  )
+
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background">
       <header className="flex shrink-0 items-center justify-between gap-4 border-b px-4 py-3">
@@ -117,7 +147,7 @@ export function ChatScreen() {
             type="button"
             variant="ghost"
             size="sm"
-            onClick={handleResetProvider}
+            onClick={handleSwitchProvider}
           >
             <LogOutIcon className="size-4" aria-hidden />
             Switch provider
@@ -131,78 +161,56 @@ export function ChatScreen() {
         </div>
 
         <div className="flex min-h-0 flex-1 flex-col rounded-lg border bg-card">
-          {messages.length === 0 ? (
-            <div className="flex-1">
-              <EmptyState onSelect={handleSeed} />
-            </div>
-          ) : (
-            <Conversation className="flex-1">
-              <ConversationContent className="pb-8">
-                {messages.map((message) => (
-                  <Message from={message.role} key={message.id}>
-                    <MessageContent>
-                      {message.parts.map((part, index) => {
-                        if (part.type === 'text') {
-                          return (
-                            <MessageResponse key={`${message.id}-${index}`}>
-                              {part.text}
-                            </MessageResponse>
-                          )
-                        }
-                        if (isToolPart(part)) {
-                          return (
-                            <ToolTrace
-                              key={`${message.id}-${index}`}
-                              part={part}
-                            />
-                          )
-                        }
-                        return null
-                      })}
-                    </MessageContent>
-                  </Message>
-                ))}
-              </ConversationContent>
-              <StreamingAutoScroll messages={messages} />
-              <ConversationScrollButton />
-            </Conversation>
-          )}
-
           {error ? (
             <div
               role="alert"
-              className="border-t border-destructive/30 bg-destructive/5 px-4 py-2 text-sm text-destructive"
+              className="border-b border-destructive/30 bg-destructive/5 px-4 py-2 text-sm text-destructive"
             >
               {error.message}
             </div>
           ) : null}
 
-          <div className="shrink-0 border-t p-3">
-            <PromptInput
-              onSubmit={(message) => {
-                const text = message.text.trim()
-                if (!text) return
-                void sendMessage({ text })
-                setInput('')
-              }}
-            >
-              <PromptInputBody>
-                <PromptInputTextarea
-                  value={input}
-                  placeholder="Ask about Swedish job ads..."
-                  onChange={(event) => setInput(event.target.value)}
-                />
-              </PromptInputBody>
-              <PromptInputFooter>
-                <PromptInputTools />
-                <PromptInputSubmit
-                  status={status}
-                  disabled={!isStreaming && input.trim() === ''}
-                  onClick={isStreaming ? () => stop() : undefined}
-                />
-              </PromptInputFooter>
-            </PromptInput>
-          </div>
+          {isEmpty ? (
+            <div className="flex flex-1 flex-col items-center justify-center gap-6 p-4">
+              <EmptyState onSelect={handleSeed} />
+              <div className="w-full max-w-2xl">{promptInput}</div>
+            </div>
+          ) : (
+            <>
+              <Conversation className="flex-1">
+                <ConversationContent className="pb-8">
+                  {messages.map((message) => (
+                    <Message from={message.role} key={message.id}>
+                      <MessageContent>
+                        {message.parts.map((part, index) => {
+                          if (part.type === 'text') {
+                            return (
+                              <MessageResponse key={`${message.id}-${index}`}>
+                                {part.text}
+                              </MessageResponse>
+                            )
+                          }
+                          if (isToolPart(part)) {
+                            return (
+                              <ToolTrace
+                                key={`${message.id}-${index}`}
+                                part={part}
+                              />
+                            )
+                          }
+                          return null
+                        })}
+                      </MessageContent>
+                    </Message>
+                  ))}
+                </ConversationContent>
+                <StreamingAutoScroll messages={messages} />
+                <ConversationScrollButton />
+              </Conversation>
+
+              <div className="shrink-0 border-t p-3">{promptInput}</div>
+            </>
+          )}
         </div>
       </div>
     </div>

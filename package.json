@@ -19,6 +19,7 @@
     "check": "./scripts/verify.sh",
     "clean": "./scripts/clean.sh",
     "dev:api": "./python/scripts/serve.sh --reload",
+    "restart:web": "./scripts/restart.sh",
     "update": "./scripts/update.sh"
   }
 }

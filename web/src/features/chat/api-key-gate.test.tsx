@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ApiKeyGate } from './api-key-gate'
 import { SESSION_KEYS } from './storage-keys'
@@ -55,6 +55,51 @@ describe('ApiKeyGate', () => {
 
     expect(screen.getByRole('alert')).toHaveTextContent(/sk-ant-/i)
     expect(window.sessionStorage.getItem(SESSION_KEYS.apiKey)).toBeNull()
+  })
+
+  it('renders over a stored provider when switchRequested and cancels without clearing', async () => {
+    window.sessionStorage.setItem(SESSION_KEYS.apiKey, 'sk-ant-existing')
+    const onResolveSwitch = vi.fn()
+    const user = userEvent.setup()
+
+    render(
+      <ApiKeyGate switchRequested onResolveSwitch={onResolveSwitch}>
+        <div>protected</div>
+      </ApiKeyGate>,
+    )
+
+    expect(
+      screen.getByRole('heading', { name: /Bring your own Anthropic key/i }),
+    ).toBeInTheDocument()
+    expect(screen.queryByText('protected')).not.toBeInTheDocument()
+
+    await user.click(
+      screen.getByRole('button', { name: /Cancel and keep current provider/i }),
+    )
+
+    expect(onResolveSwitch).toHaveBeenCalledTimes(1)
+    expect(window.sessionStorage.getItem(SESSION_KEYS.apiKey)).toBe(
+      'sk-ant-existing',
+    )
+  })
+
+  it('cancels the switch overlay on Escape without clearing storage', async () => {
+    window.sessionStorage.setItem(SESSION_KEYS.apiKey, 'sk-ant-existing')
+    const onResolveSwitch = vi.fn()
+    const user = userEvent.setup()
+
+    render(
+      <ApiKeyGate switchRequested onResolveSwitch={onResolveSwitch}>
+        <div>protected</div>
+      </ApiKeyGate>,
+    )
+
+    await user.keyboard('{Escape}')
+
+    expect(onResolveSwitch).toHaveBeenCalledTimes(1)
+    expect(window.sessionStorage.getItem(SESSION_KEYS.apiKey)).toBe(
+      'sk-ant-existing',
+    )
   })
 
   it('persists a valid key and unmounts the gate', async () => {

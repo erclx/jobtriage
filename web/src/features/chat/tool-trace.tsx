@@ -56,7 +56,11 @@ export function ToolTrace({ part }: ToolTraceProps) {
         </div>
       ) : null}
       <Tool defaultOpen={false}>
-        <ToolHeader title={TOOL_LABEL[toolName]} {...headerProps} />
+        <ToolHeader
+          title={TOOL_LABEL[toolName]}
+          className="rounded-md outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          {...headerProps}
+        />
         <ToolContent>
           {part.state !== 'input-streaming' && <ToolInput input={part.input} />}
           <ToolOutput
