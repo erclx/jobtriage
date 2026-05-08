@@ -77,6 +77,25 @@ bun run build && bun run start
 
 Do not use `bun run dev`. Turbopack's file watcher walks the AI Elements + shadcn dep tree and freezes WSL2 (vercel/next.js #87796, #91161, #66326). The Playwright `webServer` runs `build && start` for the same reason. Hot reload is not available locally on this machine. Rebuild after each edit.
 
+## Hardware monitor
+
+Local LLM smoke runs (Ollama with `qwen3-coder:30b`, the multilingual e5 embedder) can saturate WSL2 memory or push the Windows host into swap. WSL2 caps the guest at half the host by default, so the Linux side reports a much smaller ceiling than the physical install. `scripts/monitor.sh` samples four pressure sources every 3s:
+
+- Windows host RAM via `powershell.exe Get-CimInstance Win32_OperatingSystem`
+- WSL guest RAM via `/proc/meminfo`
+- GPU VRAM and utilization via `nvidia-smi`
+- Loaded Ollama models via `ollama ps`
+
+Run it in a separate terminal before starting any local model:
+
+```bash
+./scripts/monitor.sh                         # 3s interval, frame UI on stderr, samples on stdout
+./scripts/monitor.sh 1                       # 1s interval
+./scripts/monitor.sh > /tmp/mon.log 2>&1 &   # detach, background, single combined log
+```
+
+The script writes tab-separated samples to stdout for piping into `column`, `tee`, or a log file. The timeline UI and threshold warnings (`!` lines for host RAM at 85% or GPU util at 90%) write to stderr. Ctrl-C exits cleanly via the trap.
+
 ## Python commands
 
 Run from `python/` after `cd python`.

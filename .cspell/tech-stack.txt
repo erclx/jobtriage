@@ -51,8 +51,10 @@ mypy
 networkidle
 numpy
 njsproj
+noheader
 noopener
 noreferrer
+nounits
 ollama
 oxlint
 Ollama
