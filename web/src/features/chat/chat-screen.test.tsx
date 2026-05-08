@@ -161,7 +161,7 @@ describe('ChatScreen', () => {
 
     expect(screen.getByText('hi')).toBeInTheDocument()
     expect(screen.getByText('looking now')).toBeInTheDocument()
-    expect(screen.getByText(/searchJobs/)).toBeInTheDocument()
+    expect(screen.getByText(/No ads matched that filter/)).toBeInTheDocument()
   })
 
   it('forwards prompt submissions to sendMessage with trimmed text', async () => {
