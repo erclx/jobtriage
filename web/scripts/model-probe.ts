@@ -50,6 +50,14 @@ interface LanguageProbe {
   readonly expectLanguage: 'english' | 'swedish'
 }
 
+interface PairingProbe {
+  readonly slug: string
+  readonly prompt: string
+  readonly category: string
+  readonly expectTools: readonly string[]
+  readonly fallbackSpatialTools?: readonly string[]
+}
+
 interface DisciplineFixture {
   readonly name: string
   readonly description: string
@@ -64,12 +72,23 @@ interface LanguageFixture {
   readonly probes: readonly LanguageProbe[]
 }
 
-type Fixture = DisciplineFixture | LanguageFixture
+interface PairingFixture {
+  readonly name: string
+  readonly description: string
+  readonly kind: 'pairing'
+  readonly probes: readonly PairingProbe[]
+}
+
+type Fixture = DisciplineFixture | LanguageFixture | PairingFixture
 
 async function loadFixture(path: string): Promise<Fixture> {
   const raw = await readFile(path, 'utf-8')
   const parsed = JSON.parse(raw) as Fixture
-  if (parsed.kind !== 'discipline' && parsed.kind !== 'language') {
+  if (
+    parsed.kind !== 'discipline' &&
+    parsed.kind !== 'language' &&
+    parsed.kind !== 'pairing'
+  ) {
     throw new Error(`Unsupported fixture kind in ${path}`)
   }
   return parsed
@@ -169,7 +188,7 @@ function detectLanguage(text: string): 'english' | 'swedish' {
 
 async function runProbe(
   model: string,
-  probe: DisciplineProbe | LanguageProbe,
+  probe: DisciplineProbe | LanguageProbe | PairingProbe,
 ): Promise<ProbeResult> {
   const start = Date.now()
   const controller = new AbortController()
@@ -277,7 +296,18 @@ interface LanguageSummary {
   readonly errors: number
 }
 
-type ModelSummary = DisciplineSummary | LanguageSummary
+interface PairingSummary {
+  readonly kind: 'pairing'
+  readonly model: string
+  readonly fullPair: number
+  readonly partial: number
+  readonly missingPair: number
+  readonly total: number
+  readonly avgLatencyMs: number
+  readonly errors: number
+}
+
+type ModelSummary = DisciplineSummary | LanguageSummary | PairingSummary
 
 function avgLatency(results: readonly ProbeResult[]): number {
   const ok = results.filter((r) => !r.error)
@@ -315,6 +345,58 @@ function summarizeDiscipline(
     chitchatTotal: chitchat.length,
     toolWarrantedCorrect,
     toolWarrantedTotal: tool.length,
+    avgLatencyMs: avgLatency(results),
+    errors: results.filter((r) => r.error).length,
+  }
+}
+
+type PairingVerdict = 'full' | 'partial' | 'missing' | 'unexpected-tool'
+
+function evaluatePairing(
+  probe: PairingProbe,
+  toolNames: readonly string[],
+): PairingVerdict {
+  if (probe.expectTools.length === 0) {
+    return toolNames.length === 0 ? 'full' : 'unexpected-tool'
+  }
+  const hits = probe.expectTools.filter((name) => toolNames.includes(name))
+  const fallbackSpatial = probe.fallbackSpatialTools ?? []
+  if (hits.length === probe.expectTools.length) return 'full'
+  if (
+    hits.length === probe.expectTools.length - 1 &&
+    fallbackSpatial.some((name) => toolNames.includes(name))
+  ) {
+    return 'full'
+  }
+  if (hits.length > 0) return 'partial'
+  return 'missing'
+}
+
+function summarizePairing(
+  model: string,
+  fixture: PairingFixture,
+  results: readonly ProbeResult[],
+): PairingSummary {
+  const probesBySlug = new Map(fixture.probes.map((p) => [p.slug, p]))
+  let fullPair = 0
+  let partial = 0
+  let missingPair = 0
+  for (const result of results) {
+    if (result.error) continue
+    const probe = probesBySlug.get(result.probeSlug)
+    if (!probe) continue
+    const verdict = evaluatePairing(probe, result.toolNames)
+    if (verdict === 'full') fullPair++
+    else if (verdict === 'partial') partial++
+    else missingPair++
+  }
+  return {
+    kind: 'pairing',
+    model,
+    fullPair,
+    partial,
+    missingPair,
+    total: results.length,
     avgLatencyMs: avgLatency(results),
     errors: results.filter((r) => r.error).length,
   }
@@ -370,6 +452,17 @@ function renderMarkdown(
         `| \`${s.model}\` | ${s.chitchatFalsePositives}/${s.chitchatTotal} | ${s.toolWarrantedCorrect}/${s.toolWarrantedTotal} | ${s.avgLatencyMs} ms | ${s.errors} |`,
       )
     }
+  } else if (fixture.kind === 'pairing') {
+    lines.push(
+      '| Model | Full pair | Partial | Missing pair | Avg latency | Errors |',
+    )
+    lines.push('|---|---|---|---|---|---|')
+    for (const s of summaries) {
+      if (s.kind !== 'pairing') continue
+      lines.push(
+        `| \`${s.model}\` | ${s.fullPair}/${s.total} | ${s.partial} | ${s.missingPair} | ${s.avgLatencyMs} ms | ${s.errors} |`,
+      )
+    }
   } else {
     lines.push('| Model | Language match | Avg latency | Errors |')
     lines.push('|---|---|---|---|')
@@ -396,6 +489,31 @@ function renderMarkdown(
         : r.textPreview || '(no text)'
       lines.push(
         `| \`${r.model}\` | ${r.probeSlug} | ${r.category} | ${r.toolNames.join(', ') || '-'} | ${r.latencyMs} ms | ${detail.replaceAll('|', '\\|')} |`,
+      )
+    }
+  } else if (fixture.kind === 'pairing') {
+    const probesBySlug = new Map(fixture.probes.map((p) => [p.slug, p]))
+    lines.push(
+      '| Model | Probe | Expected | Tool calls | Verdict | Latency | Preview / error |',
+    )
+    lines.push('|---|---|---|---|---|---|---|')
+    for (const r of results) {
+      const probe = probesBySlug.get(r.probeSlug)
+      const expected = probe ? probe.expectTools.join(' + ') || 'none' : '?'
+      const verdict = probe ? evaluatePairing(probe, r.toolNames) : 'missing'
+      const verdictGlyph =
+        verdict === 'full'
+          ? '✓'
+          : verdict === 'partial'
+            ? '~'
+            : verdict === 'unexpected-tool'
+              ? '!'
+              : '✗'
+      const detail = r.error
+        ? `error: ${r.error.slice(0, 80)}`
+        : r.textPreview || '(no text)'
+      lines.push(
+        `| \`${r.model}\` | ${r.probeSlug} | ${expected} | ${r.toolNames.join(', ') || '-'} | ${verdictGlyph} | ${r.latencyMs} ms | ${detail.replaceAll('|', '\\|')} |`,
       )
     }
   } else {
@@ -426,15 +544,25 @@ function summarizeForFixture(
   fixture: Fixture,
   results: readonly ProbeResult[],
 ): ModelSummary {
-  return fixture.kind === 'discipline'
-    ? summarizeDiscipline(model, fixture, results)
-    : summarizeLanguage(model, fixture, results)
+  if (fixture.kind === 'discipline') {
+    return summarizeDiscipline(model, fixture, results)
+  }
+  if (fixture.kind === 'pairing') {
+    return summarizePairing(model, fixture, results)
+  }
+  return summarizeLanguage(model, fixture, results)
 }
 
 function probeVerdict(fixture: Fixture, result: ProbeResult): string {
   if (result.error) return `ERR ${result.error.slice(0, 60)}`
   if (fixture.kind === 'discipline') {
     return `tools: ${result.toolNames.join(',') || '-'}`
+  }
+  if (fixture.kind === 'pairing') {
+    const probe = fixture.probes.find((p) => p.slug === result.probeSlug)
+    if (!probe) return 'missing probe'
+    const verdict = evaluatePairing(probe, result.toolNames)
+    return `pair: ${verdict} (got ${result.toolNames.join(',') || '-'})`
   }
   const probe = fixture.probes.find((p) => p.slug === result.probeSlug) as
     | LanguageProbe

@@ -74,102 +74,133 @@ First surface every visitor sees. Only renders when no provider has been chosen 
 
 ## Chat header
 
-Spans the top of every chat surface. Does not appear on the BYOK gate.
+Spans the top of the workspace. Does not appear on the BYOK gate.
 
 ```plaintext
-+------------------------------------------------------------+
-| jobtriage                                  [moon] [Switch  |
-| Free-form chat over Swedish JobTech ads          provider] |
-+------------------------------------------------------------+
++----------------------------------------------------------------------+
+| jobtriage              [user] Profile · 412  [✨ New]  [moon] [Out]  |
+| Spatial agent workspace over Swedish JobTech ads                     |
++----------------------------------------------------------------------+
 ```
 
 ### Behavior
 
-- `Switch provider` opens a confirm dialog. Cancel keeps the current session. Confirm clears the stored key and provider and returns the user to the BYOK gate. The saved profile stays. Anonymous, single-session.
+- The profile button shows `Add profile` when no profile is saved and `Profile · N chars` when the session has one. Clicking opens the profile dialog.
+- `New chat` opens a confirm dialog before clearing the conversation, the canvas state, and the pinned shortlist. Profile, provider, and key stay. The button is disabled while a response is streaming and when chat plus canvas plus shortlist are already empty.
+- `Switch provider` opens a confirm dialog. Cancel keeps the current session. Confirm clears the stored key, provider, chat, and canvas, then returns the user to the BYOK gate. The saved profile stays. Anonymous, single-session.
 - The moon icon toggles between light, dark, and system. Tooltip on hover names the next state.
 - Subtitle stays visible at all viewport widths. The header does not shrink to a logo bar.
 
-## Profile drawer
+## Profile dialog
 
-Sits above the chat surface inside the chat column. Always rendered, collapsed by default.
-
-### Empty state
+Opens from the header profile button. Replaces the prior collapsed drawer that sat above the chat surface.
 
 ```plaintext
-+------------------------------------------------------------+
-| [user]  Profile  optional, sent with each request        v |
-+------------------------------------------------------------+
-```
-
-### Open with empty draft
-
-```plaintext
-+------------------------------------------------------------+
-| [user]  Profile  optional, sent with each request        ^ |
-| Paste markdown describing your role, location, must-haves, |
-| or deal-breakers. Forwarded with every chat turn. Held     |
-| only in this browser tab and never persisted on the server.|
-| [ Load example ]                                           |
-| +--------------------------------------------------------+ |
-| | ## Role                                                | |
-| | Senior AI engineer                                     | |
-| | ## Must-haves                                          | |
-| | ...                                                    | |
-| +--------------------------------------------------------+ |
-| 0 / 20,000 chars                       [Clear]   [ Save  ] |
-+------------------------------------------------------------+
-```
-
-`Load example` is only shown when the draft is empty. It fills the textarea with a short example profile and marks the draft dirty. The user clicks `Save` to persist.
-
-### Open with unsaved draft
-
-```plaintext
-+------------------------------------------------------------+
-| [user]  Profile  280 chars saved, 412 unsaved (amber)    ^ |
-| ...                                                        |
-| +--------------------------------------------------------+ |
-| | ## Role                                                | |
-| | Senior AI engineer                                     | |
-| | ## Must-haves                                          | |
-| | Stockholm, agentic systems, RAG, hybrid retrieval      | |
-| +--------------------------------------------------------+ |
-| 412 / 20,000 chars   Unsaved changes (amber)  [Clear]  [ Save ] |
-+------------------------------------------------------------+
++--------------------------------------------------------+
+| Profile                                            [x] |
+| Paste markdown describing your role, location,         |
+| must-haves, or deal-breakers. Forwarded with every     |
+| chat turn. Held only in this browser tab and never     |
+| persisted on the server.                               |
+|                                       [ Load example ] |
+| +----------------------------------------------------+ |
+| | ## Role                                            | |
+| | Senior AI engineer                                 | |
+| | ## Must-haves                                      | |
+| | Stockholm, agentic systems, RAG, hybrid retrieval  | |
+| +----------------------------------------------------+ |
+| 412 / 20,000 chars             Unsaved changes (amber) |
+|                                       [Clear]  [Save] |
++--------------------------------------------------------+
 ```
 
 ### Behavior
 
-- The header hint reflects state in three forms: `optional, sent with each request` when empty and unmodified, `N chars saved` when persisted and clean, `N chars saved, M unsaved` (amber) when persisted and dirty, and `M chars unsaved` (amber) when never saved and dirty.
-- `Save` is only enabled when the draft differs from the saved value AND is within the limit. The button alone does not carry the unsaved-state signal. The `Unsaved changes` label next to it does.
+- `Load example` is only shown when the draft is empty. It fills the textarea with a short example profile and marks the draft dirty.
+- `Save` is only enabled when the draft differs from the saved value AND is within the limit. The `Unsaved changes, will save on close` label next to the buttons carries the dirty signal and tells the user the close interceptor will commit.
 - `Clear` empties both draft and saved value. No confirmation. Cheap to redo by pasting again.
-- The textarea is 8 rows. Pasting more text scrolls inside the box, not the page.
+- The textarea grows to fill available height. Long pastes scroll inside the box, not the page.
+- Dialog dismisses with Escape, the close button, or clicking outside. The wrapper intercepts the close transition, persists the draft to sessionStorage if dirty and within the char limit, and only then allows the dialog to close. Over-limit drafts discard since `Save` would have blocked them anyway.
 
-## Empty chat surface
+## Profile node
+
+Anchored to the top-left of every canvas view, never deleted. The profile node is always present even when no profile is saved.
+
+### Empty
+
+```plaintext
++--------------------------+
+| [user] PROFILE           |
+|                          |
+| No profile yet           |
+| Click to add criteria    |
++--------------------------+
+```
+
+### Saved
+
+```plaintext
++--------------------------+
+| [user] PROFILE        [✎]|
+|                          |
+| Senior AI engineer       |
+| 412 chars · click to     |
+| edit                     |
++--------------------------+
+```
+
+### Behavior
+
+- Single click or double click opens the profile dialog. Both work.
+- The headline summary pulls the first non-heading line from the saved markdown and truncates at 64 characters.
+- When `connectProfileToAds` fires, edges spawn from the right handle of this node to matched ads on the canvas. Each edge takes the matching tone (emerald, amber, muted) and scales width plus opacity by score. The percentage number lives inside the ad card's match rationale row, not on the edge itself, so the line stays a clean visual thread.
+
+## Workspace layout
+
+Two columns above 1024px wide. Below 1024px the canvas hides and the chat rail fills the column.
+
+```plaintext
++------------------------+----------------------------------+
+| jobtriage      [✎]    | [Triage][Timeline][Compare][Pin] |
+| ...                    |                                  |
++------------------------+----------------------------------+
+| user: which active     |                                  |
+| Stockholm AI roles     |   +------+ +------+ +------+    |
+|                        |   | ad   | | ad   | | ad   |    |
+| > Triaged batch (5)    |   +------+ +------+ +------+    |
+|                        |                                  |
+|                        |   [profile node]                 |
+|                        |                                  |
+|                        | [+] [-] [fit]                    |
+| [Ask about ads...] [↵] |                                  |
++------------------------+----------------------------------+
+```
+
+- Left rail starts at 380px and is resizable between 320 and 640 via the splitter. Below `lg` the canvas and splitter hide and the rail fills the viewport.
+- The splitter sits between the rail and the canvas. A small vertical pill in the middle of the column signals that it is draggable at rest and grows on hover or keyboard focus. Width persists in sessionStorage. `←` and `→` adjust by 8px (32px with Shift).
+- Chat rail holds the conversation, the tool trace tree (collapsed by default), one-line spatial-tool summaries, the empty state with seed chips, and the prompt input pinned to the bottom.
+- Canvas holds the view switcher chips at top, the React Flow surface in the middle, and the zoom controls at bottom-left. Below `lg` a static notice in the chat rail reads `Best viewed on a desktop. The spatial canvas needs at least 1024px.`.
+
+## Empty workspace
 
 Shown after the gate is passed and before the first message.
 
 ```plaintext
-+------------------------------------------------------------+
-| [profile drawer collapsed]                                 |
-| +--------------------------------------------------------+ |
-| |                                                        | |
-| |                       [sparkle]                        | |
-| |                     Ask jobtriage                      | |
-| |     Free-form chat over Swedish Platsbanken ads.       | |
-| |                  Try one of these:                     | |
-| |                                                        | |
-| | ( Show me Stockholm AI engineering roles with        )|
-| |   deadlines this month                                 |
-| | ( Which active ads mention Azure ML and senior level   )|
-| | ( Roles outside Stockholm that look like staff or      )|
-| |   principal                                            |
-| | ( Find ads with Hugging Face or Triton in the          )|
-| |   description                                          |
-| |                                                        | |
-| | [ Ask about Swedish job ads...                       ↵]| |
-| +--------------------------------------------------------+ |
-+------------------------------------------------------------+
++----------------------------------+--------------------------------+
+|                                  | [Triage][Timeline][Compare]... |
+| [sparkle]                        |                                |
+| Ask jobtriage                    |   +-------------+              |
+| Spatial agent workspace over     |   | PROFILE     |              |
+| Swedish Platsbanken ads.         |   | No profile  |              |
+| Try one of these:                |   | yet         |              |
+|                                  |   +-------------+              |
+| ( Stockholm AI roles ... )       |                                |
+| ( Active ads with Azure ML )     |   Ask a question on the left   |
+| ( Roles outside Stockholm ... )  |   and the agent will populate  |
+| ( Hugging Face or Triton )       |   this canvas with ad cards,   |
+|                                  |   clusters, and timeline       |
+| [Ask about Swedish job ads...] [↵]|  placements as it reasons.     |
++----------------------------------+--------------------------------+
 ```
 
 ### Behavior
@@ -178,95 +209,135 @@ Shown after the gate is passed and before the first message.
 - Seed chip rows wrap when they do not fit the column. Long chips truncate with an ellipsis. Hovering or focusing reveals the full text via the title attribute.
 - Clicking a chip submits the chat turn directly. No intermediate edit step.
 
-## Chat surface with cards and trace
+## Chat rail conversation
 
-Shown after at least one assistant turn has rendered.
+Shown in the left rail after at least one assistant turn has rendered.
 
 ```plaintext
-+------------------------------------------------------------+
-| [profile drawer collapsed]                                 |
-| +--------------------------------------------------------+ |
-| |                            [user message bubble]       | |
-| |                                                        | |
-| | +----------------------------------------------------+ | |
-| | | Senior AI engineer                                 | | |
-| | | Acme AB · Stockholm · Apply by May 21              | | |
-| | | Open on Platsbanken ↗                              | | |
-| | +----------------------------------------------------+ | |
-| | +----------------------------------------------------+ | |
-| | | (next ad card)                                     | | |
-| | +----------------------------------------------------+ | |
-| | [wrench] Triaged batch  [Completed]                  v | |
-| |                                                        | |
-| | One-line summary or judgment from the assistant.       | |
-| |                                                        | |
-| | [ Ask about Swedish job ads...                       ↵]| |
-| +--------------------------------------------------------+ |
-+------------------------------------------------------------+
++----------------------------------+
+|                  [user bubble]   |
+|                                  |
+| > Triaged batch  [Completed]   v |
+|                                  |
+| Three roles look strong, two are |
+| stretches. See the canvas.       |
+|                                  |
+| [Ask about Swedish job ads...] ↵ |
++----------------------------------+
 ```
 
 ### Behavior
 
-- Cards render above the trace tree. The trace tree is collapsed by default behind a one-line summary like `Triaged batch · Completed`. Engineers expand to inspect input and output JSON.
-- Assistant text below the trace is a one-line summary or recommendation. Cards already carry headline, employer, location, deadline, and link. The text does not re-list the cards.
-- Each tool name maps to a friendly label: `Searched JobTech filter`, `Hybrid retrieval`, `Matched profile to ad`, `Triaged batch`, `Compared roles`, `Deadline watch`, `Engagement status`.
+- The chat rail no longer renders ad cards inline. Cards live on the canvas to the right. The rail keeps user bubbles, assistant text, and the data-tool trace tree (collapsed).
+- Spatial tool parts (`placeAds`, `groupAds`, `connectProfileToAds`, `pairAdsForCompare`, `placeAdsOnTimeline`, `pinToShortlist`, `markStatus`, `setView`) render as a single muted summary line per call (`Placed 5 ads on the canvas`, `Grouped 4 ads into 3 clusters`, `Connected profile to 4 ads`, etc.). The trace tree is reserved for data-tool inputs and outputs.
+- The summary line keeps the chat path identical on desktop and mobile, so a user without the canvas still sees evidence of the agent's work.
+- Assistant text below the trace is a one-line summary or recommendation. The canvas carries the cards. The text carries the judgment.
+- Each data tool name maps to a friendly label: `Searched JobTech filter`, `Hybrid retrieval`, `Matched profile to ad`, `Triaged batch`, `Compared roles`, `Deadline watch`, `Engagement status`.
 
-## Card variants
+## Canvas views
 
-Switch by which tool produced them. Layout below changes only the right-hand annotation.
+The view switcher chips at the top of the canvas drive the layout. The agent flips views via spatial tool calls and the user can flip them manually.
 
-### Default (semantic, search, triage)
+### Triage view (default)
 
-```plaintext
-+------------------------------------------------------+
-| Senior AI engineer                                   |
-| Acme AB · Stockholm · Apply by May 21                |
-| Open on Platsbanken ↗                                |
-+------------------------------------------------------+
-```
-
-### Deadline (deadlineWatch)
+Shown after `placeAds` or `groupAds`. Plain grid when the agent passes flat ad ids. Labeled clusters when the agent passes a `groups` payload.
 
 ```plaintext
-+------------------------------------------------------+
-| Service Owner                          [Today]       |
-| Volvo · Göteborg · Apply by May 8                    |
-| Open on Platsbanken ↗                                |
-+------------------------------------------------------+
++----------------------------------------------------+
+| [Strong fit · 3]    [Consider · 2]                 |
+|                                                    |
+|  +---------+ +---------+    +---------+ +--------+ |
+|  | ad      | | ad      |    | ad      | | ad     | |
+|  +---------+ +---------+    +---------+ +--------+ |
+|  +---------+                                       |
+|  | ad      |                                       |
+|  +---------+                                       |
++----------------------------------------------------+
 ```
 
-The right-hand pill reads `Today`, `1 day left`, ..., `N days left`. The pill is informational, not interactive.
+### Timeline view
 
-### Matched (matchProfile, compareRoles)
+Shown after `placeAdsOnTimeline`. Ads laid out on a date axis ordered by `application_deadline`. Lane stacking prevents overlap when two ads share a date.
 
 ```plaintext
-+------------------------------------------------------+
-| Senior AI engineer                                   |
-| Acme AB · Stockholm · Apply by May 21                |
-| Open on Platsbanken ↗                                |
-| Description excerpt: "Build agents in Stockholm      |
-| with Azure ML and Mastra..."                         |
-| Read more                                            |
-| Occupation label: Software developer                 |
-+------------------------------------------------------+
++----------------------------------------------------+
+| Today                +5d              +14d         |
+|   |                   |                  |         |
+|  +--------+         +--------+        +--------+   |
+|  | ad     |         | ad     |        | ad     |   |
+|  +--------+         +--------+        +--------+   |
+|         +--------+                                 |
+|         | ad     |                                 |
+|         +--------+                                 |
++----------------------------------------------------+
 ```
 
-The description excerpt clamps to four lines by default. `Read more` expands the full excerpt inline and flips to `Read less`. Other variants render the excerpt unclamped without a toggle.
+### Compare view
 
-### Empty list
+Shown after `pairAdsForCompare`. Two ads side by side with a structured diff overlay.
 
 ```plaintext
-+------------------------------------------------------+
-| No ads matched that query. Try different keywords    |
-| or a Swedish phrasing.                               |
-+------------------------------------------------------+
++----------------------------------------------------+
+|  +-----------------+      +-----------------+      |
+|  | ad A            |      | ad B            |      |
+|  | Acme AB         |      | Beta AB         |      |
+|  | Stockholm       |      | Göteborg        |      |
+|  | Excerpt...      |      | Excerpt...      |      |
+|  +-----------------+      +-----------------+      |
+|                                                    |
+|  Stack:    Azure ML (a)                            |
+|  Location: Stockholm (a) vs Göteborg (b)           |
+|  Seniority: same                                   |
++----------------------------------------------------+
 ```
 
-Empty copy is per-tool. The defaults live in the trace component.
+### Shortlist view
+
+Shown when the user clicks the Shortlist chip or the agent calls `setView` with `shortlist`. Pinned ads stack vertically. The chip badge shows the pinned count.
+
+```plaintext
++----------------------------------------------------+
+| +------------------+                               |
+| | ad (pinned)      |                               |
+| | applied · note   |                               |
+| +------------------+                               |
+| +------------------+                               |
+| | ad (pinned)      |                               |
+| +------------------+                               |
++----------------------------------------------------+
+```
+
+### Ad node anatomy
+
+```plaintext
++----------------------------------+
+| Senior AI engineer    [3 days]   |
+| Acme AB · Stockholm              |
+| Apply by May 21                  |
+|                                  |
+| 78% · Stockholm + Azure ML       | <- match rationale (only when connected)
+|                                  |
+| Build agents in Stockholm with   |
+| Azure ML and Mastra...           |
+|                                  |
+| Open on Platsbanken ↗      [Pin] |
++----------------------------------+
+```
+
+### Behavior
+
+- Deadline pill on the top right reads `Today`, `1 day left`, ..., `N days left`. Pill is informational only.
+- Match rationale block renders only when the profile node is connected to this ad via `connectProfileToAds`. Score is shown as a percentage.
+- Pin button toggles between `Pin` and `Pinned`. Pinned ads also appear on the Shortlist view.
+- Open on Platsbanken opens the live ad in a new tab.
+
+### Canvas empty state
+
+When no ads have been placed in the current session, the canvas shows the profile node alone on the dotted background. No additional overlay copy. The chat rail's empty state (sparkle, headline, seed chips) is the only onboarding surface. The view switcher chips and the profile node together signal that ad cards will land here.
 
 ## Engagement status row
 
-Renders for `trackStatus`. Has its own card shape, not the ad-card shape.
+Renders inline in the chat rail trace for `trackStatus`. Has its own card shape, not the ad-card shape. Status decoration also flows to the matching shortlist node when the agent chains `markStatus`.
 
 ### Empty
 
@@ -313,7 +384,7 @@ Renders when a tool call fails (input validation, upstream error, output validat
 
 ## Input row
 
-Always at the bottom of the conversation card. Pinned, not floating.
+Always at the bottom of the chat rail. Pinned, not floating.
 
 ```plaintext
 +------------------------------------------------------------+

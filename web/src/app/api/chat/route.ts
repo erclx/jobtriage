@@ -88,7 +88,7 @@ export async function POST(request: NextRequest): Promise<Response> {
       parsed.data.messages as Parameters<typeof convertToModelMessages>[0],
     ),
     tools: jobtriageTools,
-    stopWhen: stepCountIs(5),
+    stopWhen: stepCountIs(8),
     ...(resolved.providerName === 'ollama' && {
       providerOptions: { ollama: { options: { num_ctx: OLLAMA_NUM_CTX } } },
     }),

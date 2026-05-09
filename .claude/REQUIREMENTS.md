@@ -30,6 +30,7 @@ The Swedish JobTech (Platsbanken) UI filters by occupation code, region, and dea
 5. Compare roles: side-by-side analysis of multiple ads against the same criteria
 6. Deadline watch: time-sensitive view of ads with imminent deadlines
 7. Track status: read engagement state from a local file to surface "already applied" markers (CLI only)
+8. Spatial workspace: retrieved ads render as nodes on a canvas the agent drives. The canvas exposes four canonical views (triage clusters, timeline, compare, shortlist). The profile is a persistent node with weighted edges to matched ads. Pinning persists for the browser session.
 
 ## Tech stack
 

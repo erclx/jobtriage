@@ -56,6 +56,29 @@ The TypeScript wrappers map onto five FastAPI endpoints. `searchJobs` and `seman
 
 Profile markdown is a tool input, not embedded in the deploy image. The web pastes profile content into chat (browser sessionStorage). The CLI accepts a `--profile <path>` flag pointing at any local markdown file. No personal data baked into the public repo or the deployed container.
 
+### Spatial tool layer over inline cards
+
+Retrieved ads render as nodes on a React Flow canvas to the right of the chat rail rather than as cards inline in the conversation. Eight spatial tools (`placeAds`, `groupAds`, `connectProfileToAds`, `pairAdsForCompare`, `placeAdsOnTimeline`, `pinToShortlist`, `markStatus`, `setView`) are registered with the AI SDK alongside the seven data tools. Spatial tools never call the FastAPI backend. They are server-defined echoes whose `output-available` parts the client `CanvasBridge` translates into reducer dispatches against `CanvasContext`.
+
+The agent calls at least one spatial tool after each data tool in the same turn. The default pairings are fixed by the system prompt:
+
+| Data tool                      | Spatial tool                                   |
+| ------------------------------ | ---------------------------------------------- |
+| `searchJobs`, `semanticSearch` | `placeAds`                                     |
+| `triageBatch`                  | `groupAds` (or `placeAds` when no clear tiers) |
+| `matchProfile`                 | `connectProfileToAds`                          |
+| `compareRoles`                 | `pairAdsForCompare`                            |
+| `deadlineWatch`                | `placeAdsOnTimeline`                           |
+| `trackStatus`                  | `markStatus`                                   |
+
+Profile-fit intent stacks two spatial calls. When the user references themselves, their profile, or "fits me" / "best for me", and a profile is saved, the agent calls `connectProfileToAds` in addition to the default pairing. The Triage view supports clusters and edges simultaneously, so `groupAds` plus `connectProfileToAds` after `triageBatch` is the canonical profile-fit composition. When no profile is saved, the agent skips `connectProfileToAds` and asks the user to add one.
+
+Layout strategies live client-side in `web/src/features/canvas/views/layout.ts`. The agent picks `layout: "grid" | "stack"` and an emphasis hint, never pixel coordinates. User drag overrides persist in `state.nodePositions` and survive view switches. The full canvas state hydrates from sessionStorage on first render and writes through on every reducer step.
+
+Chat messages mirror the same pattern. `useChat` hydrates from `jobtriage:chat-messages` once on mount and writes the messages array to sessionStorage when `status === 'ready'`, so a refresh during streaming cannot restore a half-finished assistant turn. A header `New chat` action behind a confirmation dialog clears chat plus canvas plus pinned shortlist, leaving profile and provider untouched. Switching provider clears chat plus canvas in addition to rotating the key.
+
+Pinning stays client-side. The deployed web demo never writes back to `engagements/log.md`. The Typer CLI continues to be the only path that mutates the canonical engagement log, preserving the stateless deploy posture.
+
 ### Triage state in a local file, not in SQLite
 
 The CLI's `mark-status` command writes to a local `engagements/log.md` (or any markdown file the user picks). Git provides free history and rollback. SQLite is reserved for the shared ad corpus. The web demo is read-only and stateless. This keeps multi-tenant complexity out of the architecture.

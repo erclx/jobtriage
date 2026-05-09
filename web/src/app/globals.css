@@ -121,12 +121,34 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
   }
   body {
     @apply bg-background text-foreground;
   }
   html {
     @apply font-sans;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--border);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(in oklch, var(--foreground) 30%, transparent);
+  }
+  ::-webkit-scrollbar-corner {
+    background: transparent;
   }
 }
 
@@ -146,4 +168,58 @@
   to {
     height: 0;
   }
+}
+
+.react-flow {
+  --xy-background-color: var(--background);
+  --xy-background-pattern-color-default: color-mix(
+    in oklch,
+    var(--foreground) 12%,
+    transparent
+  );
+  --xy-controls-button-background-color-default: var(--card);
+  --xy-controls-button-background-color-hover-default: var(--muted);
+  --xy-controls-button-border-color-default: var(--border);
+  --xy-controls-button-color-default: var(--foreground);
+  --xy-controls-button-color-hover-default: var(--foreground);
+  --xy-edge-stroke-default: color-mix(
+    in oklch,
+    var(--foreground) 35%,
+    transparent
+  );
+  --xy-edge-stroke-selected-default: var(--primary);
+}
+
+.react-flow__controls {
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  overflow: hidden;
+}
+
+.react-flow__controls-button {
+  background-color: var(--card);
+  color: var(--foreground);
+  border-bottom: 1px solid var(--border);
+}
+
+.react-flow__controls-button:hover {
+  background-color: var(--muted);
+}
+
+.react-flow__controls-button:last-child {
+  border-bottom: none;
+}
+
+.react-flow__controls-button svg {
+  fill: currentColor;
+}
+
+.react-flow__handle {
+  width: 6px;
+  height: 6px;
+  background: transparent;
+  border: 0;
+  pointer-events: none;
+  opacity: 0;
 }

@@ -65,6 +65,12 @@ export function ApiKeyGate({
     onResolveSwitch?.()
   }
 
+  function clearSessionState() {
+    if (typeof window === 'undefined') return
+    window.sessionStorage.removeItem(SESSION_KEYS.chat)
+    window.sessionStorage.removeItem(SESSION_KEYS.canvas)
+  }
+
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const trimmed = draft.trim()
@@ -77,12 +83,14 @@ export function ApiKeyGate({
       return
     }
     setError(null)
+    if (isSwitchOverlay) clearSessionState()
     setStoredProvider('anthropic')
     setStoredKey(trimmed)
     resolveSwitch()
   }
 
   function handleUseOllama() {
+    if (isSwitchOverlay) clearSessionState()
     setStoredProvider(OLLAMA_MARKER)
     resolveSwitch()
   }

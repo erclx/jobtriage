@@ -59,6 +59,7 @@ nohup
 noopener
 noreferrer
 nounits
+oklch
 ollama
 oxlint
 Ollama
@@ -113,3 +114,4 @@ wireframes
 worktree
 worktrees
 xlink
+xyflow

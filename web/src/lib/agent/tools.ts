@@ -2,6 +2,7 @@ import 'server-only'
 
 import { tool } from 'ai'
 
+import { spatialTools } from '@/lib/agent/spatial-tools'
 import * as api from '@/lib/api/client'
 import {
   DeadlineRequestSchema,
@@ -12,7 +13,7 @@ import {
   TriageRequestSchema,
 } from '@/lib/api/schemas'
 
-export const jobtriageTools = {
+const dataTools = {
   searchJobs: tool({
     description:
       'Structured filter against the JobTech JobSearch API. Use ONLY when the user or a prior tool result supplied a real JobTech concept id. Concept ids are 12-char nanoids in the form "X9jv_K2b_m48" (4-3-3 alphanumeric segments). Never invent or paraphrase a concept id; if you do not have one, use semanticSearch or triageBatch instead. Returns ad metadata only, no description text.',
@@ -69,6 +70,11 @@ export const jobtriageTools = {
       return api.getEngagementStatus(input, { signal: abortSignal })
     },
   }),
+} as const
+
+export const jobtriageTools = {
+  ...dataTools,
+  ...spatialTools,
 } as const
 
 export type JobtriageTools = typeof jobtriageTools

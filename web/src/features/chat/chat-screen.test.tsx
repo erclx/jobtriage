@@ -89,6 +89,14 @@ vi.mock('@/components/ai-elements/prompt-input', () => ({
   ),
 }))
 
+vi.mock('@/features/canvas/canvas-surface', () => ({
+  CanvasSurface: () => <div data-testid="canvas-surface" />,
+}))
+
+vi.mock('@/features/canvas/canvas-bridge', () => ({
+  CanvasBridge: () => null,
+}))
+
 import { ChatScreen } from './chat-screen'
 
 describe('ChatScreen', () => {
@@ -134,7 +142,7 @@ describe('ChatScreen', () => {
     return { sendMessage }
   }
 
-  it('shows the empty state when there are no messages', () => {
+  it('should show the empty state when there are no messages', () => {
     setupChat()
     render(<ChatScreen />)
 
@@ -143,7 +151,7 @@ describe('ChatScreen', () => {
     ).toBeInTheDocument()
   })
 
-  it('renders text and tool parts from assistant messages', () => {
+  it('should render text parts and the collapsed tool trace, leaving cards to the canvas', () => {
     setupChat({
       messages: [
         { id: 'u1', role: 'user', parts: [{ type: 'text', text: 'hi' }] },
@@ -168,10 +176,37 @@ describe('ChatScreen', () => {
 
     expect(screen.getByText('hi')).toBeInTheDocument()
     expect(screen.getByText('looking now')).toBeInTheDocument()
-    expect(screen.getByText(/No ads matched that filter/)).toBeInTheDocument()
+    expect(screen.getByText(/Searched JobTech filter/)).toBeInTheDocument()
   })
 
-  it('forwards prompt submissions to sendMessage with trimmed text', async () => {
+  it('should render a one-line summary for spatial tool parts instead of a trace tree', () => {
+    setupChat({
+      messages: [
+        {
+          id: 'a1',
+          role: 'assistant',
+          parts: [
+            {
+              type: 'tool-placeAds',
+              state: 'output-available',
+              input: { ad_ids: ['ad-1', 'ad-2'], layout: 'grid' },
+              output: { accepted: true },
+              toolCallId: 'call-spatial',
+            } as never,
+            { type: 'text', text: 'placed' },
+          ],
+        },
+      ],
+    })
+
+    render(<ChatScreen />)
+
+    expect(screen.queryByText(/placeAds/)).not.toBeInTheDocument()
+    expect(screen.getByText(/Placed 2 ads on the canvas/)).toBeInTheDocument()
+    expect(screen.getByText('placed')).toBeInTheDocument()
+  })
+
+  it('should forward prompt submissions to sendMessage with trimmed text', async () => {
     const { sendMessage } = setupChat()
     const user = userEvent.setup()
 
@@ -184,7 +219,7 @@ describe('ChatScreen', () => {
     expect(sendMessage).toHaveBeenCalledWith({ text: 'what is up' })
   })
 
-  it('forwards Switch provider clicks to the parent without clearing storage', async () => {
+  it('should forward Switch provider clicks to the parent without clearing storage', async () => {
     setupChat()
     window.sessionStorage.setItem(SESSION_KEYS.provider, 'anthropic')
     const onSwitchProvider = vi.fn()
@@ -200,7 +235,7 @@ describe('ChatScreen', () => {
     )
   })
 
-  it('surfaces the error from useChat', () => {
+  it('should surface the error from useChat', () => {
     setupChat({ error: new Error('Backend down') })
 
     render(<ChatScreen />)
