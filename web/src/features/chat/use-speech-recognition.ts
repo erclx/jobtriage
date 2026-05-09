@@ -78,6 +78,7 @@ export interface UseSpeechRecognitionResult {
   readonly isListening: boolean
   readonly start: () => void
   readonly stop: () => void
+  readonly abort: () => void
 }
 
 export function useSpeechRecognition({
@@ -137,12 +138,13 @@ export function useSpeechRecognition({
     }
 
     recognition.onerror = (event) => {
+      if (event.error === 'aborted') return
       if (
         event.error === 'not-allowed' ||
         event.error === 'service-not-allowed'
       ) {
         onErrorRef.current?.('denied')
-      } else if (event.error === 'no-speech' || event.error === 'aborted') {
+      } else if (event.error === 'no-speech') {
         onErrorRef.current?.('no-speech')
       } else {
         onErrorRef.current?.('unknown')
@@ -168,5 +170,9 @@ export function useSpeechRecognition({
     recognitionRef.current?.stop()
   }, [])
 
-  return { isListening, isSupported, start, stop }
+  const abort = useCallback(() => {
+    recognitionRef.current?.abort()
+  }, [])
+
+  return { abort, isListening, isSupported, start, stop }
 }

@@ -172,6 +172,7 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
     isListening: isVoiceListening,
     start: startVoice,
     stop: stopVoice,
+    abort: abortVoice,
   } = useSpeechRecognition({
     onError: setVoiceError,
     onTranscript: handleVoiceTranscript,
@@ -192,11 +193,11 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return
       event.preventDefault()
-      stopVoice()
+      abortVoice()
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isVoiceListening, stopVoice])
+  }, [isVoiceListening, abortVoice])
 
   const isStreaming = status === 'submitted' || status === 'streaming'
   const isEmpty = messages.length === 0
