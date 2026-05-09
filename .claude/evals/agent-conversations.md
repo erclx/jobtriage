@@ -5,7 +5,7 @@ description: Manual prompts to drive against /api/chat, seed for the v6 agent-ev
 
 # Agent conversation fixtures
 
-Manual prompts to drive against `/api/chat` during v4 testing. v6's agent-eval harness will consume this file once it lands.
+Manual chat prompts to drive against `/api/chat`. The v6 agent-eval harness will consume this file once it lands. UI-only cases for the canvas surface (pin, drag, rail resize, theme, dialog auto-save) live in `canvas-interactions.md`.
 
 Each case keeps the prompt on a single line inside a `plaintext` block so it yanks cleanly in vim. Paste into the chat input on `http://127.0.0.1:3000`. Tick the matching box in the open PR's `## Testing` section after each run. Drop surprises in PR comments.
 
@@ -20,6 +20,21 @@ Each numbered case is an H2 with the prompt as the first `plaintext` block. The 
 - `Watch for`: known regressions tied to v4 or v4.1 fixes. Treat as an alarm pattern in the harness.
 
 Shared inputs live above the cases. Currently one shared `Profile` block. Add more shared blocks under their own H2 if a fixture needs them.
+
+## Spatial pairing
+
+Every data-tool call also fires its paired spatial tool in the same turn. The pairings are fixed by the system prompt:
+
+| Data tool                      | Paired spatial tool                            |
+| ------------------------------ | ---------------------------------------------- |
+| `searchJobs`, `semanticSearch` | `placeAds`                                     |
+| `triageBatch`                  | `groupAds` (or `placeAds` when no clear tiers) |
+| `matchProfile`                 | `connectProfileToAds`                          |
+| `compareRoles`                 | `pairAdsForCompare`                            |
+| `deadlineWatch`                | `placeAdsOnTimeline`                           |
+| `trackStatus`                  | `markStatus`                                   |
+
+The `Expected tools` field below names the data tool only. The visible result also asserts the canvas changed: ad nodes appear in the matching view, edges spawn from the profile node when applicable, the timeline renders the today cursor, and so on. The spatial-pairing fixture (`agent-spatial-pairing.json`) drives the harness check.
 
 ## Profile
 
@@ -157,3 +172,31 @@ Which deadlines are in the next 5 days, knowing today's date?
 - Expected tools: `deadlineWatch`
 - Expected behavior: model uses today's date from the system prompt without dodging. Calls `deadlineWatch` with `window_days` near 5.
 - Watch for: model evading with `I don't have access to real-time information`. That regresses the v4.1 date-injection fix.
+
+## 12. Cluster triage on the canvas
+
+```plaintext
+Triage active machine learning roles into strong fits, consider, and pass.
+```
+
+- Profile: required
+- Expected tools: `triageBatch`, then `groupAds`
+- Expected behavior: canvas flips to Triage view with two or three labeled clusters. Cluster boundaries take tone classes from the label (`Strong fit` green, `Consider` amber, `Pass` muted). Each ad sits in exactly one cluster.
+- Manual check: chat trace shows `Grouped N ads into M clusters` summary line. Cluster labels match the tones the agent used.
+- Watch for: agent picking `placeAds` instead of `groupAds`. That regresses the v4.6 spatial-pairing rule for tiered triage.
+
+## 13. Profile match edges on the canvas
+
+Save a profile first via the header dialog.
+
+```plaintext
+Which of the active AI engineer roles match my profile?
+```
+
+- Profile: required
+- Expected tools: `triageBatch`, then `connectProfileToAds`
+- Expected behavior: canvas Triage view shows ad cards plus weighted bezier edges spawning from the profile node. Each edge carries a percentage label at the midpoint. Higher score draws thicker, more opaque edges.
+- Manual check: AdNode renders the rationale block above the description excerpt with the percentage and one-line reason.
+- Watch for: agent fabricating ad ids that did not appear in the prior `triageBatch` result. The edge will draw to nowhere visible.
+
+<!-- UI-only cases for the canvas surface (pin, drag, resize, theme, dialog auto-save) live in `canvas-interactions.md`. This file holds chat prompts only. -->

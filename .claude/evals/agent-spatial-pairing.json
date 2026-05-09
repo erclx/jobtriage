@@ -1,0 +1,64 @@
+{
+  "name": "agent-spatial-pairing",
+  "description": "Regression check that every data-tool call is followed by exactly one paired spatial-tool call in the same turn. Each probe lists both the data tool and the spatial tool it should chain into. The harness asserts ALL listed tools fire (kind: pairing).",
+  "kind": "pairing",
+  "probes": [
+    {
+      "slug": "triage-strong-fit",
+      "prompt": "Find machine learning engineer roles and tell me which one fits best.",
+      "category": "triage",
+      "expectTools": ["triageBatch", "groupAds"],
+      "fallbackSpatialTools": ["placeAds"]
+    },
+    {
+      "slug": "triage-profile-fit",
+      "prompt": "Find AI engineering roles that match my profile best.",
+      "category": "triage-profile",
+      "expectTools": ["triageBatch", "groupAds", "connectProfileToAds"],
+      "fallbackSpatialTools": ["placeAds"]
+    },
+    {
+      "slug": "compare-pair",
+      "prompt": "Compare ads 30990642 and 30966965 for me.",
+      "category": "compare",
+      "expectTools": ["compareRoles", "pairAdsForCompare"]
+    },
+    {
+      "slug": "deadline-window",
+      "prompt": "Which ads have a deadline in the next two weeks?",
+      "category": "deadline",
+      "expectTools": ["deadlineWatch", "placeAdsOnTimeline"]
+    },
+    {
+      "slug": "structured-search",
+      "prompt": "Find roles with JobTech occupation concept id \"DJh5_yyF_hEM\" in region \"reg-vastra\".",
+      "category": "search",
+      "expectTools": ["searchJobs", "placeAds"]
+    },
+    {
+      "slug": "match-profile",
+      "prompt": "How does ad 30966965 match my profile?",
+      "category": "match",
+      "expectTools": ["matchProfile", "connectProfileToAds"]
+    },
+    {
+      "slug": "track-status",
+      "prompt": "What's my engagement status on ad 30966965?",
+      "category": "status",
+      "expectTools": ["trackStatus"],
+      "fallbackSpatialTools": ["markStatus"]
+    },
+    {
+      "slug": "set-view-shortlist",
+      "prompt": "Show me my shortlist.",
+      "category": "view-only",
+      "expectTools": ["setView"]
+    },
+    {
+      "slug": "chitchat-no-spatial",
+      "prompt": "hi",
+      "category": "chitchat",
+      "expectTools": []
+    }
+  ]
+}
