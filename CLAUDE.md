@@ -54,6 +54,7 @@
 - `.claude/`: planning docs (requirements, architecture, wireframes, design, tasks)
 - `.claude/evals/agent-conversations.md`: numbered manual prompts for chat surface testing, seed fixture for the v6 agent-eval harness. Each case lists expected tools, expected behavior, and known regression alarms. Run before opening a chat-touching PR.
 - `.claude/review/`: gitignored scratch for review and UI-test output, overwritten on each run
+- `wiki/`: durable reusable technical knowledge that outlives any single project decision (model landscapes, tool-stack notes, integration playbooks). Pages survive plan-file deletion when tasks ship.
 
 ## Spelling
 

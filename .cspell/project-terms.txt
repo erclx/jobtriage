@@ -1,5 +1,7 @@
 affordances
 agentiska
+alde
+BFCL
 Borås
 Braås
 chunker
@@ -11,10 +13,12 @@ executemany
 executescript
 Flen
 Floby
+GPQA
 grayscale
 jobtech
 jobtriage
 Kista
+MMLU
 nanoids
 seniorroller
 timespec
