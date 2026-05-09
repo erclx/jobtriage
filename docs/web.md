@@ -74,7 +74,8 @@ web/
 ├── scripts/
 │   ├── verify.sh                       ← Web verify (typecheck, lint, test)
 │   ├── audit.ts                        ← Playwright + tsx harness, drives 8 prompts through live Ollama
-│   └── audit-static.ts                 ← Captures BYOK gate, empty state, profile drawer states
+│   ├── audit-static.ts                 ← Captures BYOK gate, empty state, profile drawer states
+│   └── screenshots.ts                  ← Playwright harness, 16 canonical UI states × light/dark, seeded sessionStorage
 ├── components.json                     ← shadcn config
 ├── eslint.config.mjs
 ├── next.config.ts
@@ -118,7 +119,7 @@ web/
 | `bun run test:coverage` | Vitest with coverage                                                                                  |
 | `bun run test:e2e`      | Playwright                                                                                            |
 | `bun run check`         | Full web verify                                                                                       |
-| `bun run screenshot`    | Capture screenshots                                                                                   |
+| `bun run screenshots`   | Capture canonical UI states to `.claude/review/screenshots/`, light and dark per state                |
 
 ## Provider switching
 

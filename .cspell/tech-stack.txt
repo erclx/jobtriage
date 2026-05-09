@@ -16,6 +16,7 @@ coveragerc
 dataclass
 dataclasses
 dbaeumer
+domcontentloaded
 dotenv
 dotfolders
 dunder
@@ -83,6 +84,7 @@ regen
 repr
 rerank
 Reranker
+reranking
 ruff
 setattr
 scannability
