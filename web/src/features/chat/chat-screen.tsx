@@ -2,8 +2,8 @@
 
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport, type UIMessage } from 'ai'
-import { LogOutIcon, UserRoundIcon } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { LogOutIcon, SparklesIcon, UserRoundIcon } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useStickToBottomContext } from 'use-stick-to-bottom'
 
 import {
@@ -26,8 +26,17 @@ import {
 } from '@/components/ai-elements/prompt-input'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { CanvasBridge } from '@/features/canvas/canvas-bridge'
 import { CanvasProvider } from '@/features/canvas/canvas-provider'
+import { INITIAL_CANVAS_STATE, useCanvas } from '@/features/canvas/canvas-state'
 import { CanvasSurface } from '@/features/canvas/canvas-surface'
 import { EmptyState } from '@/features/chat/empty-state'
 import { isToolPart } from '@/features/chat/is-tool-part'
@@ -99,7 +108,9 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
   const [storedRailWidth, setStoredRailWidth] = useSessionValue(
     SESSION_KEYS.railWidth,
   )
+  const { state: canvasState, dispatch: dispatchCanvas } = useCanvas()
   const [profileOpen, setProfileOpen] = useState(false)
+  const [confirmNewChatOpen, setConfirmNewChatOpen] = useState(false)
 
   const railWidth = useMemo(() => {
     const parsed = Number(storedRailWidth)
@@ -128,10 +139,47 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
     [],
   )
 
-  const { messages, sendMessage, status, error, stop } = useChat({ transport })
+  const { messages, sendMessage, setMessages, status, error, stop } = useChat({
+    transport,
+  })
   const [input, setInput] = useState('')
   const isStreaming = status === 'submitted' || status === 'streaming'
   const isEmpty = messages.length === 0
+
+  const chatHydratedRef = useRef(false)
+  useEffect(() => {
+    if (chatHydratedRef.current) return
+    chatHydratedRef.current = true
+    if (typeof window === 'undefined') return
+    const raw = window.sessionStorage.getItem(SESSION_KEYS.chat)
+    if (!raw) return
+    try {
+      const parsed = JSON.parse(raw) as UIMessage[]
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        setMessages(parsed)
+      }
+    } catch {
+      // bad payload, drop it
+    }
+  }, [setMessages])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (status !== 'ready') return
+    if (!chatHydratedRef.current) return
+    try {
+      if (messages.length === 0) {
+        window.sessionStorage.removeItem(SESSION_KEYS.chat)
+      } else {
+        window.sessionStorage.setItem(
+          SESSION_KEYS.chat,
+          JSON.stringify(messages),
+        )
+      }
+    } catch {
+      // sessionStorage quota or serialization failure: stay in-memory
+    }
+  }, [messages, status])
 
   const handleSeed = useCallback(
     (text: string) => {
@@ -149,6 +197,20 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
   }, [onSwitchProvider])
 
   const handleEditProfile = useCallback(() => setProfileOpen(true), [])
+
+  const handleNewChatRequest = useCallback(() => {
+    setConfirmNewChatOpen(true)
+  }, [])
+
+  const handleNewChatConfirm = useCallback(() => {
+    setMessages([])
+    dispatchCanvas({ type: 'hydrate', state: INITIAL_CANVAS_STATE })
+    if (typeof window !== 'undefined') {
+      window.sessionStorage.removeItem(SESSION_KEYS.chat)
+      window.sessionStorage.removeItem(SESSION_KEYS.canvas)
+    }
+    setConfirmNewChatOpen(false)
+  }, [setMessages, dispatchCanvas])
 
   const promptInput = (
     <PromptInput
@@ -201,6 +263,22 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
           >
             <UserRoundIcon className="size-4" aria-hidden />
             <span className="hidden sm:inline">{profileLabel}</span>
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={handleNewChatRequest}
+            disabled={
+              isStreaming ||
+              (isEmpty &&
+                canvasState.visibleAdIds.length === 0 &&
+                canvasState.pinnedAdIds.length === 0)
+            }
+            aria-label="Start a new chat"
+          >
+            <SparklesIcon className="size-4" aria-hidden />
+            <span className="hidden sm:inline">New chat</span>
           </Button>
           <ThemeToggle />
           <Button
@@ -305,6 +383,33 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
         onOpenChange={setProfileOpen}
         onProfileChange={handleProfileChange}
       />
+      <Dialog open={confirmNewChatOpen} onOpenChange={setConfirmNewChatOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Start a new chat?</DialogTitle>
+            <DialogDescription>
+              The conversation, canvas, and pinned shortlist all clear. Your
+              profile, provider, and key stay.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setConfirmNewChatOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={handleNewChatConfirm}
+            >
+              Start new chat
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

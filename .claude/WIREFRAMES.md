@@ -78,7 +78,7 @@ Spans the top of the workspace. Does not appear on the BYOK gate.
 
 ```plaintext
 +----------------------------------------------------------------------+
-| jobtriage                       [user] Profile · 412   [moon] [Out]  |
+| jobtriage              [user] Profile · 412  [✨ New]  [moon] [Out]  |
 | Spatial agent workspace over Swedish JobTech ads                     |
 +----------------------------------------------------------------------+
 ```
@@ -86,7 +86,8 @@ Spans the top of the workspace. Does not appear on the BYOK gate.
 ### Behavior
 
 - The profile button shows `Add profile` when no profile is saved and `Profile · N chars` when the session has one. Clicking opens the profile dialog.
-- `Switch provider` opens a confirm dialog. Cancel keeps the current session. Confirm clears the stored key and provider and returns the user to the BYOK gate. The saved profile stays. Anonymous, single-session.
+- `New chat` opens a confirm dialog before clearing the conversation, the canvas state, and the pinned shortlist. Profile, provider, and key stay. The button is disabled while a response is streaming and when chat plus canvas plus shortlist are already empty.
+- `Switch provider` opens a confirm dialog. Cancel keeps the current session. Confirm clears the stored key, provider, chat, and canvas, then returns the user to the BYOK gate. The saved profile stays. Anonymous, single-session.
 - The moon icon toggles between light, dark, and system. Tooltip on hover names the next state.
 - Subtitle stays visible at all viewport widths. The header does not shrink to a logo bar.
 

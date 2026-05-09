@@ -75,6 +75,8 @@ Profile-fit intent stacks two spatial calls. When the user references themselves
 
 Layout strategies live client-side in `web/src/features/canvas/views/layout.ts`. The agent picks `layout: "grid" | "stack"` and an emphasis hint, never pixel coordinates. User drag overrides persist in `state.nodePositions` and survive view switches. The full canvas state hydrates from sessionStorage on first render and writes through on every reducer step.
 
+Chat messages mirror the same pattern. `useChat` hydrates from `jobtriage:chat-messages` once on mount and writes the messages array to sessionStorage when `status === 'ready'`, so a refresh during streaming cannot restore a half-finished assistant turn. A header `New chat` action behind a confirmation dialog clears chat plus canvas plus pinned shortlist, leaving profile and provider untouched. Switching provider clears chat plus canvas in addition to rotating the key.
+
 Pinning stays client-side. The deployed web demo never writes back to `engagements/log.md`. The Typer CLI continues to be the only path that mutates the canonical engagement log, preserving the stateless deploy posture.
 
 ### Triage state in a local file, not in SQLite
