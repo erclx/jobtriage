@@ -1,0 +1,55 @@
+{
+  "name": "agent-discipline",
+  "description": "Chitchat versus tool-warranted probe set. Regression check that the agent does not fire retrieval tools on conversational turns and selects the right tool when retrieval is warranted.",
+  "kind": "discipline",
+  "probes": [
+    {
+      "slug": "hi",
+      "prompt": "hi",
+      "category": "chitchat",
+      "expectTools": []
+    },
+    {
+      "slug": "what-can-you-do",
+      "prompt": "what can you do",
+      "category": "chitchat",
+      "expectTools": []
+    },
+    {
+      "slug": "how-are-you",
+      "prompt": "how are you",
+      "category": "chitchat",
+      "expectTools": []
+    },
+    {
+      "slug": "thanks",
+      "prompt": "thanks",
+      "category": "chitchat",
+      "expectTools": []
+    },
+    {
+      "slug": "what-is-jobtriage",
+      "prompt": "what is jobtriage",
+      "category": "chitchat",
+      "expectTools": []
+    },
+    {
+      "slug": "welder-goteborg",
+      "prompt": "find welder jobs in Göteborg",
+      "category": "tool-warranted",
+      "expectTools": ["triageBatch", "semanticSearch"]
+    },
+    {
+      "slug": "expire-7-days",
+      "prompt": "what ads expire in the next 7 days",
+      "category": "tool-warranted",
+      "expectTools": ["deadlineWatch"]
+    },
+    {
+      "slug": "agentic-roles",
+      "prompt": "list roles about agentic AI systems",
+      "category": "tool-warranted",
+      "expectTools": ["triageBatch", "semanticSearch"]
+    }
+  ]
+}

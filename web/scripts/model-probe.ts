@@ -1,17 +1,26 @@
 import { spawn } from 'node:child_process'
-import { mkdir, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = join(SCRIPT_DIR, '..', '..')
 const OUT_DIR = join(REPO_ROOT, '.claude', '.tmp', 'ollama-model-research')
+const DEFAULT_FIXTURE = join(
+  REPO_ROOT,
+  '.claude',
+  'evals',
+  'agent-discipline.json',
+)
 
 const CHAT_URL = process.env.PROBE_CHAT_URL ?? 'http://localhost:3000/api/chat'
 const REQUEST_TIMEOUT_MS = Number(process.env.PROBE_TIMEOUT_MS ?? '180000')
 const RESTART_TIMEOUT_MS = Number(
   process.env.PROBE_RESTART_TIMEOUT_MS ?? '120000',
 )
+const FIXTURE_PATH = process.env.PROBE_FIXTURE
+  ? join(REPO_ROOT, process.env.PROBE_FIXTURE)
+  : DEFAULT_FIXTURE
 
 const MODELS_FROM_ENV = process.env.PROBE_MODELS?.split(',')
   .map((s) => s.trim())
@@ -27,51 +36,53 @@ const MODELS: readonly string[] = MODELS_FROM_ENV?.length
       'gemma4:26b',
     ]
 
-interface ProbeCase {
+interface DisciplineProbe {
   readonly slug: string
   readonly prompt: string
-  readonly category: 'chitchat' | 'tool-warranted'
-  readonly expectTools?: readonly string[]
+  readonly category: string
+  readonly expectTools: readonly string[]
 }
 
-const PROBES: readonly ProbeCase[] = [
-  { slug: 'hi', prompt: 'hi', category: 'chitchat' },
-  { slug: 'what-can-you-do', prompt: 'what can you do', category: 'chitchat' },
-  { slug: 'how-are-you', prompt: 'how are you', category: 'chitchat' },
-  { slug: 'thanks', prompt: 'thanks', category: 'chitchat' },
-  {
-    slug: 'what-is-jobtriage',
-    prompt: 'what is jobtriage',
-    category: 'chitchat',
-  },
-  {
-    slug: 'welder-goteborg',
-    prompt: 'find welder jobs in Göteborg',
-    category: 'tool-warranted',
-    expectTools: ['triageBatch', 'semanticSearch'],
-  },
-  {
-    slug: 'expire-7-days',
-    prompt: 'what ads expire in the next 7 days',
-    category: 'tool-warranted',
-    expectTools: ['deadlineWatch'],
-  },
-  {
-    slug: 'agentic-roles',
-    prompt: 'list roles about agentic AI systems',
-    category: 'tool-warranted',
-    expectTools: ['triageBatch', 'semanticSearch'],
-  },
-]
+interface LanguageProbe {
+  readonly slug: string
+  readonly prompt: string
+  readonly category: string
+  readonly expectLanguage: 'english' | 'swedish'
+}
+
+interface DisciplineFixture {
+  readonly name: string
+  readonly description: string
+  readonly kind: 'discipline'
+  readonly probes: readonly DisciplineProbe[]
+}
+
+interface LanguageFixture {
+  readonly name: string
+  readonly description: string
+  readonly kind: 'language'
+  readonly probes: readonly LanguageProbe[]
+}
+
+type Fixture = DisciplineFixture | LanguageFixture
+
+async function loadFixture(path: string): Promise<Fixture> {
+  const raw = await readFile(path, 'utf-8')
+  const parsed = JSON.parse(raw) as Fixture
+  if (parsed.kind !== 'discipline' && parsed.kind !== 'language') {
+    throw new Error(`Unsupported fixture kind in ${path}`)
+  }
+  return parsed
+}
 
 interface ProbeResult {
   readonly model: string
   readonly probeSlug: string
-  readonly category: ProbeCase['category']
-  readonly expectTools: readonly string[]
+  readonly category: string
   readonly toolNames: readonly string[]
   readonly latencyMs: number
   readonly textPreview: string
+  readonly fullText: string
   readonly error?: string
 }
 
@@ -117,7 +128,49 @@ function parseSse(stream: string): {
   return { toolNames, text: textParts.join('') }
 }
 
-async function runProbe(model: string, probe: ProbeCase): Promise<ProbeResult> {
+const SWEDISH_MARKERS: ReadonlySet<string> = new Set([
+  'jag',
+  'är',
+  'du',
+  'hur',
+  'går',
+  'det',
+  'hej',
+  'tjena',
+  'vad',
+  'kan',
+  'hjälpa',
+  'karriär',
+  'dig',
+  'för',
+  'att',
+  'och',
+  'tack',
+  'från',
+  'mig',
+  'din',
+  'med',
+  'ditt',
+])
+
+function detectLanguage(text: string): 'english' | 'swedish' {
+  const words = text
+    .toLowerCase()
+    .split(/[^\p{L}]+/u)
+    .filter(Boolean)
+  const hits = new Set<string>()
+  for (const word of words) {
+    if (SWEDISH_MARKERS.has(word)) {
+      hits.add(word)
+    }
+  }
+  return hits.size >= 2 ? 'swedish' : 'english'
+}
+
+async function runProbe(
+  model: string,
+  probe: DisciplineProbe | LanguageProbe,
+): Promise<ProbeResult> {
   const start = Date.now()
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
@@ -139,10 +192,10 @@ async function runProbe(model: string, probe: ProbeCase): Promise<ProbeResult> {
         model,
         probeSlug: probe.slug,
         category: probe.category,
-        expectTools: probe.expectTools ?? [],
         toolNames: [],
         latencyMs: Date.now() - start,
         textPreview: '',
+        fullText: '',
         error: `HTTP ${response.status}: ${errorText.slice(0, 160)}`,
       }
     }
@@ -156,20 +209,20 @@ async function runProbe(model: string, probe: ProbeCase): Promise<ProbeResult> {
       model,
       probeSlug: probe.slug,
       category: probe.category,
-      expectTools: probe.expectTools ?? [],
       toolNames,
       latencyMs,
       textPreview,
+      fullText: text,
     }
   } catch (error) {
     return {
       model,
       probeSlug: probe.slug,
       category: probe.category,
-      expectTools: probe.expectTools ?? [],
       toolNames: [],
       latencyMs: Date.now() - start,
       textPreview: '',
+      fullText: '',
       error: error instanceof Error ? error.message : String(error),
     }
   } finally {
@@ -204,7 +257,8 @@ async function restartWebForModel(model: string): Promise<void> {
   })
 }
 
-interface ModelSummary {
+interface DisciplineSummary {
+  readonly kind: 'discipline'
   readonly model: string
   readonly chitchatFalsePositives: number
   readonly chitchatTotal: number
@@ -214,78 +268,190 @@ interface ModelSummary {
   readonly errors: number
 }
 
-function summarize(results: readonly ProbeResult[]): ModelSummary {
-  const model = results[0]?.model ?? 'unknown'
-  const chitchat = results.filter((r) => r.category === 'chitchat')
-  const tool = results.filter((r) => r.category === 'tool-warranted')
+interface LanguageSummary {
+  readonly kind: 'language'
+  readonly model: string
+  readonly correct: number
+  readonly total: number
+  readonly avgLatencyMs: number
+  readonly errors: number
+}
+
+type ModelSummary = DisciplineSummary | LanguageSummary
+
+function avgLatency(results: readonly ProbeResult[]): number {
+  const ok = results.filter((r) => !r.error)
+  if (ok.length === 0) return 0
+  return Math.round(ok.reduce((s, r) => s + r.latencyMs, 0) / ok.length)
+}
+
+function summarizeDiscipline(
+  model: string,
+  fixture: DisciplineFixture,
+  results: readonly ProbeResult[],
+): DisciplineSummary {
+  const probesBySlug = new Map(fixture.probes.map((p) => [p.slug, p]))
+  const chitchat = results.filter(
+    (r) => probesBySlug.get(r.probeSlug)?.category === 'chitchat',
+  )
+  const tool = results.filter(
+    (r) => probesBySlug.get(r.probeSlug)?.category === 'tool-warranted',
+  )
   const chitchatFalsePositives = chitchat.filter(
     (r) => r.toolNames.length > 0,
   ).length
-  const toolWarrantedCorrect = tool.filter(
-    (r) =>
+  const toolWarrantedCorrect = tool.filter((r) => {
+    const probe = probesBySlug.get(r.probeSlug)
+    if (!probe) return false
+    return (
       r.toolNames.length > 0 &&
-      r.toolNames.some((name) => r.expectTools.includes(name)),
-  ).length
-  const errors = results.filter((r) => r.error).length
-  const okResults = results.filter((r) => !r.error)
-  const avgLatencyMs =
-    okResults.length === 0
-      ? 0
-      : Math.round(
-          okResults.reduce((sum, r) => sum + r.latencyMs, 0) / okResults.length,
-        )
+      r.toolNames.some((name) => probe.expectTools.includes(name))
+    )
+  }).length
   return {
+    kind: 'discipline',
     model,
     chitchatFalsePositives,
     chitchatTotal: chitchat.length,
     toolWarrantedCorrect,
     toolWarrantedTotal: tool.length,
-    avgLatencyMs,
-    errors,
+    avgLatencyMs: avgLatency(results),
+    errors: results.filter((r) => r.error).length,
+  }
+}
+
+function summarizeLanguage(
+  model: string,
+  fixture: LanguageFixture,
+  results: readonly ProbeResult[],
+): LanguageSummary {
+  const probesBySlug = new Map(fixture.probes.map((p) => [p.slug, p]))
+  let correct = 0
+  for (const r of results) {
+    if (r.error) continue
+    const probe = probesBySlug.get(r.probeSlug)
+    if (!probe) continue
+    const detected = detectLanguage(r.fullText)
+    if (detected === probe.expectLanguage) correct++
+  }
+  return {
+    kind: 'language',
+    model,
+    correct,
+    total: results.length,
+    avgLatencyMs: avgLatency(results),
+    errors: results.filter((r) => r.error).length,
   }
 }
 
 function renderMarkdown(
+  fixture: Fixture,
   results: readonly ProbeResult[],
   summaries: readonly ModelSummary[],
 ): string {
   const lines: string[] = []
-  lines.push('# Ollama model probe results')
+  lines.push(`# ${fixture.name} probe results`)
   lines.push('')
   lines.push(`Run at: ${new Date().toISOString()}`)
   lines.push(`Endpoint: ${CHAT_URL}`)
+  lines.push(`Fixture: ${fixture.name} (${fixture.kind})`)
   lines.push('')
   lines.push('## Summary')
   lines.push('')
-  lines.push(
-    '| Model | Chitchat false-positives (lower is better) | Tool-warranted correct | Avg latency | Errors |',
-  )
-  lines.push('|---|---|---|---|---|')
-  for (const s of summaries) {
+
+  if (fixture.kind === 'discipline') {
     lines.push(
-      `| \`${s.model}\` | ${s.chitchatFalsePositives}/${s.chitchatTotal} | ${s.toolWarrantedCorrect}/${s.toolWarrantedTotal} | ${s.avgLatencyMs} ms | ${s.errors} |`,
+      '| Model | Chitchat false-positives | Tool-warranted correct | Avg latency | Errors |',
     )
+    lines.push('|---|---|---|---|---|')
+    for (const s of summaries) {
+      if (s.kind !== 'discipline') continue
+      lines.push(
+        `| \`${s.model}\` | ${s.chitchatFalsePositives}/${s.chitchatTotal} | ${s.toolWarrantedCorrect}/${s.toolWarrantedTotal} | ${s.avgLatencyMs} ms | ${s.errors} |`,
+      )
+    }
+  } else {
+    lines.push('| Model | Language match | Avg latency | Errors |')
+    lines.push('|---|---|---|---|')
+    for (const s of summaries) {
+      if (s.kind !== 'language') continue
+      lines.push(
+        `| \`${s.model}\` | ${s.correct}/${s.total} | ${s.avgLatencyMs} ms | ${s.errors} |`,
+      )
+    }
   }
+
   lines.push('')
   lines.push('## Per-probe detail')
   lines.push('')
-  lines.push(
-    '| Model | Probe | Category | Tool calls | Latency | Preview / error |',
-  )
-  lines.push('|---|---|---|---|---|---|')
-  for (const r of results) {
-    const detail = r.error
-      ? `error: ${r.error.slice(0, 80)}`
-      : r.textPreview || '(no text)'
+
+  if (fixture.kind === 'discipline') {
     lines.push(
-      `| \`${r.model}\` | ${r.probeSlug} | ${r.category} | ${r.toolNames.join(', ') || '-'} | ${r.latencyMs} ms | ${detail.replaceAll('|', '\\|')} |`,
+      '| Model | Probe | Category | Tool calls | Latency | Preview / error |',
     )
+    lines.push('|---|---|---|---|---|---|')
+    for (const r of results) {
+      const detail = r.error
+        ? `error: ${r.error.slice(0, 80)}`
+        : r.textPreview || '(no text)'
+      lines.push(
+        `| \`${r.model}\` | ${r.probeSlug} | ${r.category} | ${r.toolNames.join(', ') || '-'} | ${r.latencyMs} ms | ${detail.replaceAll('|', '\\|')} |`,
+      )
+    }
+  } else {
+    const probesBySlug = new Map(fixture.probes.map((p) => [p.slug, p]))
+    lines.push(
+      '| Model | Probe | Expected | Detected | Match | Latency | Preview / error |',
+    )
+    lines.push('|---|---|---|---|---|---|---|')
+    for (const r of results) {
+      const probe = probesBySlug.get(r.probeSlug)
+      const expected = probe?.expectLanguage ?? '?'
+      const detected = r.error ? '-' : detectLanguage(r.fullText)
+      const match = r.error ? '-' : detected === expected ? '✓' : '✗'
+      const detail = r.error
+        ? `error: ${r.error.slice(0, 80)}`
+        : r.textPreview || '(no text)'
+      lines.push(
+        `| \`${r.model}\` | ${r.probeSlug} | ${expected} | ${detected} | ${match} | ${r.latencyMs} ms | ${detail.replaceAll('|', '\\|')} |`,
+      )
+    }
   }
+
   return lines.join('\n')
+}
+
+function summarizeForFixture(
+  model: string,
+  fixture: Fixture,
+  results: readonly ProbeResult[],
+): ModelSummary {
+  return fixture.kind === 'discipline'
+    ? summarizeDiscipline(model, fixture, results)
+    : summarizeLanguage(model, fixture, results)
+}
+
+function probeVerdict(fixture: Fixture, result: ProbeResult): string {
+  if (result.error) return `ERR ${result.error.slice(0, 60)}`
+  if (fixture.kind === 'discipline') {
+    return `tools: ${result.toolNames.join(',') || '-'}`
+  }
+  const probe = fixture.probes.find((p) => p.slug === result.probeSlug) as
+    | LanguageProbe
+    | undefined
+  const detected = detectLanguage(result.fullText)
+  const match = detected === probe?.expectLanguage ? '✓' : '✗'
+  return `lang: ${detected} ${match} (expected ${probe?.expectLanguage ?? '?'})`
 }
 
 async function main(): Promise<void> {
   await mkdir(OUT_DIR, { recursive: true })
+  const fixture = await loadFixture(FIXTURE_PATH)
+  process.stdout.write(
+    `Fixture: ${fixture.name} (${fixture.kind}) from ${FIXTURE_PATH}\n`,
+  )
+  process.stdout.write(`Probes: ${fixture.probes.length}\n`)
+
   const allResults: ProbeResult[] = []
   const summaries: ModelSummary[] = []
 
@@ -300,35 +466,32 @@ async function main(): Promise<void> {
       const failure: ProbeResult = {
         model,
         probeSlug: 'restart',
-        category: 'chitchat',
-        expectTools: [],
+        category: 'restart',
         toolNames: [],
         latencyMs: 0,
         textPreview: '',
+        fullText: '',
         error: 'restart:web failed',
       }
       allResults.push(failure)
-      summaries.push(summarize([failure]))
+      summaries.push(summarizeForFixture(model, fixture, [failure]))
       continue
     }
 
     const modelResults: ProbeResult[] = []
-    for (const probe of PROBES) {
+    for (const probe of fixture.probes) {
       const result = await runProbe(model, probe)
       modelResults.push(result)
-      const verdict = result.error
-        ? `ERR ${result.error.slice(0, 60)}`
-        : `tools: ${result.toolNames.join(',') || '-'}`
       process.stdout.write(
-        `  ${probe.category.padEnd(15)} ${probe.slug.padEnd(20)} ${result.latencyMs.toString().padStart(6)}ms  ${verdict}\n`,
+        `  ${probe.category.padEnd(20)} ${probe.slug.padEnd(22)} ${result.latencyMs.toString().padStart(6)}ms  ${probeVerdict(fixture, result)}\n`,
       )
     }
     allResults.push(...modelResults)
-    summaries.push(summarize(modelResults))
+    summaries.push(summarizeForFixture(model, fixture, modelResults))
   }
 
-  const markdown = renderMarkdown(allResults, summaries)
-  const outPath = join(OUT_DIR, 'smoke-results.md')
+  const markdown = renderMarkdown(fixture, allResults, summaries)
+  const outPath = join(OUT_DIR, `smoke-${fixture.name}.md`)
   await writeFile(outPath, `${markdown}\n`)
   process.stdout.write(`\n\nWrote ${outPath}\n\n`)
   process.stdout.write(markdown)
