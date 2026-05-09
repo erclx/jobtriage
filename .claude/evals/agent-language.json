@@ -1,0 +1,61 @@
+{
+  "name": "agent-language",
+  "description": "Language detection probe set. Regression check that the agent matches the user's language: English greetings stay English, Swedish words and sentences switch to Swedish, ambiguous short input defaults to English.",
+  "kind": "language",
+  "probes": [
+    {
+      "slug": "en-hi",
+      "prompt": "hi",
+      "category": "english-greeting",
+      "expectLanguage": "english"
+    },
+    {
+      "slug": "en-hello",
+      "prompt": "hello",
+      "category": "english-greeting",
+      "expectLanguage": "english"
+    },
+    {
+      "slug": "en-yo",
+      "prompt": "yo",
+      "category": "english-greeting",
+      "expectLanguage": "english"
+    },
+    {
+      "slug": "en-hey",
+      "prompt": "hey",
+      "category": "english-greeting",
+      "expectLanguage": "english"
+    },
+    {
+      "slug": "en-whats-up",
+      "prompt": "what's up",
+      "category": "english-question",
+      "expectLanguage": "english"
+    },
+    {
+      "slug": "sv-hej",
+      "prompt": "hej",
+      "category": "swedish-greeting",
+      "expectLanguage": "swedish"
+    },
+    {
+      "slug": "sv-tjena",
+      "prompt": "tjena",
+      "category": "swedish-greeting",
+      "expectLanguage": "swedish"
+    },
+    {
+      "slug": "sv-greeting-question",
+      "prompt": "Hej, hur går det?",
+      "category": "swedish-question",
+      "expectLanguage": "swedish"
+    },
+    {
+      "slug": "sv-question",
+      "prompt": "Vad kan du göra?",
+      "category": "swedish-question",
+      "expectLanguage": "swedish"
+    }
+  ]
+}

@@ -57,14 +57,20 @@ The Vercel AI SDK's `ollama-ai-provider-v2` was historically tuned for Qwen 3 Co
 
 ## Smoke harness
 
-`web/scripts/model-probe.ts` runs five chitchat probes and three tool-warranted probes per model against the live Next.js stack with the real system prompt and tool schemas. Restart the web server with `OLLAMA_MODEL_ID=<tag>` between rounds. Output lands at `.claude/.tmp/ollama-model-research/smoke-results.md`.
+`web/scripts/model-probe.ts` runs probe fixtures from `.claude/evals/*.json` against the live Next.js stack with the real system prompt and tool schemas. The harness reads `PROBE_FIXTURE` from env and branches on the fixture's `kind` field. Restart of the web server between models is automatic. Output lands at `.claude/.tmp/ollama-model-research/smoke-<fixture>.md`.
 
-Probe set:
+Two fixtures ship today:
 
-- **Chitchat (expect 0 tool calls):** "hi", "what can you do", "how are you", "thanks", "what is jobtriage"
-- **Tool-warranted (expect 1+ correct calls):** "find welder jobs in Göteborg" (`triageBatch` or `semanticSearch`), "what ads expire in the next 7 days" (`deadlineWatch`), "list roles about agentic AI systems" (`triageBatch` or `semanticSearch`)
+- `agent-discipline.json` (`kind: discipline`): 5 chitchat probes expecting zero tool calls plus 3 tool-warranted probes expecting a specific tool from a small allow-list. Default fixture.
+- `agent-language.json` (`kind: language`): 9 probes covering English greetings, Swedish greetings, and full Swedish sentences. The harness applies a Swedish-marker word heuristic to detect the response language.
 
-Re-run the harness on every model swap, and again after any system-prompt or tool-description change. The probe set is small enough to be cheap (~5 min per model) and broad enough to catch the two failure axes that matter most: false-positive tool calls on chitchat and wrong-tool selection on warranted prompts.
+Run a single fixture against a single model:
+
+```bash
+PROBE_MODELS=gemma4:26b PROBE_FIXTURE=.claude/evals/agent-language.json bun run web/scripts/model-probe.ts
+```
+
+Re-run on every model swap and after any system-prompt or tool-description change. The fixture set is small enough to be cheap (~5 min per model) and broad enough to catch the failure axes that matter most: false-positive tool calls on chitchat, wrong-tool selection on warranted prompts, and reply-language drift.
 
 ## Sources
 
