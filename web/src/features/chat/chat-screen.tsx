@@ -193,7 +193,6 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
       if (event.key !== 'Escape') return
       event.preventDefault()
       stopVoice()
-      setInput(voiceBaselineRef.current)
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
