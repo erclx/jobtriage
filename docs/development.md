@@ -63,6 +63,7 @@ Run from `web/` after `cd web`.
 | `bun run test:run`      | Vitest once with verbose reporter.                               |
 | `bun run test:coverage` | Vitest with coverage.                                            |
 | `bun run test:e2e`      | Playwright end-to-end.                                           |
+| `bun run screenshots`   | Capture canonical UI states to `.claude/review/screenshots/`.    |
 | `bun run check`         | Web verify (typecheck, lint, test).                              |
 
 ## Local smoke
