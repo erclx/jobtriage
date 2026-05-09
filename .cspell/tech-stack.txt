@@ -47,8 +47,10 @@ lintstagedrc
 logomark
 mkdocs
 mkhl
+Modelfile
 monkeypatch
 mypy
+MXFP
 networkidle
 numpy
 njsproj

@@ -83,7 +83,7 @@ Do not use `bun run dev`. The script is disabled at the package level and exits 
 
 ## Hardware monitor
 
-Local LLM smoke runs (Ollama with `qwen3-coder:30b`, the multilingual e5 embedder) can saturate WSL2 memory or push the Windows host into swap. WSL2 caps the guest at half the host by default, so the Linux side reports a much smaller ceiling than the physical install. `scripts/monitor.sh` samples four pressure sources every 3s:
+Local LLM smoke runs (Ollama with `gemma4:26b`, the multilingual e5 embedder) can saturate WSL2 memory or push the Windows host into swap. WSL2 caps the guest at half the host by default, so the Linux side reports a much smaller ceiling than the physical install. `scripts/monitor.sh` samples four pressure sources every 3s:
 
 - Windows host RAM via `powershell.exe Get-CimInstance Win32_OperatingSystem`
 - WSL guest RAM via `/proc/meminfo`

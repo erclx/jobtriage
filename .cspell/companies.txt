@@ -1,3 +1,4 @@
+Clarifai
 figma
 Isaksson
 Klarna

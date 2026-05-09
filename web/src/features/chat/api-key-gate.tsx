@@ -178,7 +178,7 @@ export function ApiKeyGate({
             Use local Ollama
           </Button>
           <p className="text-center text-xs text-muted-foreground">
-            Requires Ollama with qwen3-coder:30b on localhost:11434.
+            Requires Ollama with gemma4:26b on localhost:11434.
           </p>
         </div>
 
