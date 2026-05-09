@@ -332,6 +332,7 @@ export const MessageResponse = memo(
         className
       )}
       plugins={streamdownPlugins}
+      linkSafety={{ enabled: false }}
       {...props}
     />
   ),
