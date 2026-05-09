@@ -2,7 +2,7 @@
 
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport, type UIMessage } from 'ai'
-import { LogOutIcon } from 'lucide-react'
+import { LogOutIcon, UserRoundIcon } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useStickToBottomContext } from 'use-stick-to-bottom'
 
@@ -26,14 +26,36 @@ import {
 } from '@/components/ai-elements/prompt-input'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Button } from '@/components/ui/button'
+import { CanvasBridge } from '@/features/canvas/canvas-bridge'
+import { CanvasProvider } from '@/features/canvas/canvas-provider'
+import { CanvasSurface } from '@/features/canvas/canvas-surface'
 import { EmptyState } from '@/features/chat/empty-state'
 import { isToolPart } from '@/features/chat/is-tool-part'
-import { ProfileDrawer } from '@/features/chat/profile-drawer'
-import { SESSION_KEYS } from '@/features/chat/storage-keys'
+import { ProfileDialog } from '@/features/chat/profile-dialog'
+import { RailSplitter } from '@/features/chat/rail-splitter'
+import { SpatialSummary } from '@/features/chat/spatial-summary'
+import {
+  RAIL_WIDTH_DEFAULT,
+  RAIL_WIDTH_MAX,
+  RAIL_WIDTH_MIN,
+  SESSION_KEYS,
+} from '@/features/chat/storage-keys'
 import { ToolTrace } from '@/features/chat/tool-trace'
 import { useSessionValue } from '@/features/chat/use-session-value'
+import { cn } from '@/lib/utils'
 
 const isBrowser = typeof window !== 'undefined'
+
+const SPATIAL_TOOL_TYPE_PREFIXES = [
+  'tool-placeAds',
+  'tool-groupAds',
+  'tool-connectProfileToAds',
+  'tool-pairAdsForCompare',
+  'tool-placeAdsOnTimeline',
+  'tool-pinToShortlist',
+  'tool-markStatus',
+  'tool-setView',
+] as const
 
 function readApiKey(): string {
   if (!isBrowser) return ''
@@ -61,15 +83,36 @@ function getRequestBody(): { profile: string | null } {
 }
 
 interface ChatScreenProps {
-  onSwitchProvider?: () => void
+  readonly onSwitchProvider?: () => void
 }
 
 export function ChatScreen({ onSwitchProvider }: ChatScreenProps = {}) {
-  const [storedProfile] = useSessionValue(SESSION_KEYS.profile)
+  return (
+    <CanvasProvider>
+      <ChatScreenInner onSwitchProvider={onSwitchProvider} />
+    </CanvasProvider>
+  )
+}
 
-  const handleSwitchProvider = useCallback(() => {
-    onSwitchProvider?.()
-  }, [onSwitchProvider])
+function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
+  const [storedProfile] = useSessionValue(SESSION_KEYS.profile)
+  const [storedRailWidth, setStoredRailWidth] = useSessionValue(
+    SESSION_KEYS.railWidth,
+  )
+  const [profileOpen, setProfileOpen] = useState(false)
+
+  const railWidth = useMemo(() => {
+    const parsed = Number(storedRailWidth)
+    if (!Number.isFinite(parsed) || parsed === 0) return RAIL_WIDTH_DEFAULT
+    return clampRail(parsed)
+  }, [storedRailWidth])
+
+  const handleRailResize = useCallback(
+    (next: number) => {
+      setStoredRailWidth(String(clampRail(next)))
+    },
+    [setStoredRailWidth],
+  )
 
   useEffect(() => {
     latestProfile = storedProfile
@@ -85,12 +128,10 @@ export function ChatScreen({ onSwitchProvider }: ChatScreenProps = {}) {
     [],
   )
 
-  const { messages, sendMessage, status, error, stop } = useChat({
-    transport,
-  })
-
+  const { messages, sendMessage, status, error, stop } = useChat({ transport })
   const [input, setInput] = useState('')
   const isStreaming = status === 'submitted' || status === 'streaming'
+  const isEmpty = messages.length === 0
 
   const handleSeed = useCallback(
     (text: string) => {
@@ -103,7 +144,11 @@ export function ChatScreen({ onSwitchProvider }: ChatScreenProps = {}) {
     latestProfile = next
   }, [])
 
-  const isEmpty = messages.length === 0
+  const handleSwitchProvider = useCallback(() => {
+    onSwitchProvider?.()
+  }, [onSwitchProvider])
+
+  const handleEditProfile = useCallback(() => setProfileOpen(true), [])
 
   const promptInput = (
     <PromptInput
@@ -132,16 +177,31 @@ export function ChatScreen({ onSwitchProvider }: ChatScreenProps = {}) {
     </PromptInput>
   )
 
+  const profileLabel = useMemo(
+    () => profileButtonLabel(storedProfile),
+    [storedProfile],
+  )
+
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background">
       <header className="flex shrink-0 items-center justify-between gap-4 border-b px-4 py-3">
         <div>
           <h1 className="text-lg font-semibold">jobtriage</h1>
           <p className="text-xs text-muted-foreground">
-            Free-form chat over Swedish JobTech ads
+            Spatial agent workspace over Swedish JobTech ads
           </p>
         </div>
         <div className="flex items-center gap-1">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={handleEditProfile}
+            aria-label="Edit profile"
+          >
+            <UserRoundIcon className="size-4" aria-hidden />
+            <span className="hidden sm:inline">{profileLabel}</span>
+          </Button>
           <ThemeToggle />
           <Button
             type="button"
@@ -150,17 +210,23 @@ export function ChatScreen({ onSwitchProvider }: ChatScreenProps = {}) {
             onClick={handleSwitchProvider}
           >
             <LogOutIcon className="size-4" aria-hidden />
-            Switch provider
+            <span className="hidden sm:inline">Switch provider</span>
           </Button>
         </div>
       </header>
 
-      <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col gap-3 px-4 py-4">
-        <div className="shrink-0">
-          <ProfileDrawer onProfileChange={handleProfileChange} />
-        </div>
+      <div className="flex min-h-0 flex-1">
+        <aside
+          style={{ '--rail-width': `${railWidth}px` } as React.CSSProperties}
+          className={cn(
+            'flex w-full min-w-0 flex-col bg-card',
+            'lg:w-[var(--rail-width)] lg:shrink-0',
+          )}
+        >
+          <div className="border-b bg-muted/40 px-4 py-2 text-xs text-muted-foreground lg:hidden">
+            Best viewed on a desktop. The spatial canvas needs at least 1024px.
+          </div>
 
-        <div className="flex min-h-0 flex-1 flex-col rounded-lg border bg-card">
           {error ? (
             <div
               role="alert"
@@ -171,14 +237,14 @@ export function ChatScreen({ onSwitchProvider }: ChatScreenProps = {}) {
           ) : null}
 
           {isEmpty ? (
-            <div className="flex flex-1 flex-col items-center justify-center gap-6 p-4">
+            <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-6">
               <EmptyState onSelect={handleSeed} />
-              <div className="w-full max-w-2xl">{promptInput}</div>
+              <div className="w-full">{promptInput}</div>
             </div>
           ) : (
             <>
               <Conversation className="flex-1">
-                <ConversationContent className="pb-8">
+                <ConversationContent className="px-3 pb-6 pt-3">
                   {messages.map((message) => (
                     <Message from={message.role} key={message.id}>
                       <MessageContent>
@@ -191,6 +257,14 @@ export function ChatScreen({ onSwitchProvider }: ChatScreenProps = {}) {
                             )
                           }
                           if (isToolPart(part)) {
+                            if (isSpatialToolPart(part as { type: string })) {
+                              return (
+                                <SpatialSummary
+                                  key={`${message.id}-${index}`}
+                                  part={part}
+                                />
+                              )
+                            }
                             return (
                               <ToolTrace
                                 key={`${message.id}-${index}`}
@@ -211,14 +285,46 @@ export function ChatScreen({ onSwitchProvider }: ChatScreenProps = {}) {
               <div className="shrink-0 border-t p-3">{promptInput}</div>
             </>
           )}
-        </div>
+        </aside>
+
+        <RailSplitter
+          minWidth={RAIL_WIDTH_MIN}
+          maxWidth={RAIL_WIDTH_MAX}
+          currentWidth={railWidth}
+          onResize={handleRailResize}
+        />
+
+        <section className="hidden min-w-0 flex-1 lg:block">
+          <CanvasSurface onEditProfile={handleEditProfile} />
+        </section>
       </div>
+
+      <CanvasBridge messages={messages} />
+      <ProfileDialog
+        open={profileOpen}
+        onOpenChange={setProfileOpen}
+        onProfileChange={handleProfileChange}
+      />
     </div>
   )
 }
 
+function profileButtonLabel(profile: string): string {
+  const trimmed = profile.trim()
+  if (!trimmed) return 'Add profile'
+  return `Profile · ${profile.length.toLocaleString()} chars`
+}
+
+function clampRail(value: number): number {
+  return Math.min(RAIL_WIDTH_MAX, Math.max(RAIL_WIDTH_MIN, Math.round(value)))
+}
+
+function isSpatialToolPart(part: { type: string }): boolean {
+  return SPATIAL_TOOL_TYPE_PREFIXES.some((prefix) => part.type === prefix)
+}
+
 interface StreamingAutoScrollProps {
-  messages: readonly UIMessage[]
+  readonly messages: readonly UIMessage[]
 }
 
 function StreamingAutoScroll({ messages }: StreamingAutoScrollProps) {
