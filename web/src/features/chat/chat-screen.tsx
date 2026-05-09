@@ -51,6 +51,11 @@ import {
 } from '@/features/chat/storage-keys'
 import { ToolTrace } from '@/features/chat/tool-trace'
 import { useSessionValue } from '@/features/chat/use-session-value'
+import {
+  type SpeechRecognitionError,
+  useSpeechRecognition,
+} from '@/features/chat/use-speech-recognition'
+import { VoiceInputButton } from '@/features/chat/voice-input-button'
 import { cn } from '@/lib/utils'
 
 const isBrowser = typeof window !== 'undefined'
@@ -143,6 +148,57 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
     transport,
   })
   const [input, setInput] = useState('')
+  const [voiceError, setVoiceError] = useState<SpeechRecognitionError | null>(
+    null,
+  )
+  const voiceBaselineRef = useRef('')
+  const inputRef = useRef('')
+  useEffect(() => {
+    inputRef.current = input
+  }, [input])
+
+  const handleVoiceTranscript = useCallback(
+    ({ final, interim }: { final: string; interim: string }) => {
+      const baseline = voiceBaselineRef.current
+      const prefix = baseline ? `${baseline.replace(/\s+$/, '')} ` : ''
+      const tail = `${final}${interim}`.replace(/^\s+/, '')
+      setInput(`${prefix}${tail}`)
+    },
+    [],
+  )
+
+  const {
+    isSupported: isVoiceSupported,
+    isListening: isVoiceListening,
+    start: startVoice,
+    stop: stopVoice,
+  } = useSpeechRecognition({
+    onError: setVoiceError,
+    onTranscript: handleVoiceTranscript,
+  })
+
+  const handleVoiceToggle = useCallback(() => {
+    if (isVoiceListening) {
+      stopVoice()
+      return
+    }
+    setVoiceError(null)
+    voiceBaselineRef.current = inputRef.current
+    startVoice()
+  }, [isVoiceListening, startVoice, stopVoice])
+
+  useEffect(() => {
+    if (!isVoiceListening) return
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      event.preventDefault()
+      stopVoice()
+      setInput(voiceBaselineRef.current)
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isVoiceListening, stopVoice])
+
   const isStreaming = status === 'submitted' || status === 'streaming'
   const isEmpty = messages.length === 0
 
@@ -213,30 +269,45 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
   }, [setMessages, dispatchCanvas])
 
   const promptInput = (
-    <PromptInput
-      onSubmit={(message) => {
-        const text = message.text.trim()
-        if (!text) return
-        void sendMessage({ text })
-        setInput('')
-      }}
-    >
-      <PromptInputBody>
-        <PromptInputTextarea
-          value={input}
-          placeholder="Ask about Swedish job ads..."
-          onChange={(event) => setInput(event.target.value)}
-        />
-      </PromptInputBody>
-      <PromptInputFooter>
-        <PromptInputTools />
-        <PromptInputSubmit
-          status={status}
-          disabled={!isStreaming && input.trim() === ''}
-          onClick={isStreaming ? () => stop() : undefined}
-        />
-      </PromptInputFooter>
-    </PromptInput>
+    <div className="flex flex-col gap-1">
+      {voiceError ? (
+        <p role="status" className="px-1 text-xs text-destructive">
+          {voiceErrorMessage(voiceError)}
+        </p>
+      ) : null}
+      <PromptInput
+        className="chat-prompt-input"
+        onSubmit={(message) => {
+          const text = message.text.trim()
+          if (!text) return
+          stopVoice()
+          void sendMessage({ text })
+          setInput('')
+        }}
+      >
+        <PromptInputBody>
+          <PromptInputTextarea
+            value={input}
+            placeholder="Ask about Swedish job ads..."
+            onChange={(event) => setInput(event.target.value)}
+          />
+        </PromptInputBody>
+        <PromptInputFooter>
+          <PromptInputTools>
+            <VoiceInputButton
+              isSupported={isVoiceSupported}
+              isListening={isVoiceListening}
+              onToggle={handleVoiceToggle}
+            />
+          </PromptInputTools>
+          <PromptInputSubmit
+            status={status}
+            disabled={!isStreaming && input.trim() === ''}
+            onClick={isStreaming ? () => stop() : undefined}
+          />
+        </PromptInputFooter>
+      </PromptInput>
+    </div>
   )
 
   const profileLabel = useMemo(
@@ -412,6 +483,14 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
       </Dialog>
     </div>
   )
+}
+
+function voiceErrorMessage(error: SpeechRecognitionError): string {
+  if (error === 'denied')
+    return 'Allow microphone access in the browser to use voice input.'
+  if (error === 'no-speech')
+    return 'No speech detected. Tap the mic and try again.'
+  return 'Voice input is unavailable. Try again or type instead.'
 }
 
 function profileButtonLabel(profile: string): string {
