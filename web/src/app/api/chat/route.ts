@@ -21,7 +21,7 @@ const ChatRequestSchema = z.object({
 })
 
 const ANTHROPIC_MODEL_ID = 'claude-sonnet-4-5'
-const OLLAMA_MODEL_ID = process.env.OLLAMA_MODEL_ID ?? 'qwen3-coder:30b'
+const OLLAMA_MODEL_ID = process.env.OLLAMA_MODEL_ID ?? 'gemma4:26b'
 const OLLAMA_BASE_URL =
   process.env.OLLAMA_BASE_URL ?? 'http://localhost:11434/api'
 const OLLAMA_NUM_CTX = Number(process.env.OLLAMA_NUM_CTX ?? '8192')

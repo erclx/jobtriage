@@ -64,7 +64,7 @@ cd python && uv run jobtriage mark-status <ad-id> applied --note 'submitted via 
 The web app at `web/` ships a Next.js 16 chat surface built on AI Elements and the Vercel AI SDK. The first turn surfaces a gate with two paths:
 
 - Paste an Anthropic API key. Held in browser sessionStorage and forwarded to `/api/chat` via a Bearer header. Never persisted on disk.
-- Click "Use local Ollama" to route the agent loop through `qwen3-coder:30b` on `localhost:11434`. Override the model id with `OLLAMA_MODEL_ID`.
+- Click "Use local Ollama" to route the agent loop through `gemma4:26b` on `localhost:11434`. Override the model id with `OLLAMA_MODEL_ID`.
 
 A profile drawer accepts optional markdown describing the user. The drawer's contents stay in sessionStorage and ride along on every request to be appended into the system prompt server-side. Seven registered tools post to the FastAPI endpoints below: `searchJobs`, `semanticSearch`, `matchProfile`, `triageBatch`, `compareRoles`, `deadlineWatch`, and `trackStatus`. Tool results render as structured ad cards (employer, deadline, snippet, link) above a per-call trace tree. The trace tree is collapsed by default with a one-line summary header so the transcript reads cleanly. Expand a header to inspect input and output JSON. Theme defaults to system preference with a sun-and-moon toggle in the chat header.
 
