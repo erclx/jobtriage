@@ -59,6 +59,7 @@ nohup
 noopener
 noreferrer
 nounits
+oklch
 ollama
 oxlint
 Ollama

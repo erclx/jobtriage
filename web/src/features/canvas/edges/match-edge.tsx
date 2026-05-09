@@ -1,19 +1,9 @@
 'use client'
 
-import {
-  BaseEdge,
-  EdgeLabelRenderer,
-  type EdgeProps,
-  getBezierPath,
-} from '@xyflow/react'
+import { BaseEdge, type EdgeProps, getBezierPath } from '@xyflow/react'
 import { memo } from 'react'
 
-import {
-  MATCH_TONE_BORDER,
-  MATCH_TONE_TEXT,
-  matchToneFor,
-} from '@/features/canvas/match-tone'
-import { cn } from '@/lib/utils'
+import { MATCH_TONE_STROKE, matchToneFor } from '@/features/canvas/match-tone'
 
 export interface MatchEdgeData {
   readonly score: number
@@ -41,7 +31,7 @@ function MatchEdgeComponent({
   targetPosition,
   data,
 }: MatchEdgeRenderProps) {
-  const [path, labelX, labelY] = getBezierPath({
+  const [path] = getBezierPath({
     sourceX,
     sourceY,
     sourcePosition,
@@ -55,33 +45,15 @@ function MatchEdgeComponent({
   const opacity = 0.35 + score * 0.5
 
   return (
-    <>
-      <BaseEdge
-        id={id}
-        path={path}
-        style={{
-          stroke: 'var(--primary)',
-          strokeWidth,
-          strokeOpacity: opacity,
-        }}
-      />
-      <EdgeLabelRenderer>
-        <div
-          style={{
-            position: 'absolute',
-            transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
-            pointerEvents: 'none',
-          }}
-          className={cn(
-            'rounded-full border bg-background px-2 py-0.5 text-[10px] font-semibold shadow-sm',
-            MATCH_TONE_BORDER[matchToneFor(score)],
-            MATCH_TONE_TEXT[matchToneFor(score)],
-          )}
-        >
-          {Math.round(score * 100)}%
-        </div>
-      </EdgeLabelRenderer>
-    </>
+    <BaseEdge
+      id={id}
+      path={path}
+      style={{
+        stroke: MATCH_TONE_STROKE[matchToneFor(score)],
+        strokeWidth,
+        strokeOpacity: opacity,
+      }}
+    />
   )
 }
 

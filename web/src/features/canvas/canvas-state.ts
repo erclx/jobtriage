@@ -143,6 +143,18 @@ function uniquePush(
   return next.length > cap ? next.slice(next.length - cap) : next
 }
 
+function pruneNodePositions(
+  positions: Readonly<Record<string, CanvasPosition>>,
+  keepIds: readonly string[],
+): Readonly<Record<string, CanvasPosition>> {
+  const allow = new Set<string>([PROFILE_NODE_ID, ...keepIds])
+  const next: Record<string, CanvasPosition> = {}
+  for (const [id, position] of Object.entries(positions)) {
+    if (allow.has(id)) next[id] = position
+  }
+  return next
+}
+
 export function canvasReducer(
   state: CanvasState,
   action: CanvasAction,
@@ -165,6 +177,7 @@ export function canvasReducer(
         view: 'triage',
         adRegistry: ingestAds(state.adRegistry, action.ads),
         visibleAdIds: adIds,
+        nodePositions: pruneNodePositions(state.nodePositions, adIds),
         groups: [],
         emphasis: action.emphasis ?? 'none',
         comparePair: null,
@@ -183,6 +196,7 @@ export function canvasReducer(
         view: 'triage',
         adRegistry: ingestAds(state.adRegistry, action.ads),
         visibleAdIds: adIds,
+        nodePositions: pruneNodePositions(state.nodePositions, adIds),
         groups: action.groups,
         emphasis: 'none',
         comparePair: null,
@@ -201,7 +215,12 @@ export function canvasReducer(
         view: 'triage',
         adRegistry: ingestAds(state.adRegistry, action.ads),
         visibleAdIds: adIds,
-        groups: [],
+        nodePositions: pruneNodePositions(
+          state.nodePositions,
+          state.groups.length > 0
+            ? state.groups.flatMap((group) => group.adIds)
+            : adIds,
+        ),
         emphasis: 'matchScore',
         profileMatches: action.links,
         comparePair: null,
@@ -214,11 +233,13 @@ export function canvasReducer(
     }
 
     case 'pairAdsForCompare': {
+      const adIds = [action.adIdA, action.adIdB]
       return {
         ...state,
         view: 'compare',
         adRegistry: ingestAds(state.adRegistry, action.ads),
-        visibleAdIds: [action.adIdA, action.adIdB],
+        visibleAdIds: adIds,
+        nodePositions: pruneNodePositions(state.nodePositions, adIds),
         groups: [],
         emphasis: 'none',
         comparePair: {
@@ -241,6 +262,7 @@ export function canvasReducer(
         view: 'timeline',
         adRegistry: ingestAds(state.adRegistry, action.ads),
         visibleAdIds: adIds,
+        nodePositions: pruneNodePositions(state.nodePositions, adIds),
         groups: [],
         emphasis: 'none',
         comparePair: null,

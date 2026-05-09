@@ -17,3 +17,9 @@ export const MATCH_TONE_BORDER: Record<MatchTone, string> = {
   consider: 'border-amber-500/40',
   pass: 'border-muted-foreground/30',
 }
+
+export const MATCH_TONE_STROKE: Record<MatchTone, string> = {
+  strong: 'oklch(0.696 0.17 162.48)',
+  consider: 'oklch(0.769 0.188 70.08)',
+  pass: 'var(--muted-foreground)',
+}

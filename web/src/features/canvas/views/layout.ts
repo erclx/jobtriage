@@ -6,9 +6,9 @@ import {
 import type { GroupNodeData } from '@/features/canvas/nodes/group-node'
 
 export const AD_NODE_WIDTH = 288
-export const AD_NODE_HEIGHT = 200
-export const NODE_GAP = 24
-export const PROFILE_X = -360
+export const AD_NODE_HEIGHT = 240
+export const NODE_GAP = 48
+export const PROFILE_X = -440
 export const PROFILE_Y = 0
 
 export interface LayoutNode {

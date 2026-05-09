@@ -40,13 +40,17 @@ One row per role. Intent is a short phrase a human can picture. Value is a hex o
 | match-strong   | profile-match score at or above 70%                   | emerald-600 / emerald-400   |
 | match-consider | profile-match score 40 to 69%                         | amber-600 / amber-400       |
 | match-pass     | profile-match score below 40%                         | `--muted-foreground`        |
+| edge-strong    | profile-to-ad edge stroke at or above 70%             | emerald-500 oklch           |
+| edge-consider  | profile-to-ad edge stroke 40 to 69%                   | amber-500 oklch             |
+| edge-pass      | profile-to-ad edge stroke below 40%                   | `--muted-foreground`        |
 | group-strong   | cluster boundary tone for "Strong fit" labels         | emerald-500/40 + 5% surface |
 | group-consider | cluster boundary tone for "Consider" labels           | amber-500/40 + 5% surface   |
 | group-pass     | cluster boundary tone for "Pass" / "Skip" labels      | `--muted-foreground/30`     |
 
 Notes:
 
-- Monochrome stays the rule for chrome. The match and group hues exist only on score-bound surfaces (percentage labels, edge midpoints, cluster boundaries). The thresholds are shared across both surfaces (see `web/src/features/canvas/match-tone.ts` and `views/layout.ts` `classifyTone`) so the agent's `groupAds` clusters and `connectProfileToAds` edges read consistently.
+- Monochrome stays the rule for chrome. The match, edge, and group hues exist only on score-bound surfaces (percentage labels, edge strokes, cluster boundaries). The thresholds are shared across all three (see `web/src/features/canvas/match-tone.ts` and `views/layout.ts` `classifyTone`) so the agent's `groupAds` clusters and `connectProfileToAds` edges read consistently.
+- Edge strokes pick a single mid-luminance oklch per tone (`MATCH_TONE_STROKE`) that has adequate contrast on both light and dark canvas backgrounds. Strokes also encode score via width (1 to 3.5px) and opacity (35 to 85%), so a strong-fit edge reads as a thicker, more saturated emerald line and a weak-fit edge reads as a thin, faint muted line.
 - Dark mode is a token swap, not a re-tone. A light surface lifts. A dark surface still feels neutral.
 
 ## Typography
