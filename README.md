@@ -61,12 +61,12 @@ cd python && uv run jobtriage mark-status <ad-id> applied --note 'submitted via 
 
 ## Chat surface
 
-The web app at `web/` ships a Next.js 16 chat surface built on AI Elements and the Vercel AI SDK. The first turn surfaces a gate with two paths:
+The web app at `web/` ships a Next.js 16 spatial agent workspace built on AI Elements, the Vercel AI SDK, and React Flow v12. The first turn surfaces a gate with two paths:
 
 - Paste an Anthropic API key. Held in browser sessionStorage and forwarded to `/api/chat` via a Bearer header. Never persisted on disk.
 - Click "Use local Ollama" to route the agent loop through `gemma4:26b` on `localhost:11434`. Override the model id with `OLLAMA_MODEL_ID`.
 
-A profile drawer accepts optional markdown describing the user. The drawer's contents stay in sessionStorage and ride along on every request to be appended into the system prompt server-side. Seven registered tools post to the FastAPI endpoints below: `searchJobs`, `semanticSearch`, `matchProfile`, `triageBatch`, `compareRoles`, `deadlineWatch`, and `trackStatus`. Tool results render as structured ad cards (employer, deadline, snippet, link) above a per-call trace tree. The trace tree is collapsed by default with a one-line summary header so the transcript reads cleanly. Expand a header to inspect input and output JSON. Theme defaults to system preference with a sun-and-moon toggle in the chat header.
+The workspace is a resizable two-column layout: a left chat rail and a right React Flow canvas. The agent fires data tools (`searchJobs`, `semanticSearch`, `matchProfile`, `triageBatch`, `compareRoles`, `deadlineWatch`, `trackStatus`) plus paired spatial tools (`placeAds`, `groupAds`, `connectProfileToAds`, `pairAdsForCompare`, `placeAdsOnTimeline`, `pinToShortlist`, `markStatus`, `setView`). Retrieved ads land as draggable nodes on one of four canonical canvas views: triage clusters, deadline timeline, compare diff, or shortlist column. The profile is a persistent canvas node with weighted edges that spawn from it on profile-fit prompts, color-coded green / amber / muted by score bucket. Profile editing happens in a header dialog that auto-saves on close. Below 1024px the canvas hides and the chat rail surfaces a "Best viewed on a desktop" notice. Theme defaults to system preference with a sun-and-moon toggle in the chat header.
 
 ## HTTP API
 

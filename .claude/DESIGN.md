@@ -21,26 +21,32 @@ The `aitk design render` command reads the tables below and writes an HTML plus 
 
 ## Personality
 
-Calm utility, not a marketing site. Reads as a daily-driver tool a senior engineer trusts. Light by default, dark fully supported. Neutral grayscale with one red for failure states, no marketing gradients, no decorative color. Density is recruiter-readable, not dashboard-dense. The chat is the product. Chrome stays out of the way.
+Spatial reasoning workspace. Reads as a daily-driver tool a senior engineer trusts, with the agent's work visible as structure on the canvas rather than narrated in prose. Chat sits in a left rail and the canvas fills the right. Light by default, dark fully supported. Neutral grayscale plus one accent for profile match edges, one red for failure states, one amber for deadline urgency. No marketing gradients, no decorative color. Density is recruiter-readable, not dashboard-dense. Card content stays calm. The canvas earns its surface by showing clusters, timelines, and match edges, not animation.
 
 ## Color
 
 One row per role. Intent is a short phrase a human can picture. Value is a hex or a named system token.
 
-| Role        | Intent                                               | Value                 |
-| ----------- | ---------------------------------------------------- | --------------------- |
-| background  | page canvas, near-white in light, near-black in dark | `--background`        |
-| surface     | cards, panels, raised blocks                         | `--card`              |
-| text        | primary body text                                    | `--foreground`        |
-| muted       | secondary text, helper, captions                     | `--muted-foreground`  |
-| accent      | borders, dividers, subtle separators                 | `--border`            |
-| primary     | filled buttons, headline emphasis                    | `--primary`           |
-| destructive | tool errors, validation alerts                       | `--destructive`       |
-| warning     | unsaved changes hint on the profile drawer           | amber-600 / amber-400 |
+| Role           | Intent                                                | Value                       |
+| -------------- | ----------------------------------------------------- | --------------------------- |
+| background     | page canvas, near-white in light, near-black in dark  | `--background`              |
+| surface        | cards, panels, raised blocks                          | `--card`                    |
+| text           | primary body text                                     | `--foreground`              |
+| muted          | secondary text, helper, captions                      | `--muted-foreground`        |
+| accent         | borders, dividers, subtle separators                  | `--border`                  |
+| primary        | filled buttons, headline emphasis, profile match edge | `--primary`                 |
+| destructive    | tool errors, validation alerts                        | `--destructive`             |
+| warning        | unsaved changes hint on the profile dialog            | amber-600 / amber-400       |
+| match-strong   | profile-match score at or above 70%                   | emerald-600 / emerald-400   |
+| match-consider | profile-match score 40 to 69%                         | amber-600 / amber-400       |
+| match-pass     | profile-match score below 40%                         | `--muted-foreground`        |
+| group-strong   | cluster boundary tone for "Strong fit" labels         | emerald-500/40 + 5% surface |
+| group-consider | cluster boundary tone for "Consider" labels           | amber-500/40 + 5% surface   |
+| group-pass     | cluster boundary tone for "Pass" / "Skip" labels      | `--muted-foreground/30`     |
 
 Notes:
 
-- The palette is intentionally monochrome. Only destructive (red) and warning (amber) carry hue, and only on alert affordances. Any new hue belongs in this table or it does not ship.
+- Monochrome stays the rule for chrome. The match and group hues exist only on score-bound surfaces (percentage labels, edge midpoints, cluster boundaries). The thresholds are shared across both surfaces (see `web/src/features/canvas/match-tone.ts` and `views/layout.ts` `classifyTone`) so the agent's `groupAds` clusters and `connectProfileToAds` edges read consistently.
 - Dark mode is a token swap, not a re-tone. A light surface lifts. A dark surface still feels neutral.
 
 ## Typography
@@ -92,7 +98,7 @@ Notes:
 
 ## Motion
 
-Motion is reserved for state changes the user must register: chevron rotation on collapsibles, fade on theme switch, the typing indicator on the chat input. No entrance animations on cards, no parallax, no decorative motion. Default duration 150ms with the default Tailwind ease.
+Motion is reserved for state changes the user must register. Chevron rotation on collapsibles, fade on theme switch, and the typing indicator on the chat input stay as before. The canvas adds two: node fade-in when the agent places ads (150ms, default ease) and edge draw when the profile connects to a matched ad (200ms, default ease). View transitions on the canvas use React Flow's built-in fit-view animation at 250ms. No parallax. No decorative motion. No entrance animations on inline UI.
 
 ## Iconography
 

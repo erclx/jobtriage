@@ -13,6 +13,7 @@ Next.js 16 App Router app. Owns the chat UI, the agent loop via the Vercel AI SD
 - React 19
 - Tailwind v4 via `@tailwindcss/postcss`
 - Vercel AI SDK v6 with `@ai-sdk/anthropic` for the deployed demo and `ollama-ai-provider-v2` for local dev
+- React Flow v12 (`@xyflow/react`) for the spatial canvas
 - AI Elements component library for chat surfaces, vendored under `src/components/ai-elements/`
 - shadcn/ui primitives, vendored under `src/components/ui/`
 - `next-themes` for system-preference dark mode
@@ -33,20 +34,31 @@ web/
 │   │   ├── ui/                         ← vendored shadcn primitives
 │   │   ├── theme-provider.tsx          ← next-themes wrapper
 │   │   └── theme-toggle.tsx            ← sun/moon header button
-│   ├── features/chat/                  ← chat surface components and hooks
+│   ├── features/chat/                  ← chat rail components and hooks
 │   │   ├── api-key-gate.tsx            ← BYOK or local-Ollama gate
-│   │   ├── chat-screen.tsx             ← top-level useChat shell
-│   │   ├── profile-drawer.tsx          ← per-session profile markdown
-│   │   ├── tool-trace.tsx              ← cards above the collapsed AI Elements Tool
-│   │   ├── ad-card.tsx                 ← structured ad card (employer, deadline, snippet, link)
-│   │   ├── ad-card-list.tsx            ← list wrapper with loading/empty/error states
-│   │   ├── ad-card-types.ts            ← shared union for card shape and variant
+│   │   ├── chat-screen.tsx             ← two-column shell, mounts CanvasProvider plus CanvasBridge
+│   │   ├── profile-dialog.tsx          ← header-triggered profile editor, auto-save on close
+│   │   ├── rail-splitter.tsx           ← draggable splitter between rail and canvas
+│   │   ├── tool-trace.tsx              ← collapsed AI Elements Tool plus engagement-status card
+│   │   ├── spatial-summary.tsx         ← one-line muted summary per spatial tool call
 │   │   ├── engagement-status.tsx       ← trackStatus entries or "Not tracked yet" empty
 │   │   ├── empty-state.tsx             ← seed-query suggestions
 │   │   ├── seed-queries.ts             ← suggestion strings
 │   │   ├── storage-keys.ts             ← session storage keys plus provider type
+│   │   ├── ad-card-types.ts            ← shared union for ad shape across canvas nodes
 │   │   ├── use-session-value.ts        ← SSR-safe sessionStorage hook
 │   │   └── is-tool-part.ts             ← tool-part type guard
+│   ├── features/canvas/                ← React Flow surface and reducer
+│   │   ├── canvas-state.ts             ← reducer, action types, context
+│   │   ├── canvas-provider.tsx         ← context provider with sessionStorage hydration
+│   │   ├── canvas-surface.tsx          ← React Flow root, view switcher, controlled drag
+│   │   ├── canvas-bridge.tsx           ← translates AI SDK message stream into reducer dispatches
+│   │   ├── match-tone.ts               ← shared score-to-tone helper for percentages and edges
+│   │   ├── nodes/ad-node.tsx           ← ad card rendered as a React Flow node, pin button
+│   │   ├── nodes/profile-node.tsx      ← persistent profile node anchored top-left
+│   │   ├── nodes/group-node.tsx        ← cluster boundary with tone class
+│   │   ├── edges/match-edge.tsx        ← weighted bezier edge from profile to ad
+│   │   └── views/layout.ts             ← grid, group, timeline, compare, shortlist layouts
 │   ├── lib/
 │   │   ├── env.ts                      ← validated server env
 │   │   ├── utils.ts                    ← cn helper
@@ -79,7 +91,8 @@ web/
 - Path alias `@` maps to `./src` (configured in `tsconfig.json`).
 - Server components by default. Add `'use client'` only when required.
 - Domain UI lives under `src/features/`. Shared, generic UI lives under `src/components/`.
-- Tool definitions live in `src/lib/agent/tools.ts` and are registered with the AI SDK inside `src/app/api/chat/route.ts`.
+- Data tools live in `src/lib/agent/tools.ts`, spatial tools in `src/lib/agent/spatial-tools.ts`. Both register with the AI SDK inside `src/app/api/chat/route.ts`.
+- Spatial tools never call the FastAPI backend. They echo their input on the server. The `CanvasBridge` component on the client watches `tool-output-available` parts and dispatches reducer actions against `CanvasContext`.
 - Vendored shadcn and AI Elements primitives are not edited in place. Wrap them in feature components when extending behavior.
 - Tests colocate next to source as `*.test.ts` or `*.spec.ts`. Playwright specs live in `e2e/`.
 
