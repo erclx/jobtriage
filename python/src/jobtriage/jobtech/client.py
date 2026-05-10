@@ -131,7 +131,7 @@ class JobTechClient:
         if limit < 1 or limit > MAX_PAGE_SIZE:
             raise ValueError(f'limit must be in [1, {MAX_PAGE_SIZE}]')
 
-        params: list[tuple[str, str]] = [
+        params: list[tuple[str, str | int | float | bool | None]] = [
             ('limit', str(limit)),
             ('offset', '0'),
         ]
