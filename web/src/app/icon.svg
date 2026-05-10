@@ -1,12 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <style>
-    text {
-      fill: #0a0a0a;
-      font: 600 28px "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    }
-    @media (prefers-color-scheme: dark) {
-      text { fill: #fafafa; }
-    }
-  </style>
-  <text x="16" y="24" text-anchor="middle">j</text>
+  <rect width="32" height="32" rx="6" fill="#0a0a0a"/>
+  <circle cx="19" cy="9" r="2.5" fill="#fafafa"/>
+  <path d="M19 14 V21 a5 5 0 0 1 -5 5 H10" fill="none" stroke="#fafafa" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
