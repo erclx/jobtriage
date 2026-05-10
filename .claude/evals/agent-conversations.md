@@ -199,4 +199,68 @@ Which of the active AI engineer roles match my profile?
 - Manual check: AdNode renders the rationale block above the description excerpt with the percentage and one-line reason.
 - Watch for: agent fabricating ad ids that did not appear in the prior `triageBatch` result. The edge will draw to nowhere visible.
 
+## Deploy posture cases
+
+These cases exercise the v4.10 live JobTech path (`lookupConcept` then live `searchJobs`) instead of the local SQLite corpus. The deploy posture fires automatically on the Anthropic branch. To exercise it from the local Ollama branch, append `?mode=deploy` to the chat URL (`http://127.0.0.1:3000/?mode=deploy`). The chat client then sends `x-jobtriage-mode: deploy` and the route honors it because Vercel is not set in the local env.
+
+The structured fixture lives at `.claude/evals/agent-general-profile.json` and runs through `web/scripts/model-probe.ts` for automated regression.
+
+## 14. Cross-profession search, nurse
+
+Replace the shared profile with a nurse profile via the header dialog before this case:
+
+```plaintext
+# Profile
+
+Licensed nurse (sjuksköterska), 6 years on a cardiology ward. Living in Stockholm, looking for a permanent ward role.
+```
+
+Then prompt:
+
+```plaintext
+Find nursing roles in Stockholm.
+```
+
+- Profile: required (nurse)
+- Expected tools: `lookupConcept`, then `searchJobs`, then `placeAds`
+- Expected behavior: canvas fills with real Swedish nursing ads (`Sjuksköterska` headlines) from JobTech live, not the local AI-engineering corpus. Each card carries employer, deadline, municipality, and an `arbetsformedlingen.se/platsbanken/...` link.
+- Manual check: tool trace renders `lookupConcept` first, then `searchJobs` second. Cards show description excerpts. Reply text references one or two ads by headline, does not re-list every ad.
+- Watch for: `triageBatch` or `semanticSearch` firing instead of `lookupConcept` plus `searchJobs`. That means the deploy posture did not engage. Check for `?mode=deploy` on the URL.
+
+## 15. Cross-profession search, chef with Swedish translation
+
+Replace the profile with a chef profile:
+
+```plaintext
+# Profile
+
+Sous chef with 9 years in fine-dining kitchens, including 3 years at a Michelin-starred restaurant in Stockholm. Looking for a head-chef role at a small to mid-size restaurant in Stockholm or Uppsala.
+```
+
+Then prompt:
+
+```plaintext
+Find chef roles in Stockholm.
+```
+
+- Profile: required (chef)
+- Expected tools: `lookupConcept`, then `searchJobs`, then `placeAds`
+- Expected behavior: agent passes a Swedish profession term in the `searchJobs.query` field (`kock`, not `chef`, since `chef` means `boss` in Swedish). Cards show real `Kock`, `Köksmästare`, or `Chefskock` ads.
+- Manual check: inspect the `searchJobs` tool input in the trace. It should contain `query` with a Swedish term. If it only sends `occupation_concept_id` without `query`, the Swedish-fallback prompt rule has regressed.
+- Watch for: results coming back as nursing or wait-staff ads. That means the agent passed only `occupation_concept_id` and JobTech ignored or under-matched the filter.
+
+## 16. Cross-profession search, marketer
+
+Replace the profile with a marketer profile, then prompt:
+
+```plaintext
+Find marketing manager roles in Malmö or Copenhagen.
+```
+
+- Profile: required (marketer)
+- Expected tools: `lookupConcept`, then `searchJobs`, then `placeAds`
+- Expected behavior: canvas fills with marketing roles. If zero results match the strict filter, the agent may bail with a one-liner and skip `placeAds`. The harness scores that as a partial verdict, acceptable when the result set is genuinely empty.
+- Manual check: empty-state messaging is honest. Reply must not pretend to have placed ads when it did not.
+- Watch for: hallucinated Malmö ads. Cross-check at least one headline against `arbetsformedlingen.se/platsbanken/` to confirm the ad is real.
+
 <!-- UI-only cases for the canvas surface (pin, drag, resize, theme, dialog auto-save) live in `canvas-interactions.md`. This file holds chat prompts only. -->

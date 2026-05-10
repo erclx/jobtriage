@@ -1,0 +1,97 @@
+{
+  "name": "agent-general-profile",
+  "description": "Cross-profession regression for the deploy posture (lookupConcept + live searchJobs + spatial pairing). Each probe is single-turn so it verifies the deploy chain on a fresh request, plus that chitchat does not fire tools. Profile-fit and compare probes are out of scope here since they assume prior canvas state; the v6 agent-eval harness will own multi-turn fixtures.",
+  "kind": "general-profile",
+  "profiles": {
+    "ai-engineer": "# Profile\n\nSenior AI engineer, 8 years building ML systems. Currently shipping agentic RAG pipelines with Vercel AI SDK and LangGraph. Strong Python and TypeScript. Based in Göteborg, open to Stockholm or remote inside Sweden. Looking for staff or principal-track AI engineering roles.",
+    "nurse": "# Profile\n\nLicensed nurse (sjuksköterska), 6 years on a cardiology ward in a regional hospital. Comfortable with night shifts and acute care. Living in Stockholm, looking for a permanent ward role or a clinic position with regular hours.",
+    "marketer": "# Profile\n\nB2B SaaS marketing lead, 7 years across content, demand-gen, and lifecycle. Built a 5-person team at a Series B. Strong with HubSpot, Webflow, and SQL for funnel analytics. Based in Malmö, open to hybrid in Copenhagen.",
+    "chef": "# Profile\n\nSous chef with 9 years in fine-dining kitchens, including 3 years at a Michelin-starred restaurant in Stockholm. Lead pastry section but cross-trained on sauce and grill. Looking for a head-chef role at a small to mid-size restaurant in Stockholm or Uppsala."
+  },
+  "probes": [
+    {
+      "slug": "ai-engineer-search-goteborg",
+      "profileKey": "ai-engineer",
+      "prompt": "Find AI engineering roles in Göteborg.",
+      "category": "search",
+      "expectTools": ["lookupConcept", "searchJobs", "placeAds"]
+    },
+    {
+      "slug": "ai-engineer-search-stockholm",
+      "profileKey": "ai-engineer",
+      "prompt": "Show me ML engineer ads in Stockholm.",
+      "category": "search",
+      "expectTools": ["lookupConcept", "searchJobs", "placeAds"]
+    },
+    {
+      "slug": "ai-engineer-chitchat",
+      "profileKey": "ai-engineer",
+      "prompt": "hi",
+      "category": "chitchat",
+      "expectTools": []
+    },
+    {
+      "slug": "nurse-search-stockholm",
+      "profileKey": "nurse",
+      "prompt": "Find nursing roles in Stockholm.",
+      "category": "search",
+      "expectTools": ["lookupConcept", "searchJobs", "placeAds"]
+    },
+    {
+      "slug": "nurse-search-cardiology",
+      "profileKey": "nurse",
+      "prompt": "What cardiology nurse roles are open right now?",
+      "category": "search",
+      "expectTools": ["lookupConcept", "searchJobs", "placeAds"]
+    },
+    {
+      "slug": "nurse-chitchat",
+      "profileKey": "nurse",
+      "prompt": "what can you do",
+      "category": "chitchat",
+      "expectTools": []
+    },
+    {
+      "slug": "marketer-search-malmo",
+      "profileKey": "marketer",
+      "prompt": "Find marketing manager roles in Malmö or Copenhagen.",
+      "category": "search",
+      "expectTools": ["lookupConcept", "searchJobs", "placeAds"]
+    },
+    {
+      "slug": "marketer-search-saas",
+      "profileKey": "marketer",
+      "prompt": "Show me B2B SaaS marketing jobs.",
+      "category": "search",
+      "expectTools": ["lookupConcept", "searchJobs", "placeAds"]
+    },
+    {
+      "slug": "marketer-chitchat",
+      "profileKey": "marketer",
+      "prompt": "thanks",
+      "category": "chitchat",
+      "expectTools": []
+    },
+    {
+      "slug": "chef-search-stockholm",
+      "profileKey": "chef",
+      "prompt": "Find chef roles in Stockholm or Uppsala.",
+      "category": "search",
+      "expectTools": ["lookupConcept", "searchJobs", "placeAds"]
+    },
+    {
+      "slug": "chef-search-pastry",
+      "profileKey": "chef",
+      "prompt": "What pastry chef positions are open in Sweden?",
+      "category": "search",
+      "expectTools": ["lookupConcept", "searchJobs", "placeAds"]
+    },
+    {
+      "slug": "chef-chitchat",
+      "profileKey": "chef",
+      "prompt": "how are you",
+      "category": "chitchat",
+      "expectTools": []
+    }
+  ]
+}

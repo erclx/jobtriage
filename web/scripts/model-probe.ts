@@ -79,7 +79,33 @@ interface PairingFixture {
   readonly probes: readonly PairingProbe[]
 }
 
-type Fixture = DisciplineFixture | LanguageFixture | PairingFixture
+interface GeneralProfileProbe {
+  readonly slug: string
+  readonly prompt: string
+  readonly category: string
+  readonly profileKey: string
+  readonly expectTools: readonly string[]
+}
+
+interface GeneralProfileFixture {
+  readonly name: string
+  readonly description: string
+  readonly kind: 'general-profile'
+  readonly profiles: Readonly<Record<string, string>>
+  readonly probes: readonly GeneralProfileProbe[]
+}
+
+type Fixture =
+  | DisciplineFixture
+  | LanguageFixture
+  | PairingFixture
+  | GeneralProfileFixture
+
+type AnyProbe =
+  | DisciplineProbe
+  | LanguageProbe
+  | PairingProbe
+  | GeneralProfileProbe
 
 async function loadFixture(path: string): Promise<Fixture> {
   const raw = await readFile(path, 'utf-8')
@@ -87,7 +113,8 @@ async function loadFixture(path: string): Promise<Fixture> {
   if (
     parsed.kind !== 'discipline' &&
     parsed.kind !== 'language' &&
-    parsed.kind !== 'pairing'
+    parsed.kind !== 'pairing' &&
+    parsed.kind !== 'general-profile'
   ) {
     throw new Error(`Unsupported fixture kind in ${path}`)
   }
@@ -105,7 +132,7 @@ interface ProbeResult {
   readonly error?: string
 }
 
-function buildBody(prompt: string): string {
+function buildBody(prompt: string, profile: string | null): string {
   return JSON.stringify({
     messages: [
       {
@@ -114,7 +141,7 @@ function buildBody(prompt: string): string {
         parts: [{ type: 'text', text: prompt }],
       },
     ],
-    profile: null,
+    profile,
   })
 }
 
@@ -188,20 +215,26 @@ function detectLanguage(text: string): 'english' | 'swedish' {
 
 async function runProbe(
   model: string,
-  probe: DisciplineProbe | LanguageProbe | PairingProbe,
+  probe: AnyProbe,
+  options: { profile?: string | null; forceDeploy?: boolean } = {},
 ): Promise<ProbeResult> {
   const start = Date.now()
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
 
+  const headers: Record<string, string> = {
+    'content-type': 'application/json',
+    'x-jobtriage-provider': 'ollama',
+  }
+  if (options.forceDeploy) {
+    headers['x-jobtriage-mode'] = 'deploy'
+  }
+
   try {
     const response = await fetch(CHAT_URL, {
       method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-jobtriage-provider': 'ollama',
-      },
-      body: buildBody(probe.prompt),
+      headers,
+      body: buildBody(probe.prompt, options.profile ?? null),
       signal: controller.signal,
     })
 
@@ -307,7 +340,22 @@ interface PairingSummary {
   readonly errors: number
 }
 
-type ModelSummary = DisciplineSummary | LanguageSummary | PairingSummary
+interface GeneralProfileSummary {
+  readonly kind: 'general-profile'
+  readonly model: string
+  readonly fullPair: number
+  readonly partial: number
+  readonly missingPair: number
+  readonly total: number
+  readonly avgLatencyMs: number
+  readonly errors: number
+}
+
+type ModelSummary =
+  | DisciplineSummary
+  | LanguageSummary
+  | PairingSummary
+  | GeneralProfileSummary
 
 function avgLatency(results: readonly ProbeResult[]): number {
   const ok = results.filter((r) => !r.error)
@@ -370,6 +418,49 @@ function evaluatePairing(
   }
   if (hits.length > 0) return 'partial'
   return 'missing'
+}
+
+function evaluateGeneralProfile(
+  probe: GeneralProfileProbe,
+  toolNames: readonly string[],
+): PairingVerdict {
+  if (probe.expectTools.length === 0) {
+    return toolNames.length === 0 ? 'full' : 'unexpected-tool'
+  }
+  const hits = probe.expectTools.filter((name) => toolNames.includes(name))
+  if (hits.length === probe.expectTools.length) return 'full'
+  if (hits.length > 0) return 'partial'
+  return 'missing'
+}
+
+function summarizeGeneralProfile(
+  model: string,
+  fixture: GeneralProfileFixture,
+  results: readonly ProbeResult[],
+): GeneralProfileSummary {
+  const probesBySlug = new Map(fixture.probes.map((p) => [p.slug, p]))
+  let fullPair = 0
+  let partial = 0
+  let missingPair = 0
+  for (const result of results) {
+    if (result.error) continue
+    const probe = probesBySlug.get(result.probeSlug)
+    if (!probe) continue
+    const verdict = evaluateGeneralProfile(probe, result.toolNames)
+    if (verdict === 'full') fullPair++
+    else if (verdict === 'partial') partial++
+    else missingPair++
+  }
+  return {
+    kind: 'general-profile',
+    model,
+    fullPair,
+    partial,
+    missingPair,
+    total: results.length,
+    avgLatencyMs: avgLatency(results),
+    errors: results.filter((r) => r.error).length,
+  }
 }
 
 function summarizePairing(
@@ -463,6 +554,46 @@ function renderMarkdown(
         `| \`${s.model}\` | ${s.fullPair}/${s.total} | ${s.partial} | ${s.missingPair} | ${s.avgLatencyMs} ms | ${s.errors} |`,
       )
     }
+  } else if (fixture.kind === 'general-profile') {
+    lines.push(
+      '| Model | Full pair | Partial | Missing | Avg latency | Errors |',
+    )
+    lines.push('|---|---|---|---|---|---|')
+    for (const s of summaries) {
+      if (s.kind !== 'general-profile') continue
+      lines.push(
+        `| \`${s.model}\` | ${s.fullPair}/${s.total} | ${s.partial} | ${s.missingPair} | ${s.avgLatencyMs} ms | ${s.errors} |`,
+      )
+    }
+    lines.push('')
+    lines.push('### Per-profession breakdown')
+    lines.push('')
+    const probesBySlug = new Map(fixture.probes.map((p) => [p.slug, p]))
+    const profileKeys = Array.from(
+      new Set(fixture.probes.map((p) => p.profileKey)),
+    )
+    lines.push(`| Model | ${profileKeys.join(' | ')} |`)
+    lines.push(`|---|${profileKeys.map(() => '---').join('|')}|`)
+    for (const s of summaries) {
+      if (s.kind !== 'general-profile') continue
+      const cells = profileKeys.map((key) => {
+        const slugsForKey = fixture.probes
+          .filter((p) => p.profileKey === key)
+          .map((p) => p.slug)
+        const subset = results.filter(
+          (r) => r.model === s.model && slugsForKey.includes(r.probeSlug),
+        )
+        let full = 0
+        for (const r of subset) {
+          if (r.error) continue
+          const probe = probesBySlug.get(r.probeSlug)
+          if (!probe) continue
+          if (evaluateGeneralProfile(probe, r.toolNames) === 'full') full++
+        }
+        return `${full}/${subset.length}`
+      })
+      lines.push(`| \`${s.model}\` | ${cells.join(' | ')} |`)
+    }
   } else {
     lines.push('| Model | Language match | Avg latency | Errors |')
     lines.push('|---|---|---|---|')
@@ -516,6 +647,33 @@ function renderMarkdown(
         `| \`${r.model}\` | ${r.probeSlug} | ${expected} | ${r.toolNames.join(', ') || '-'} | ${verdictGlyph} | ${r.latencyMs} ms | ${detail.replaceAll('|', '\\|')} |`,
       )
     }
+  } else if (fixture.kind === 'general-profile') {
+    const probesBySlug = new Map(fixture.probes.map((p) => [p.slug, p]))
+    lines.push(
+      '| Model | Probe | Profile | Expected | Tool calls | Verdict | Latency | Preview / error |',
+    )
+    lines.push('|---|---|---|---|---|---|---|---|')
+    for (const r of results) {
+      const probe = probesBySlug.get(r.probeSlug)
+      const expected = probe ? probe.expectTools.join(' + ') || 'none' : '?'
+      const verdict = probe
+        ? evaluateGeneralProfile(probe, r.toolNames)
+        : 'missing'
+      const verdictGlyph =
+        verdict === 'full'
+          ? '✓'
+          : verdict === 'partial'
+            ? '~'
+            : verdict === 'unexpected-tool'
+              ? '!'
+              : '✗'
+      const detail = r.error
+        ? `error: ${r.error.slice(0, 80)}`
+        : r.textPreview || '(no text)'
+      lines.push(
+        `| \`${r.model}\` | ${r.probeSlug} | ${probe?.profileKey ?? '?'} | ${expected} | ${r.toolNames.join(', ') || '-'} | ${verdictGlyph} | ${r.latencyMs} ms | ${detail.replaceAll('|', '\\|')} |`,
+      )
+    }
   } else {
     const probesBySlug = new Map(fixture.probes.map((p) => [p.slug, p]))
     lines.push(
@@ -550,6 +708,9 @@ function summarizeForFixture(
   if (fixture.kind === 'pairing') {
     return summarizePairing(model, fixture, results)
   }
+  if (fixture.kind === 'general-profile') {
+    return summarizeGeneralProfile(model, fixture, results)
+  }
   return summarizeLanguage(model, fixture, results)
 }
 
@@ -563,6 +724,12 @@ function probeVerdict(fixture: Fixture, result: ProbeResult): string {
     if (!probe) return 'missing probe'
     const verdict = evaluatePairing(probe, result.toolNames)
     return `pair: ${verdict} (got ${result.toolNames.join(',') || '-'})`
+  }
+  if (fixture.kind === 'general-profile') {
+    const probe = fixture.probes.find((p) => p.slug === result.probeSlug)
+    if (!probe) return 'missing probe'
+    const verdict = evaluateGeneralProfile(probe, result.toolNames)
+    return `gen: ${verdict} (got ${result.toolNames.join(',') || '-'})`
   }
   const probe = fixture.probes.find((p) => p.slug === result.probeSlug) as
     | LanguageProbe
@@ -607,8 +774,17 @@ async function main(): Promise<void> {
     }
 
     const modelResults: ProbeResult[] = []
+    const isGeneralProfile = fixture.kind === 'general-profile'
     for (const probe of fixture.probes) {
-      const result = await runProbe(model, probe)
+      const profile =
+        isGeneralProfile && 'profileKey' in probe
+          ? ((fixture as GeneralProfileFixture).profiles[probe.profileKey] ??
+            null)
+          : null
+      const result = await runProbe(model, probe, {
+        profile,
+        forceDeploy: isGeneralProfile,
+      })
       modelResults.push(result)
       process.stdout.write(
         `  ${probe.category.padEnd(20)} ${probe.slug.padEnd(22)} ${result.latencyMs.toString().padStart(6)}ms  ${probeVerdict(fixture, result)}\n`,
