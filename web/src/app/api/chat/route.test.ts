@@ -23,11 +23,19 @@ vi.mock('ai', async () => {
 vi.mock('@ai-sdk/anthropic', () => ({
   createAnthropic: vi.fn(() => () => 'anthropic-model-handle'),
 }))
+vi.mock('@ai-sdk/openai', () => ({
+  createOpenAI: vi.fn(() => () => 'openai-model-handle'),
+}))
+vi.mock('@ai-sdk/google', () => ({
+  createGoogleGenerativeAI: vi.fn(() => () => 'gemini-model-handle'),
+}))
 vi.mock('ollama-ai-provider-v2', () => ({
   createOllama: vi.fn(() => () => 'ollama-model-handle'),
 }))
 
 import { createAnthropic } from '@ai-sdk/anthropic'
+import { createGoogleGenerativeAI } from '@ai-sdk/google'
+import { createOpenAI } from '@ai-sdk/openai'
 import { convertToModelMessages, streamText } from 'ai'
 import { createOllama } from 'ollama-ai-provider-v2'
 
@@ -35,6 +43,8 @@ import { POST } from './route'
 
 const streamTextMock = vi.mocked(streamText)
 const createAnthropicMock = vi.mocked(createAnthropic)
+const createOpenAIMock = vi.mocked(createOpenAI)
+const createGoogleGenerativeAIMock = vi.mocked(createGoogleGenerativeAI)
 const createOllamaMock = vi.mocked(createOllama)
 const convertToModelMessagesMock = vi.mocked(convertToModelMessages)
 
@@ -71,6 +81,8 @@ const mockStreamResult = (): void => {
 afterEach(() => {
   streamTextMock.mockReset()
   createAnthropicMock.mockClear()
+  createOpenAIMock.mockClear()
+  createGoogleGenerativeAIMock.mockClear()
   createOllamaMock.mockClear()
   convertToModelMessagesMock.mockClear()
 })
@@ -212,6 +224,108 @@ describe('POST /api/chat', () => {
     }
     const toolNames = Object.keys(callArg.tools)
     expect(toolNames).toContain('lookupConcept')
+    expect(toolNames).not.toContain('triageBatch')
+  })
+
+  it('should reject OpenAI requests with no Authorization header', async () => {
+    const response = await POST(
+      buildRequest({
+        authorization: null,
+        provider: 'openai',
+      }) as Parameters<typeof POST>[0],
+    )
+    expect(response.status).toBe(401)
+  })
+
+  it('should reject Gemini requests with no Authorization header', async () => {
+    const response = await POST(
+      buildRequest({
+        authorization: null,
+        provider: 'gemini',
+      }) as Parameters<typeof POST>[0],
+    )
+    expect(response.status).toBe(401)
+  })
+
+  it('should route through createOpenAI when provider is openai', async () => {
+    mockStreamResult()
+    const response = await POST(
+      buildRequest({
+        authorization: 'Bearer sk-openai-test',
+        provider: 'openai',
+        body: { messages: [] },
+      }) as Parameters<typeof POST>[0],
+    )
+
+    expect(createOpenAIMock).toHaveBeenCalledWith({ apiKey: 'sk-openai-test' })
+    expect(createAnthropicMock).not.toHaveBeenCalled()
+    expect(createGoogleGenerativeAIMock).not.toHaveBeenCalled()
+    expect(response.status).toBe(200)
+  })
+
+  it('should route through createGoogleGenerativeAI when provider is gemini', async () => {
+    mockStreamResult()
+    const response = await POST(
+      buildRequest({
+        authorization: 'Bearer AIza-test',
+        provider: 'gemini',
+        body: { messages: [] },
+      }) as Parameters<typeof POST>[0],
+    )
+
+    expect(createGoogleGenerativeAIMock).toHaveBeenCalledWith({
+      apiKey: 'AIza-test',
+    })
+    expect(createAnthropicMock).not.toHaveBeenCalled()
+    expect(createOpenAIMock).not.toHaveBeenCalled()
+    expect(response.status).toBe(200)
+  })
+
+  it('should reject unknown provider strings with 400', async () => {
+    const response = await POST(
+      buildRequest({
+        authorization: 'Bearer something',
+        provider: 'cohere',
+      }) as Parameters<typeof POST>[0],
+    )
+    expect(response.status).toBe(400)
+  })
+
+  it('should register the deploy tool subset on the OpenAI branch', async () => {
+    mockStreamResult()
+    await POST(
+      buildRequest({
+        authorization: 'Bearer sk-openai-test',
+        provider: 'openai',
+        body: { messages: [] },
+      }) as Parameters<typeof POST>[0],
+    )
+
+    const callArg = streamTextMock.mock.calls[0][0] as {
+      tools: Record<string, unknown>
+    }
+    const toolNames = Object.keys(callArg.tools)
+    expect(toolNames).toContain('lookupConcept')
+    expect(toolNames).toContain('searchJobs')
+    expect(toolNames).not.toContain('triageBatch')
+  })
+
+  it('should register the deploy tool subset on the Gemini branch', async () => {
+    mockStreamResult()
+    await POST(
+      buildRequest({
+        authorization: 'Bearer AIza-test',
+        provider: 'gemini',
+        body: { messages: [] },
+      }) as Parameters<typeof POST>[0],
+    )
+
+    const callArg = streamTextMock.mock.calls[0][0] as {
+      tools: Record<string, unknown>
+    }
+    const toolNames = Object.keys(callArg.tools)
+    expect(toolNames).toContain('lookupConcept')
+    expect(toolNames).toContain('searchJobs')
     expect(toolNames).not.toContain('triageBatch')
   })
 

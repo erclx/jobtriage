@@ -22,19 +22,36 @@ const FIXTURE_PATH = process.env.PROBE_FIXTURE
   ? join(REPO_ROOT, process.env.PROBE_FIXTURE)
   : DEFAULT_FIXTURE
 
+const BYOK_PROVIDERS = ['anthropic', 'openai', 'gemini'] as const
+type ByokProvider = (typeof BYOK_PROVIDERS)[number]
+type ProbeProvider = ByokProvider | 'ollama'
+
+const RAW_PROVIDER = (process.env.PROBE_PROVIDER ?? 'ollama').toLowerCase()
+const PROBE_PROVIDER: ProbeProvider = (
+  BYOK_PROVIDERS as readonly string[]
+).includes(RAW_PROVIDER)
+  ? (RAW_PROVIDER as ByokProvider)
+  : 'ollama'
+const PROBE_API_KEY = process.env.PROBE_API_KEY ?? ''
+const PROBE_MODEL_ID = process.env.PROBE_MODEL_ID ?? ''
+
 const MODELS_FROM_ENV = process.env.PROBE_MODELS?.split(',')
   .map((s) => s.trim())
   .filter(Boolean)
-const MODELS: readonly string[] = MODELS_FROM_ENV?.length
-  ? MODELS_FROM_ENV
-  : [
-      'mistral-small3.2:24b',
-      'gemma4:31b',
-      'qwen3:32b',
-      'qwen3:30b',
-      'qwen3-coder:30b',
-      'gemma4:26b',
-    ]
+const DEFAULT_OLLAMA_MODELS: readonly string[] = [
+  'mistral-small3.2:24b',
+  'gemma4:31b',
+  'qwen3:32b',
+  'qwen3:30b',
+  'qwen3-coder:30b',
+  'gemma4:26b',
+]
+const MODELS: readonly string[] =
+  PROBE_PROVIDER === 'ollama'
+    ? MODELS_FROM_ENV?.length
+      ? MODELS_FROM_ENV
+      : DEFAULT_OLLAMA_MODELS
+    : [PROBE_MODEL_ID || PROBE_PROVIDER]
 
 interface DisciplineProbe {
   readonly slug: string
@@ -224,7 +241,10 @@ async function runProbe(
 
   const headers: Record<string, string> = {
     'content-type': 'application/json',
-    'x-jobtriage-provider': 'ollama',
+    'x-jobtriage-provider': PROBE_PROVIDER,
+  }
+  if (PROBE_PROVIDER !== 'ollama' && PROBE_API_KEY) {
+    headers.authorization = `Bearer ${PROBE_API_KEY}`
   }
   if (options.forceDeploy) {
     headers['x-jobtriage-mode'] = 'deploy'
@@ -750,27 +770,38 @@ async function main(): Promise<void> {
   const allResults: ProbeResult[] = []
   const summaries: ModelSummary[] = []
 
+  if (PROBE_PROVIDER !== 'ollama') {
+    process.stdout.write(
+      `Provider: ${PROBE_PROVIDER} (BYOK, restart:web skipped)\n`,
+    )
+    if (!PROBE_API_KEY) {
+      throw new Error(`PROBE_PROVIDER=${PROBE_PROVIDER} requires PROBE_API_KEY`)
+    }
+  }
+
   for (const model of MODELS) {
     process.stdout.write(`\n=== ${model} ===\n`)
-    try {
-      await restartWebForModel(model)
-    } catch (error) {
-      process.stdout.write(
-        `  restart failed: ${error instanceof Error ? error.message : String(error)}\n`,
-      )
-      const failure: ProbeResult = {
-        model,
-        probeSlug: 'restart',
-        category: 'restart',
-        toolNames: [],
-        latencyMs: 0,
-        textPreview: '',
-        fullText: '',
-        error: 'restart:web failed',
+    if (PROBE_PROVIDER === 'ollama') {
+      try {
+        await restartWebForModel(model)
+      } catch (error) {
+        process.stdout.write(
+          `  restart failed: ${error instanceof Error ? error.message : String(error)}\n`,
+        )
+        const failure: ProbeResult = {
+          model,
+          probeSlug: 'restart',
+          category: 'restart',
+          toolNames: [],
+          latencyMs: 0,
+          textPreview: '',
+          fullText: '',
+          error: 'restart:web failed',
+        }
+        allResults.push(failure)
+        summaries.push(summarizeForFixture(model, fixture, [failure]))
+        continue
       }
-      allResults.push(failure)
-      summaries.push(summarizeForFixture(model, fixture, [failure]))
-      continue
     }
 
     const modelResults: ProbeResult[] = []
@@ -795,7 +826,7 @@ async function main(): Promise<void> {
   }
 
   const markdown = renderMarkdown(fixture, allResults, summaries)
-  const outPath = join(OUT_DIR, `smoke-${fixture.name}.md`)
+  const outPath = join(OUT_DIR, `smoke-${PROBE_PROVIDER}-${fixture.name}.md`)
   await writeFile(outPath, `${markdown}\n`)
   process.stdout.write(`\n\nWrote ${outPath}\n\n`)
   process.stdout.write(markdown)
