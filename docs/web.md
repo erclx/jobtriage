@@ -98,7 +98,7 @@ web/
 - Path alias `@` maps to `./src` (configured in `tsconfig.json`).
 - Server components by default. Add `'use client'` only when required.
 - Domain UI lives under `src/features/`. Shared, generic UI lives under `src/components/`.
-- Data tools live in `src/lib/agent/tools.ts`, spatial tools in `src/lib/agent/spatial-tools.ts`. Both register with the AI SDK inside `src/app/api/chat/route.ts`.
+- Data tools live in `src/lib/agent/tools.ts`, spatial tools in `src/lib/agent/spatial-tools.ts`. `tools.ts` exports two flat tool tables: `jobtriageTools` (the local-mode seven-tool corpus stack) and `deployJobtriageTools` (the deploy-mode subset: `lookupConcept`, live `searchJobs`, live `matchProfile`, live `compareRoles`, `trackStatus`, plus all spatial tools). `src/app/api/chat/route.ts` picks the active table via `resolveAgentMode(providerName, request)`. Local Ollama maps to `local`. Any other provider maps to `deploy`. The `x-jobtriage-mode: deploy` request header overrides the default outside Vercel so the harness and the dev browser path can exercise the deploy posture without an Anthropic key. The chat client sends that header when `?mode=deploy` is on the URL.
 - Spatial tools never call the FastAPI backend. They echo their input on the server. The `CanvasBridge` component on the client watches `tool-output-available` parts and dispatches reducer actions against `CanvasContext`.
 - Vendored shadcn and AI Elements primitives are not edited in place. Wrap them in feature components when extending behavior.
 - Tests colocate next to source as `*.test.ts` or `*.spec.ts`. Playwright specs live in `e2e/`.
