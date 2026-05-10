@@ -11,8 +11,10 @@ from jobtriage.evals.golden import GoldenQuery, GoldenSet
 from jobtriage.evals.harness import (
     build_runners,
     evaluate_configuration,
+    evaluate_embedding_ablation,
     precision_at_k,
     recall_at_k,
+    render_embedding_ablation_table,
     render_markdown_table,
 )
 from jobtriage.jobtech.models import Ad
@@ -63,6 +65,65 @@ def test_evaluate_configuration_reports_metrics(
 
     assert metrics_by_name['hybrid'].precision_at[1] == pytest.approx(1.0)
     assert metrics_by_name['hybrid'].recall_at_10 == pytest.approx(1.0)
+
+
+def test_evaluate_embedding_ablation_runs_dense_in_memory(
+    memory_db: sqlite3.Connection, make_ad: AdFactory
+) -> None:
+    ads = [
+        make_ad(
+            ad_id='stockholm',
+            description_text='Senior AI engineer in Stockholm building agents',
+        ),
+        make_ad(
+            ad_id='goteborg',
+            description_text='Backend developer in Göteborg using Azure',
+        ),
+    ]
+    ingest_ads(memory_db, ads, filter_signature='sig', now=datetime(2026, 5, 1))
+    embedder = KeywordEmbedder()
+
+    golden = GoldenSet(
+        queries=[
+            GoldenQuery(query='stockholm agent', expected_ad_ids=['stockholm']),
+            GoldenQuery(query='göteborg azure', expected_ad_ids=['goteborg']),
+        ]
+    )
+    row = evaluate_embedding_ablation(memory_db, embedder, 'fake-model', golden)
+
+    assert row.dimension == embedder.dimension
+    assert row.dense_metrics.precision_at[1] == pytest.approx(1.0)
+    assert row.hybrid_metrics.precision_at[1] == pytest.approx(1.0)
+
+
+def test_evaluate_embedding_ablation_rejects_empty_corpus(
+    memory_db: sqlite3.Connection,
+) -> None:
+    embedder = KeywordEmbedder()
+    golden = GoldenSet(queries=[GoldenQuery(query='x', expected_ad_ids=['x'])])
+    with pytest.raises(ValueError):
+        evaluate_embedding_ablation(memory_db, embedder, 'fake-model', golden)
+
+
+def test_render_embedding_ablation_table_emits_two_rows_per_model(
+    memory_db: sqlite3.Connection, make_ad: AdFactory
+) -> None:
+    ingest_ads(
+        memory_db,
+        [make_ad(ad_id='only', description_text='Stockholm role with agents')],
+        filter_signature='sig',
+    )
+    embedder = KeywordEmbedder()
+    golden = GoldenSet(
+        queries=[GoldenQuery(query='stockholm', expected_ad_ids=['only'])]
+    )
+    rows = [evaluate_embedding_ablation(memory_db, embedder, 'fake-model', golden)]
+
+    rendered = render_embedding_ablation_table(rows)
+    assert 'fake-model' in rendered
+    assert 'dense' in rendered
+    assert 'hybrid' in rendered
+    assert rendered.count('\n') >= 3
 
 
 def test_render_markdown_table_emits_one_row_per_metric(

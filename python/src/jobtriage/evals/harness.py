@@ -5,7 +5,9 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from jobtriage.embeddings import Embedder
+import numpy as np
+
+from jobtriage.embeddings import Embedder, EmbeddingMatrix
 from jobtriage.evals.golden import GoldenQuery, GoldenSet
 from jobtriage.retrieval import (
     bm25_search,
@@ -27,6 +29,14 @@ class ConfigurationMetrics:
     recall_at_10: float
     p50_ms: float
     p95_ms: float
+
+
+@dataclass(frozen=True, slots=True)
+class EmbeddingAblationRow:
+    model_name: str
+    dimension: int
+    dense_metrics: ConfigurationMetrics
+    hybrid_metrics: ConfigurationMetrics
 
 
 def precision_at_k(retrieved: list[str], expected: set[str], k: int) -> float:
@@ -125,6 +135,99 @@ def render_markdown_table(rows: list[ConfigurationMetrics]) -> str:
         for row in rows
     ]
     return '\n'.join([header, divider, *body])
+
+
+def evaluate_embedding_ablation(
+    conn: sqlite3.Connection,
+    embedder: Embedder,
+    model_name: str,
+    golden: GoldenSet,
+) -> EmbeddingAblationRow:
+    chunks = _load_active_chunks(conn)
+    if not chunks:
+        raise ValueError('no active ad chunks available for ablation')
+
+    chunk_texts = [text for _, text in chunks]
+    chunk_ad_ids = [ad_id for ad_id, _ in chunks]
+    passage_matrix = embedder.embed_passages(chunk_texts)
+    dimension = embedder.dimension
+
+    def dense_runner(query: GoldenQuery) -> list[str]:
+        query_vector = embedder.embed_query(query.query)[0]
+        return _rank_in_memory(chunk_ad_ids, passage_matrix, query_vector, EVAL_TOP_K)
+
+    def hybrid_runner(query: GoldenQuery) -> list[str]:
+        bm25_ranked = bm25_search(conn, query.query, top_k=EVAL_TOP_K)
+        query_vector = embedder.embed_query(query.query)[0]
+        dense_ranked = _rank_in_memory(
+            chunk_ad_ids, passage_matrix, query_vector, EVAL_TOP_K
+        )
+        fused = reciprocal_rank_fusion([bm25_ranked, dense_ranked])
+        return [ad_id for ad_id, _ in fused[:EVAL_TOP_K]]
+
+    return EmbeddingAblationRow(
+        model_name=model_name,
+        dimension=dimension,
+        dense_metrics=evaluate_configuration('dense', dense_runner, golden),
+        hybrid_metrics=evaluate_configuration('hybrid', hybrid_runner, golden),
+    )
+
+
+def render_embedding_ablation_table(rows: list[EmbeddingAblationRow]) -> str:
+    header = (
+        '| Model | Dim | Configuration | precision@1 | precision@5 | '
+        'precision@10 | recall@10 | p50 ms | p95 ms |'
+    )
+    divider = (
+        '| ----- | --- | ------------- | ----------- | ----------- | '
+        '------------ | --------- | ------ | ------ |'
+    )
+    body: list[str] = []
+    for row in rows:
+        for metrics in (row.dense_metrics, row.hybrid_metrics):
+            body.append(
+                f'| {row.model_name} | {row.dimension} | {metrics.name:<13} | '
+                f'{metrics.precision_at[1]:>11.3f} | '
+                f'{metrics.precision_at[5]:>11.3f} | '
+                f'{metrics.precision_at[10]:>12.3f} | '
+                f'{metrics.recall_at_10:>9.3f} | '
+                f'{metrics.p50_ms:>6.1f} | {metrics.p95_ms:>6.1f} |'
+            )
+    return '\n'.join([header, divider, *body])
+
+
+def _load_active_chunks(conn: sqlite3.Connection) -> list[tuple[str, str]]:
+    rows = conn.execute(
+        """
+        SELECT ad_chunks.ad_id, ad_chunks.chunk_text
+        FROM ad_chunks
+        JOIN ads ON ads.id = ad_chunks.ad_id
+        WHERE ads.is_active = 1
+        ORDER BY ad_chunks.ad_id, ad_chunks.chunk_index
+        """
+    ).fetchall()
+    return [(row['ad_id'], row['chunk_text']) for row in rows]
+
+
+def _rank_in_memory(
+    chunk_ad_ids: list[str],
+    passage_matrix: EmbeddingMatrix,
+    query_vector: EmbeddingMatrix,
+    top_k: int,
+) -> list[str]:
+    if passage_matrix.shape[0] == 0:
+        return []
+    query = query_vector.reshape(-1).astype(np.float32)
+    similarities = passage_matrix @ query
+
+    best_per_ad: dict[str, float] = {}
+    for ad_id, similarity in zip(chunk_ad_ids, similarities, strict=True):
+        score = float(similarity)
+        if ad_id not in best_per_ad or score > best_per_ad[ad_id]:
+            best_per_ad[ad_id] = score
+
+    ranked = sorted(best_per_ad.items(), key=lambda pair: pair[1], reverse=True)
+    return [ad_id for ad_id, _ in ranked[:top_k]]
 
 
 def _mean(values: list[float]) -> float:

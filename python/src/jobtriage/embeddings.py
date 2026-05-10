@@ -11,6 +11,8 @@ if TYPE_CHECKING:
     from sentence_transformers import SentenceTransformer
 
 DEFAULT_MODEL_NAME = 'intfloat/multilingual-e5-base'
+MULTILINGUAL_E5_LARGE_MODEL_NAME = 'intfloat/multilingual-e5-large'
+ENGLISH_BASELINE_MODEL_NAME = 'sentence-transformers/all-MiniLM-L6-v2'
 
 PASSAGE_PREFIX = 'passage: '
 QUERY_PREFIX = 'query: '
