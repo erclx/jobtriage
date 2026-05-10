@@ -297,9 +297,7 @@ async def live_search_jobs(
     payload: LiveJobSearchRequest,
     settings: Annotated[Settings, Depends(get_settings)],
 ) -> LiveJobSearchResponse:
-    if not (
-        payload.query or payload.occupation_concept_id or payload.region
-    ):
+    if not (payload.query or payload.occupation_concept_id or payload.region):
         raise HTTPException(
             status_code=422,
             detail='Provide at least one of query, occupation_concept_id, region.',
@@ -342,7 +340,9 @@ def _ad_to_live_summary(ad: Ad) -> LiveAdSummary:
         ad_id=ad.id,
         headline=ad.headline,
         employer_name=ad.employer.name if ad.employer else None,
-        municipality=ad.workplace_address.municipality if ad.workplace_address else None,
+        municipality=ad.workplace_address.municipality
+        if ad.workplace_address
+        else None,
         application_deadline=(
             ad.application_deadline.isoformat() if ad.application_deadline else None
         ),
