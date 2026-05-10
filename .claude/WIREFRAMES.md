@@ -88,7 +88,7 @@ Spans the top of the workspace. Does not appear on the BYOK gate.
 - The profile button shows `Add profile` when no profile is saved and `Profile · N chars` when the session has one. Clicking opens the profile dialog.
 - `New chat` opens a confirm dialog before clearing the conversation, the canvas state, and the pinned shortlist. Profile, provider, and key stay. The button is disabled while a response is streaming and when chat plus canvas plus shortlist are already empty.
 - `Switch provider` opens a confirm dialog. Cancel keeps the current session. Confirm clears the stored key, provider, chat, and canvas, then returns the user to the BYOK gate. The saved profile stays. Anonymous, single-session.
-- The moon icon toggles between light, dark, and system. Tooltip on hover names the next state.
+- The theme button cycles system, light, dark, system. The icon reflects the current mode (monitor for system, sun for light, moon for dark). The aria-label names the current mode and the next state, so clicking back to system restores the OS color-scheme listener.
 - Subtitle stays visible at all viewport widths. The header does not shrink to a logo bar.
 
 ## Profile dialog
