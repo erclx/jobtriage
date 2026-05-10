@@ -3,6 +3,7 @@
 import typer
 
 from jobtriage.cli.evaluate import evaluate_command
+from jobtriage.cli.evaluate_embeddings import evaluate_embeddings_command
 from jobtriage.cli.index import index_command
 from jobtriage.cli.mark_status import mark_status_command
 from jobtriage.cli.search import search_command
@@ -20,3 +21,4 @@ app.command('mark-status')(mark_status_command)
 app.command('index')(index_command)
 app.command('search')(search_command)
 app.command('evaluate')(evaluate_command)
+app.command('evaluate-embeddings')(evaluate_embeddings_command)

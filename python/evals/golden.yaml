@@ -119,3 +119,33 @@ queries:
   - query: 'service owner cloud platform'
     expected_ad_ids: ['30955728']
     note: 'Volvo Service Owner role'
+  - query: 'audio speaker component owner truck cabin'
+    expected_ad_ids: ['30981322']
+    note: 'HT Engineering Technical Consultant for in-vehicle speakers'
+  - query: 'senior product director consumer experience streaming'
+    expected_ad_ids: ['30942853']
+    note: 'Spotify Senior Product Director'
+  - query: 'vehicle test rig operator chassis'
+    expected_ad_ids: ['30903312']
+    note: 'Volvo Test Rig Operator'
+  - query: 'maintenance technician bus depot Uddevalla'
+    expected_ad_ids: ['30975978']
+    note: 'Volvo Bussar Underhållstekniker, English query for Swedish ad'
+  - query: 'industrial painter manufacturing plant'
+    expected_ad_ids: ['30910013']
+    note: 'Montico målare, English query for Swedish ad'
+  - query: 'maskiningenjör underhåll Volvo Cars'
+    expected_ad_ids: ['30965408', '30933620']
+    note: 'Swedish phrasing for Volvo Cars maintenance engineer roles'
+  - query: 'protect company against cyberattacks security analyst'
+    expected_ad_ids: ['30950679']
+    note: 'Volvo Exposure and Threat Protection Specialist, paraphrased'
+  - query: 'finance controller automotive financial services'
+    expected_ad_ids: ['30972400']
+    note: 'Volvo Financial Services Manager Business Control'
+  - query: 'compensation benefits global mobility leader'
+    expected_ad_ids: ['30998110']
+    note: 'Volvo Head of Performance Management, Total Rewards and Global Mobility'
+  - query: 'I want to write code that powers payment infrastructure'
+    expected_ad_ids: ['30688390', '30745422']
+    note: 'Klarna engineering paraphrased as candidate intent'

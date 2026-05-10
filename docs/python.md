@@ -36,7 +36,7 @@ python/
 │       ├── embeddings.py       ← multilingual-e5 wrapper with passage/query prefixes
 │       ├── retrieval.py        ← BM25, dense cosine, reciprocal rank fusion
 │       ├── evals/              ← golden-set loader and ablation harness
-│       └── cli/                ← Typer commands: sweep, mark-status, index, search, evaluate
+│       └── cli/                ← Typer commands: sweep, mark-status, index, search, evaluate, evaluate-embeddings
 ├── tests/                      ← pytest, mirrors src/ layout
 ├── scripts/
 │   ├── verify.sh               ← Python verify (ruff, mypy, pytest, openapi freshness)
@@ -60,9 +60,9 @@ The `storage/` schema reserves a nullable `embedding` BLOB column on `ad_chunks`
 - `storage/`: SQLite schema, paragraph-then-length chunker, append-mostly ingest with filter-scoped deactivation. Ingest writes both `ad_chunks` and `ad_chunks_fts` rows together.
 - `embeddings.py`: `Embedder` Protocol plus `SentenceTransformerEmbedder` for multilingual-e5. Lazy-loads the model on first encode and applies the `passage:`/`query:` prefixes that e5 requires.
 - `retrieval.py`: `bm25_search` over FTS5, `dense_search` over the embedding column, `reciprocal_rank_fusion` (k=60 default), and `hybrid_search` that composes them.
-- `evals/`: pydantic-validated golden-set loader and a four-configuration runner (filter-only, bm25-only, dense-only, hybrid). Emits precision-at-k, recall@10, and p50/p95 latency.
+- `evals/`: pydantic-validated golden-set loader and a four-configuration runner (filter-only, bm25-only, dense-only, hybrid). Emits precision-at-k, recall@10, and p50/p95 latency. Adds an embedding-ablation runner that encodes chunks in memory per model and compares e5-base, e5-large, and `all-MiniLM-L6-v2` on dense and hybrid configurations without touching `ad_chunks.embedding`.
 - `engagement.py`: `record_status` appends rows to a markdown engagement log, `read_status` parses entries for one ad id. Single-writer file, no SQLite mirror per ARCHITECTURE.md.
-- `cli/`: Typer commands. `sweep` ingests from JobTech, `index` backfills embeddings, `search` runs hybrid retrieval, `evaluate` runs the ablation harness, `mark-status` records engagement state.
+- `cli/`: Typer commands. `sweep` ingests from JobTech, `index` backfills embeddings, `search` runs hybrid retrieval, `evaluate` runs the four-configuration ablation harness, `evaluate-embeddings` runs the per-model encoder comparison, `mark-status` records engagement state.
 
 ## Conventions
 

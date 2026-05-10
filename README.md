@@ -51,14 +51,29 @@ cd python && uv run jobtriage mark-status <ad-id> applied --note 'submitted via 
 
 ## Hybrid retrieval ablation
 
-40-query Swedish golden set against a 59-ad corpus from Spotify, Klarna, Volvo Group, Volvo Cars, and Ericsson. Embeddings from `intfloat/multilingual-e5-base`. Reproduce via `uv run jobtriage evaluate`.
+50-query Swedish golden set against a 59-ad corpus from Spotify, Klarna, Volvo Group, Volvo Cars, Ericsson, HT Engineering, Stig Ericsson Bil, Montico, and Isaksson Rekrytering. Embeddings from `intfloat/multilingual-e5-base`. Reproduce via `uv run jobtriage evaluate`.
 
 | Configuration | precision@1 | precision@5 | precision@10 | recall@10 | p50 ms | p95 ms |
 | ------------- | ----------- | ----------- | ------------ | --------- | ------ | ------ |
-| filter-only   | 0.025       | 0.020       | 0.018        | 0.113     | 0.0    | 0.0    |
-| bm25-only     | 0.775       | 0.255       | 0.135        | 0.963     | 0.2    | 0.3    |
-| dense-only    | 0.850       | 0.250       | 0.138        | 0.969     | 5.6    | 7.8    |
-| hybrid        | 0.825       | 0.255       | 0.135        | 0.963     | 5.8    | 7.3    |
+| filter-only   | 0.020       | 0.020       | 0.020        | 0.150     | 0.0    | 0.0    |
+| bm25-only     | 0.680       | 0.224       | 0.124        | 0.920     | 0.2    | 1.2    |
+| dense-only    | 0.780       | 0.240       | 0.132        | 0.965     | 6.4    | 7.8    |
+| hybrid        | 0.720       | 0.240       | 0.128        | 0.950     | 6.2    | 15.2   |
+
+## Multilingual embedding comparison
+
+Same 50-query golden set, swapping the encoder while holding the corpus, BM25 index, and harness constant. The English-only baseline (`all-MiniLM-L6-v2`) measures what the project would look like without multilingual support. All three models share the e5 `passage:` / `query:` prefixes for an apples-to-apples input contract. Reproduce via `uv run jobtriage evaluate-embeddings`.
+
+| Model                                  | Dim  | Configuration | precision@1 | precision@5 | precision@10 | recall@10 | p50 ms | p95 ms |
+| -------------------------------------- | ---- | ------------- | ----------- | ----------- | ------------ | --------- | ------ | ------ |
+| intfloat/multilingual-e5-base          | 768  | dense         | 0.780       | 0.240       | 0.132        | 0.965     | 4.4    | 6.0    |
+| intfloat/multilingual-e5-base          | 768  | hybrid        | 0.740       | 0.240       | 0.128        | 0.950     | 4.8    | 6.0    |
+| intfloat/multilingual-e5-large         | 1024 | dense         | 0.860       | 0.236       | 0.130        | 0.945     | 7.6    | 9.8    |
+| intfloat/multilingual-e5-large         | 1024 | hybrid        | 0.820       | 0.236       | 0.126        | 0.940     | 8.2    | 9.6    |
+| sentence-transformers/all-MiniLM-L6-v2 | 384  | dense         | 0.700       | 0.232       | 0.120        | 0.855     | 3.1    | 4.2    |
+| sentence-transformers/all-MiniLM-L6-v2 | 384  | hybrid        | 0.760       | 0.236       | 0.128        | 0.925     | 3.3    | 3.9    |
+
+The English-only baseline drops 11 points of recall@10 against e5-base on the Swedish golden set, and the BM25 floor recovers 7 of those points back through hybrid fusion. e5-large lifts precision@1 by 8 points over e5-base for ~70% more memory and ~70% more dense latency. All three models receive the e5 prefix tokens. For MiniLM those are noise tokens that suppress its dense numbers slightly, which we accept as the cost of a uniform input contract. The command loads each model in turn and releases between runs. Allow ≥4 GB free RAM for e5-large.
 
 ## Chat surface
 
