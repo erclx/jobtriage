@@ -22,10 +22,20 @@ interface SeedPayload {
   readonly sessionStorage?: Record<string, string>
 }
 
+interface Viewport {
+  readonly width: number
+  readonly height: number
+}
+
+const DEFAULT_VIEWPORT: Viewport = { width: 1440, height: 900 }
+const MOBILE_VIEWPORT: Viewport = { width: 375, height: 812 }
+const TABLET_VIEWPORT: Viewport = { width: 768, height: 1024 }
+
 interface CaptureCase {
   readonly surface: Surface
   readonly name: string
   readonly seed: SeedPayload
+  readonly viewport?: Viewport
   readonly act?: (page: Page) => Promise<void>
   readonly target?: (page: Page) => Promise<{
     readonly capture: () => Promise<Buffer>
@@ -444,6 +454,30 @@ const CASES: readonly CaptureCase[] = [
     ),
     target: (page) => focusAdNode(page, SAMPLE_AD_IDS[0]),
   },
+  {
+    surface: 'byok',
+    name: 'mobile-375',
+    viewport: MOBILE_VIEWPORT,
+    seed: { localStorage: { theme: 'placeholder' } },
+  },
+  {
+    surface: 'byok',
+    name: 'mobile-768',
+    viewport: TABLET_VIEWPORT,
+    seed: { localStorage: { theme: 'placeholder' } },
+  },
+  {
+    surface: 'chat',
+    name: 'mobile-375',
+    viewport: MOBILE_VIEWPORT,
+    seed: authedSeed(),
+  },
+  {
+    surface: 'chat',
+    name: 'mobile-768',
+    viewport: TABLET_VIEWPORT,
+    seed: authedSeed(),
+  },
 ] as const
 
 async function focusAdNode(page: Page, adId: string) {
@@ -489,7 +523,7 @@ async function captureOne(
   theme: Theme,
 ): Promise<void> {
   const context = await browser.newContext({
-    viewport: { width: 1440, height: 900 },
+    viewport: testCase.viewport ?? DEFAULT_VIEWPORT,
     deviceScaleFactor: 2,
     colorScheme: theme,
   })
