@@ -62,6 +62,7 @@ noreferrer
 nounits
 oklch
 ollama
+opengraph
 oxlint
 Ollama
 Otta
@@ -85,9 +86,11 @@ repr
 rerank
 Reranker
 reranking
+Roboto
 ruff
 setattr
 scannability
+Segoe
 serviceworker
 shadcn
 shellcheck
