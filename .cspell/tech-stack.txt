@@ -62,6 +62,7 @@ noreferrer
 nounits
 oklch
 ollama
+opengraph
 oxlint
 Ollama
 Otta
