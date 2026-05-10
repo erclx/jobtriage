@@ -83,6 +83,12 @@ Pinning stays client-side. The deployed web demo never writes back to `engagemen
 
 The CLI's `mark-status` command writes to a local `engagements/log.md` (or any markdown file the user picks). Git provides free history and rollback. SQLite is reserved for the shared ad corpus. The web demo is read-only and stateless. This keeps multi-tenant complexity out of the architecture.
 
+### Voice input via the browser-native Web Speech API
+
+The chat input ships a mic toggle in Chrome that streams partial transcripts into the textarea via `window.SpeechRecognition || window.webkitSpeechRecognition`. Pure client-side, no server hop, no API key, no Whisper dependency. The toggle commits the finalized transcript on stop. Escape calls `abort()` so it stops without firing the final-result rewrite that would flicker capitalization and punctuation into the textarea.
+
+The button hides cleanly on browsers without `SpeechRecognition` (Firefox, Safari) so unsupported visitors do not see a broken affordance. Chromium covers roughly 70% of desktop traffic, which is enough to justify shipping the path while leaving the door open for a Whisper-on-server fallback later. Tradeoff: the typed prefix at listen-start is preserved by snapshotting the input value, but typing while listening is clobbered by the next interim event. v1 by design.
+
 ## Risks / open questions
 
 - **Tool-call trace UI density**: resolved at v4. Cards always render above the trace tree. The trace tree is collapsed by default behind a one-line summary header like `Triaged batch · Completed`. Recruiters get a clean transcript by default. Engineers expand per-tool to inspect inputs and outputs.

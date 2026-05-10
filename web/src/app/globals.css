@@ -223,3 +223,10 @@
   pointer-events: none;
   opacity: 0;
 }
+
+.chat-prompt-input [data-slot='input-group'],
+.dark .chat-prompt-input [data-slot='input-group'] {
+  background-color: transparent;
+  opacity: 1;
+  transition: none;
+}
