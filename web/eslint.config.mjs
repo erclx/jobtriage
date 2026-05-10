@@ -56,7 +56,7 @@ export default defineConfig([
   },
   {
     files: [
-      'src/app/**/{layout,page,template,error,loading,not-found}.{ts,tsx}',
+      'src/app/**/{layout,page,template,error,loading,not-found,opengraph-image,twitter-image}.{ts,tsx}',
     ],
     rules: {
       'react-refresh/only-export-components': 'off',

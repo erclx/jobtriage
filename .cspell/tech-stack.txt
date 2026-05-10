@@ -85,9 +85,11 @@ repr
 rerank
 Reranker
 reranking
+Roboto
 ruff
 setattr
 scannability
+Segoe
 serviceworker
 shadcn
 shellcheck
