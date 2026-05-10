@@ -33,7 +33,7 @@ web/
 │   │   ├── ai-elements/                ← vendored AI Elements primitives
 │   │   ├── ui/                         ← vendored shadcn primitives
 │   │   ├── theme-provider.tsx          ← next-themes wrapper
-│   │   └── theme-toggle.tsx            ← sun/moon header button
+│   │   └── theme-toggle.tsx            ← system/light/dark cycle button
 │   ├── features/chat/                  ← chat rail components and hooks
 │   │   ├── api-key-gate.tsx            ← BYOK or local-Ollama gate
 │   │   ├── chat-screen.tsx             ← two-column shell, mounts CanvasProvider plus CanvasBridge
