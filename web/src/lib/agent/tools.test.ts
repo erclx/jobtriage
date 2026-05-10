@@ -11,12 +11,15 @@ vi.mock('@/lib/api/client', () => ({
   triageBatch: vi.fn(),
   deadlineWatch: vi.fn(),
   getEngagementStatus: vi.fn(),
+  lookupConcept: vi.fn(),
+  liveSearchJobs: vi.fn(),
+  liveGetJobDetails: vi.fn(),
 }))
 
 import * as api from '@/lib/api/client'
 import { TriageRequestSchema } from '@/lib/api/schemas'
 
-import { jobtriageTools } from './tools'
+import { deployJobtriageTools, jobtriageTools } from './tools'
 
 const searchJobsMock = vi.mocked(api.searchJobs)
 const semanticSearchMock = vi.mocked(api.semanticSearch)
@@ -140,6 +143,40 @@ describe('jobtriageTools.deadlineWatch', () => {
 
     expect(deadlineWatchMock).toHaveBeenCalledWith(
       { window_days: 14, top_k: 10 },
+      { signal: callOptions.abortSignal },
+    )
+  })
+})
+
+describe('deployJobtriageTools.lookupConcept', () => {
+  it('should forward query and top_k to the taxonomy endpoint', async () => {
+    const lookupMock = vi.mocked(api.lookupConcept)
+    lookupMock.mockResolvedValueOnce({ results: [] })
+
+    await deployJobtriageTools.lookupConcept.execute?.(
+      { query: 'nurse', top_k: 5 },
+      callOptions,
+    )
+
+    expect(lookupMock).toHaveBeenCalledWith(
+      { query: 'nurse', top_k: 5 },
+      { signal: callOptions.abortSignal },
+    )
+  })
+})
+
+describe('deployJobtriageTools.searchJobs', () => {
+  it('should forward to the live JobTech endpoint', async () => {
+    const liveMock = vi.mocked(api.liveSearchJobs)
+    liveMock.mockResolvedValueOnce({ results: [] })
+
+    await deployJobtriageTools.searchJobs.execute?.(
+      { query: 'nurse', region: 'AvNB_uwa_6n6', top_k: 5 },
+      callOptions,
+    )
+
+    expect(liveMock).toHaveBeenCalledWith(
+      { query: 'nurse', region: 'AvNB_uwa_6n6', top_k: 5 },
       { signal: callOptions.abortSignal },
     )
   })

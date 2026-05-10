@@ -9,6 +9,9 @@ import {
   EngagementStatusRequestSchema,
   JobDetailsRequestSchema,
   JobSearchRequestSchema,
+  LiveJobDetailsRequestSchema,
+  LiveJobSearchRequestSchema,
+  LookupConceptRequestSchema,
   SemanticSearchRequestSchema,
   TriageRequestSchema,
 } from '@/lib/api/schemas'
@@ -72,9 +75,51 @@ const dataTools = {
   }),
 } as const
 
+const deployDataTools = {
+  lookupConcept: tool({
+    description:
+      'Resolve a free-text term (occupation name like "nurse", "marketer", or a Swedish region or city) to JobTech taxonomy concept ids. Returns up to top_k matches across both occupation and region taxonomies; each result carries a "type" field ("occupation" or "region") so you can route the id into the right searchJobs field. ALWAYS call this before searchJobs when the user names a profession, role, or place; never invent concept ids.',
+    inputSchema: LookupConceptRequestSchema,
+    execute: async (input, { abortSignal }) => {
+      return api.lookupConcept(input, { signal: abortSignal })
+    },
+  }),
+  searchJobs: tool({
+    description:
+      'Free-text plus structured live search against the JobTech (Platsbanken) public API. Returns active Swedish ads with description excerpts inline, so you can reason about per-ad fit against the USER PROFILE without a follow-up tool call. ALWAYS pass `query` with the user\'s profession term in Swedish ("kock" not "chef", "sjuksköterska" not "nurse"). Optionally also pass `occupation_concept_id` (from a lookupConcept result with type "occupation") and `region` (from a lookupConcept result with type "region"). Free-text matches reliably; the concept-id filter is narrower and may miss adjacent roles, so never omit `query`. Default top_k is 5. NEVER invent concept ids; resolve them via lookupConcept first.',
+    inputSchema: LiveJobSearchRequestSchema,
+    execute: async (input, { abortSignal }) => {
+      return api.liveSearchJobs(input, { signal: abortSignal })
+    },
+  }),
+  matchProfile: tool({
+    description:
+      'Fetch one live JobTech ad with a description excerpt so you can score the fit against the USER PROFILE in the system prompt. Use after the user names a specific ad and asks how it matches them. Pass exactly one ad_id from a prior searchJobs result.',
+    inputSchema: LiveJobDetailsRequestSchema,
+    execute: async (input, { abortSignal }) => {
+      return api.liveGetJobDetails(input, { signal: abortSignal })
+    },
+  }),
+  compareRoles: tool({
+    description:
+      'Fetch live JobTech excerpts for two or more ad_ids in parallel for a side-by-side comparison. Anchor on the verb "compare". After searchJobs surfaces candidate ad_ids, chain into compareRoles to render the side-by-side variant; do not re-run searchJobs to fake a comparison. Pass at least two ad_ids; ten max.',
+    inputSchema: LiveJobDetailsRequestSchema,
+    execute: async (input, { abortSignal }) => {
+      return api.liveGetJobDetails(input, { signal: abortSignal })
+    },
+  }),
+  trackStatus: dataTools.trackStatus,
+} as const
+
 export const jobtriageTools = {
   ...dataTools,
   ...spatialTools,
 } as const
 
+export const deployJobtriageTools = {
+  ...deployDataTools,
+  ...spatialTools,
+} as const
+
 export type JobtriageTools = typeof jobtriageTools
+export type DeployJobtriageTools = typeof deployJobtriageTools

@@ -83,12 +83,20 @@ function readProvider(): string {
 
 let latestProfile = ''
 
+function readModeOverride(): string | null {
+  if (!isBrowser) return null
+  const mode = new URLSearchParams(window.location.search).get('mode')
+  return mode === 'deploy' ? 'deploy' : null
+}
+
 function getRequestHeaders(): Record<string, string> {
   const headers: Record<string, string> = {
     'x-jobtriage-provider': readProvider(),
   }
   const key = readApiKey()
   if (key) headers.authorization = `Bearer ${key}`
+  const modeOverride = readModeOverride()
+  if (modeOverride) headers['x-jobtriage-mode'] = modeOverride
   return headers
 }
 

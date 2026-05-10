@@ -11,6 +11,12 @@ import type {
   JobDetailsResponse,
   JobSearchRequest,
   JobSearchResponse,
+  LiveJobDetailsRequest,
+  LiveJobDetailsResponse,
+  LiveJobSearchRequest,
+  LiveJobSearchResponse,
+  LookupConceptRequest,
+  LookupConceptResponse,
   SemanticSearchRequest,
   SemanticSearchResponse,
   TriageRequest,
@@ -25,6 +31,12 @@ import {
   JobDetailsResponseSchema,
   JobSearchRequestSchema,
   JobSearchResponseSchema,
+  LiveJobDetailsRequestSchema,
+  LiveJobDetailsResponseSchema,
+  LiveJobSearchRequestSchema,
+  LiveJobSearchResponseSchema,
+  LookupConceptRequestSchema,
+  LookupConceptResponseSchema,
   SemanticSearchRequestSchema,
   SemanticSearchResponseSchema,
   TriageRequestSchema,
@@ -127,6 +139,40 @@ export async function deadlineWatch(
 ): Promise<DeadlineResponse> {
   const body = DeadlineRequestSchema.parse(payload)
   return postJson('/v1/jobs/deadline', body, DeadlineResponseSchema, ctx)
+}
+
+export async function liveSearchJobs(
+  payload: LiveJobSearchRequest,
+  ctx: RequestContext = {},
+): Promise<LiveJobSearchResponse> {
+  const body = LiveJobSearchRequestSchema.parse(payload)
+  return postJson(
+    '/v1/jobs/live-search',
+    body,
+    LiveJobSearchResponseSchema,
+    ctx,
+  )
+}
+
+export async function liveGetJobDetails(
+  payload: LiveJobDetailsRequest,
+  ctx: RequestContext = {},
+): Promise<LiveJobDetailsResponse> {
+  const body = LiveJobDetailsRequestSchema.parse(payload)
+  return postJson(
+    '/v1/jobs/live-details',
+    body,
+    LiveJobDetailsResponseSchema,
+    ctx,
+  )
+}
+
+export async function lookupConcept(
+  payload: LookupConceptRequest,
+  ctx: RequestContext = {},
+): Promise<LookupConceptResponse> {
+  const body = LookupConceptRequestSchema.parse(payload)
+  return postJson('/v1/taxonomy/lookup', body, LookupConceptResponseSchema, ctx)
 }
 
 export async function getEngagementStatus(

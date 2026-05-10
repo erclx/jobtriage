@@ -42,6 +42,7 @@ const buildRequest = (init: {
   body?: unknown
   authorization?: string | null
   provider?: string
+  mode?: string
 }): Request => {
   const headers = new Headers({ 'content-type': 'application/json' })
   if (init.authorization !== null) {
@@ -49,6 +50,9 @@ const buildRequest = (init: {
   }
   if (init.provider) {
     headers.set('x-jobtriage-provider', init.provider)
+  }
+  if (init.mode) {
+    headers.set('x-jobtriage-mode', init.mode)
   }
   return new Request('http://localhost/api/chat', {
     method: 'POST',
@@ -147,6 +151,68 @@ describe('POST /api/chat', () => {
       providerOptions?: unknown
     }
     expect(callArg.providerOptions).toBeUndefined()
+  })
+
+  it('should register the deploy tool subset on the Anthropic branch', async () => {
+    mockStreamResult()
+    await POST(
+      buildRequest({
+        authorization: 'Bearer sk-ant-abc',
+        body: { messages: [] },
+      }) as Parameters<typeof POST>[0],
+    )
+
+    const callArg = streamTextMock.mock.calls[0][0] as {
+      tools: Record<string, unknown>
+    }
+    const toolNames = Object.keys(callArg.tools)
+    expect(toolNames).toContain('lookupConcept')
+    expect(toolNames).toContain('searchJobs')
+    expect(toolNames).toContain('matchProfile')
+    expect(toolNames).toContain('compareRoles')
+    expect(toolNames).toContain('trackStatus')
+    expect(toolNames).not.toContain('semanticSearch')
+    expect(toolNames).not.toContain('triageBatch')
+    expect(toolNames).not.toContain('deadlineWatch')
+  })
+
+  it('should register the local tool subset on the Ollama branch by default', async () => {
+    mockStreamResult()
+    await POST(
+      buildRequest({
+        authorization: null,
+        provider: 'ollama',
+        body: { messages: [] },
+      }) as Parameters<typeof POST>[0],
+    )
+
+    const callArg = streamTextMock.mock.calls[0][0] as {
+      tools: Record<string, unknown>
+    }
+    const toolNames = Object.keys(callArg.tools)
+    expect(toolNames).toContain('semanticSearch')
+    expect(toolNames).toContain('triageBatch')
+    expect(toolNames).toContain('deadlineWatch')
+    expect(toolNames).not.toContain('lookupConcept')
+  })
+
+  it('should honor x-jobtriage-mode: deploy on the Ollama branch when not on Vercel', async () => {
+    mockStreamResult()
+    await POST(
+      buildRequest({
+        authorization: null,
+        provider: 'ollama',
+        mode: 'deploy',
+        body: { messages: [] },
+      }) as Parameters<typeof POST>[0],
+    )
+
+    const callArg = streamTextMock.mock.calls[0][0] as {
+      tools: Record<string, unknown>
+    }
+    const toolNames = Object.keys(callArg.tools)
+    expect(toolNames).toContain('lookupConcept')
+    expect(toolNames).not.toContain('triageBatch')
   })
 
   it('omits the profile block when no profile is supplied', async () => {
