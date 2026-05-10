@@ -1,0 +1,110 @@
+name: Agent Eval
+
+on:
+  workflow_dispatch:
+    inputs:
+      providers:
+        description: 'Comma-separated providers to run (anthropic, openai, gemini)'
+        required: false
+        default: 'anthropic,openai,gemini'
+      fixture:
+        description: 'Fixture path relative to repo root'
+        required: false
+        default: '.claude/evals/agent-discipline.json'
+
+permissions:
+  contents: read
+
+jobs:
+  agent-eval:
+    name: 🤖 Agent eval (${{ matrix.provider }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: [anthropic, openai, gemini]
+    steps:
+      - name: Skip provider when not in dispatch list
+        id: gate
+        run: |
+          providers="${{ github.event.inputs.providers }}"
+          if [[ ",${providers}," != *",${{ matrix.provider }},"* ]]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout
+        if: steps.gate.outputs.skip != 'true'
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        if: steps.gate.outputs.skip != 'true'
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install web deps
+        if: steps.gate.outputs.skip != 'true'
+        working-directory: web
+        run: bun install --frozen-lockfile
+
+      - name: Start web server
+        if: steps.gate.outputs.skip != 'true'
+        working-directory: web
+        run: |
+          bun run build
+          bun run start > server.log 2>&1 &
+          for i in {1..30}; do
+            if curl -sf http://localhost:3000/api/healthcheck > /dev/null 2>&1 \
+               || curl -sf http://localhost:3000/ > /dev/null 2>&1; then
+              echo "server up"
+              break
+            fi
+            sleep 2
+          done
+
+      - name: Resolve provider secret
+        if: steps.gate.outputs.skip != 'true'
+        id: secret
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          case "${{ matrix.provider }}" in
+            anthropic) key="$ANTHROPIC_API_KEY" ;;
+            openai)    key="$OPENAI_API_KEY" ;;
+            gemini)    key="$GEMINI_API_KEY" ;;
+          esac
+          if [ -z "$key" ]; then
+            echo "::warning::No API key configured for ${{ matrix.provider }}, skipping"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "::add-mask::$key"
+            echo "key=$key" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run discipline fixture
+        if: steps.gate.outputs.skip != 'true' && steps.secret.outputs.skip != 'true'
+        working-directory: web
+        env:
+          PROBE_PROVIDER: ${{ matrix.provider }}
+          PROBE_API_KEY: ${{ steps.secret.outputs.key }}
+          PROBE_FIXTURE: ${{ github.event.inputs.fixture }}
+        run: bun scripts/model-probe.ts
+
+      - name: Run general-profile fixture
+        if: steps.gate.outputs.skip != 'true' && steps.secret.outputs.skip != 'true'
+        working-directory: web
+        env:
+          PROBE_PROVIDER: ${{ matrix.provider }}
+          PROBE_API_KEY: ${{ steps.secret.outputs.key }}
+          PROBE_FIXTURE: .claude/evals/agent-general-profile.json
+        run: bun scripts/model-probe.ts
+
+      - name: Upload results
+        if: always() && steps.gate.outputs.skip != 'true' && steps.secret.outputs.skip != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-eval-${{ matrix.provider }}
+          path: .claude/.tmp/ollama-model-research/smoke-*.md
