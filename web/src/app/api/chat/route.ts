@@ -9,8 +9,8 @@ import type { NextRequest } from 'next/server'
 import { createOllama } from 'ollama-ai-provider-v2'
 import { z } from 'zod'
 
-import { buildSystemPrompt } from '@/lib/agent/system-prompt'
-import { jobtriageTools } from '@/lib/agent/tools'
+import { type AgentMode, buildSystemPrompt } from '@/lib/agent/system-prompt'
+import { deployJobtriageTools, jobtriageTools } from '@/lib/agent/tools'
 
 export const runtime = 'nodejs'
 export const maxDuration = 120
@@ -62,6 +62,17 @@ function resolveProvider(request: NextRequest): ResolvedProvider | Response {
   }
 }
 
+function resolveAgentMode(
+  providerName: 'anthropic' | 'ollama',
+  request: NextRequest,
+): AgentMode {
+  const headerOverride = request.headers.get('x-jobtriage-mode')
+  if (headerOverride === 'deploy' && !process.env.VERCEL) {
+    return 'deploy'
+  }
+  return providerName === 'ollama' ? 'local' : 'deploy'
+}
+
 export async function POST(request: NextRequest): Promise<Response> {
   const resolved = resolveProvider(request)
   if (resolved instanceof Response) {
@@ -81,13 +92,15 @@ export async function POST(request: NextRequest): Promise<Response> {
   }
 
   const today = new Date().toISOString().slice(0, 10)
+  const mode = resolveAgentMode(resolved.providerName, request)
+  const tools = mode === 'deploy' ? deployJobtriageTools : jobtriageTools
   const result = streamText({
     model: resolved.model,
-    system: buildSystemPrompt(parsed.data.profile, today),
+    system: buildSystemPrompt(parsed.data.profile, today, mode),
     messages: await convertToModelMessages(
       parsed.data.messages as Parameters<typeof convertToModelMessages>[0],
     ),
-    tools: jobtriageTools,
+    tools,
     stopWhen: stepCountIs(8),
     ...(resolved.providerName === 'ollama' && {
       providerOptions: { ollama: { options: { num_ctx: OLLAMA_NUM_CTX } } },

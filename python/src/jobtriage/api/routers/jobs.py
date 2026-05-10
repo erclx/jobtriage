@@ -1,5 +1,6 @@
 """Job search endpoints wrapping the v0/v1 retrieval primitives."""
 
+import asyncio
 import sqlite3
 from datetime import date, timedelta
 from typing import Annotated
@@ -18,6 +19,11 @@ from jobtriage.api.schemas import (
     JobDetailsResponse,
     JobSearchRequest,
     JobSearchResponse,
+    LiveAdSummary,
+    LiveJobDetailsRequest,
+    LiveJobDetailsResponse,
+    LiveJobSearchRequest,
+    LiveJobSearchResponse,
     RankedAd,
     SemanticSearchRequest,
     SemanticSearchResponse,
@@ -26,6 +32,8 @@ from jobtriage.api.schemas import (
     TriageResponse,
 )
 from jobtriage.embeddings import Embedder
+from jobtriage.jobtech.client import JobTechClient
+from jobtriage.jobtech.models import Ad
 from jobtriage.retrieval import filter_only_search, hybrid_search
 from jobtriage.settings import Settings
 
@@ -282,3 +290,63 @@ def _clip_excerpt(text: str | None) -> str:
     if len(cleaned) <= EXCERPT_MAX_CHARS:
         return cleaned
     return cleaned[:EXCERPT_MAX_CHARS].rstrip() + '…'
+
+
+@router.post('/live-search', response_model=LiveJobSearchResponse)
+async def live_search_jobs(
+    payload: LiveJobSearchRequest,
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> LiveJobSearchResponse:
+    if not (payload.query or payload.occupation_concept_id or payload.region):
+        raise HTTPException(
+            status_code=422,
+            detail='Provide at least one of query, occupation_concept_id, region.',
+        )
+    async with JobTechClient(
+        base_url=settings.jobtech_base_url,
+        timeout_seconds=settings.jobtech_timeout_seconds,
+    ) as client:
+        ads = await client.live_search(
+            query=payload.query,
+            occupation_concept_id=payload.occupation_concept_id,
+            region=payload.region,
+            limit=payload.top_k,
+        )
+    return LiveJobSearchResponse(results=[_ad_to_live_summary(ad) for ad in ads])
+
+
+@router.post('/live-details', response_model=LiveJobDetailsResponse)
+async def live_job_details(
+    payload: LiveJobDetailsRequest,
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> LiveJobDetailsResponse:
+    async with JobTechClient(
+        base_url=settings.jobtech_base_url,
+        timeout_seconds=settings.jobtech_timeout_seconds,
+    ) as client:
+        ads = await asyncio.gather(
+            *(client.fetch_ad(ad_id) for ad_id in payload.ad_ids)
+        )
+    results = [_ad_to_live_summary(ad) for ad in ads if ad is not None]
+    if not results:
+        raise HTTPException(
+            status_code=404, detail=f'No live ads matched: {payload.ad_ids}'
+        )
+    return LiveJobDetailsResponse(results=results)
+
+
+def _ad_to_live_summary(ad: Ad) -> LiveAdSummary:
+    return LiveAdSummary(
+        ad_id=ad.id,
+        headline=ad.headline,
+        employer_name=ad.employer.name if ad.employer else None,
+        municipality=ad.workplace_address.municipality
+        if ad.workplace_address
+        else None,
+        application_deadline=(
+            ad.application_deadline.isoformat() if ad.application_deadline else None
+        ),
+        webpage_url=ad.webpage_url,
+        description_excerpt=_clip_excerpt(ad.description_text),
+        occupation_label=ad.occupation.label if ad.occupation else None,
+    )

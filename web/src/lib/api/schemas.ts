@@ -94,6 +94,61 @@ export const DeadlineResponseSchema = z
   })
   .strict()
 
+export const LiveAdSummarySchema = AdSummarySchema.extend({
+  description_excerpt: z.string(),
+  occupation_label: z.string().nullable().optional(),
+}).strict()
+
+export const LiveJobSearchRequestSchema = z
+  .object({
+    query: z.string().min(1).max(512).optional(),
+    occupation_concept_id: z.string().min(1).optional(),
+    region: z.string().min(1).optional(),
+    top_k: z.number().int().min(1).max(10).default(5),
+  })
+  .strict()
+
+export const LiveJobSearchResponseSchema = z
+  .object({
+    results: z.array(LiveAdSummarySchema),
+  })
+  .strict()
+
+export const LiveJobDetailsRequestSchema = z
+  .object({
+    ad_ids: z.array(z.string().min(1)).min(1).max(10),
+  })
+  .strict()
+
+export const LiveJobDetailsResponseSchema = z
+  .object({
+    results: z.array(LiveAdSummarySchema),
+  })
+  .strict()
+
+export const ConceptKindSchema = z.enum(['occupation', 'region'])
+
+export const ConceptSchema = z
+  .object({
+    concept_id: z.string().min(1),
+    preferred_label: z.string().min(1),
+    type: ConceptKindSchema,
+  })
+  .strict()
+
+export const LookupConceptRequestSchema = z
+  .object({
+    query: z.string().min(1).max(128),
+    top_k: z.number().int().min(1).max(20).default(5),
+  })
+  .strict()
+
+export const LookupConceptResponseSchema = z
+  .object({
+    results: z.array(ConceptSchema),
+  })
+  .strict()
+
 export const EngagementEntrySchema = z
   .object({
     recorded_on: z.string(),
@@ -132,6 +187,17 @@ export type TriageRequest = z.input<typeof TriageRequestSchema>
 export type TriageResponse = z.infer<typeof TriageResponseSchema>
 export type DeadlineRequest = z.input<typeof DeadlineRequestSchema>
 export type DeadlineResponse = z.infer<typeof DeadlineResponseSchema>
+export type LiveAdSummary = z.infer<typeof LiveAdSummarySchema>
+export type LiveJobSearchRequest = z.input<typeof LiveJobSearchRequestSchema>
+export type LiveJobSearchResponse = z.infer<typeof LiveJobSearchResponseSchema>
+export type LiveJobDetailsRequest = z.input<typeof LiveJobDetailsRequestSchema>
+export type LiveJobDetailsResponse = z.infer<
+  typeof LiveJobDetailsResponseSchema
+>
+export type Concept = z.infer<typeof ConceptSchema>
+export type ConceptKind = z.infer<typeof ConceptKindSchema>
+export type LookupConceptRequest = z.input<typeof LookupConceptRequestSchema>
+export type LookupConceptResponse = z.infer<typeof LookupConceptResponseSchema>
 export type EngagementEntry = z.infer<typeof EngagementEntrySchema>
 export type EngagementStatusRequest = z.input<
   typeof EngagementStatusRequestSchema

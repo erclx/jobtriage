@@ -143,6 +143,34 @@
         "title": "AdSummary",
         "type": "object"
       },
+      "Concept": {
+        "additionalProperties": false,
+        "properties": {
+          "concept_id": {
+            "title": "Concept Id",
+            "type": "string"
+          },
+          "preferred_label": {
+            "title": "Preferred Label",
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "occupation",
+              "region"
+            ],
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "concept_id",
+          "preferred_label",
+          "type"
+        ],
+        "title": "Concept",
+        "type": "object"
+      },
       "DeadlineAd": {
         "additionalProperties": false,
         "properties": {
@@ -432,6 +460,226 @@
           "results"
         ],
         "title": "JobSearchResponse",
+        "type": "object"
+      },
+      "LiveAdSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "ad_id": {
+            "title": "Ad Id",
+            "type": "string"
+          },
+          "application_deadline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Application Deadline"
+          },
+          "description_excerpt": {
+            "title": "Description Excerpt",
+            "type": "string"
+          },
+          "employer_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Employer Name"
+          },
+          "headline": {
+            "title": "Headline",
+            "type": "string"
+          },
+          "municipality": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Municipality"
+          },
+          "occupation_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Occupation Label"
+          },
+          "webpage_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Webpage Url"
+          }
+        },
+        "required": [
+          "ad_id",
+          "headline",
+          "description_excerpt"
+        ],
+        "title": "LiveAdSummary",
+        "type": "object"
+      },
+      "LiveJobDetailsRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "ad_ids": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Ad Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "ad_ids"
+        ],
+        "title": "LiveJobDetailsRequest",
+        "type": "object"
+      },
+      "LiveJobDetailsResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/LiveAdSummary"
+            },
+            "title": "Results",
+            "type": "array"
+          }
+        },
+        "required": [
+          "results"
+        ],
+        "title": "LiveJobDetailsResponse",
+        "type": "object"
+      },
+      "LiveJobSearchRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "occupation_concept_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Occupation Concept Id"
+          },
+          "query": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Query"
+          },
+          "region": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region"
+          },
+          "top_k": {
+            "default": 5,
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Top K",
+            "type": "integer"
+          }
+        },
+        "title": "LiveJobSearchRequest",
+        "type": "object"
+      },
+      "LiveJobSearchResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/LiveAdSummary"
+            },
+            "title": "Results",
+            "type": "array"
+          }
+        },
+        "required": [
+          "results"
+        ],
+        "title": "LiveJobSearchResponse",
+        "type": "object"
+      },
+      "LookupConceptRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Query",
+            "type": "string"
+          },
+          "top_k": {
+            "default": 5,
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Top K",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "title": "LookupConceptRequest",
+        "type": "object"
+      },
+      "LookupConceptResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/Concept"
+            },
+            "title": "Results",
+            "type": "array"
+          }
+        },
+        "required": [
+          "results"
+        ],
+        "title": "LookupConceptResponse",
         "type": "object"
       },
       "RankedAd": {
@@ -851,6 +1099,88 @@
         ]
       }
     },
+    "/v1/jobs/live-details": {
+      "post": {
+        "operationId": "live_job_details_v1_jobs_live_details_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LiveJobDetailsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveJobDetailsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Live Job Details",
+        "tags": [
+          "jobs"
+        ]
+      }
+    },
+    "/v1/jobs/live-search": {
+      "post": {
+        "operationId": "live_search_jobs_v1_jobs_live_search_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LiveJobSearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveJobSearchResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Live Search Jobs",
+        "tags": [
+          "jobs"
+        ]
+      }
+    },
     "/v1/jobs/search": {
       "post": {
         "operationId": "search_jobs_v1_jobs_search_post",
@@ -971,6 +1301,47 @@
         "summary": "Triage",
         "tags": [
           "jobs"
+        ]
+      }
+    },
+    "/v1/taxonomy/lookup": {
+      "post": {
+        "operationId": "lookup_concept_v1_taxonomy_lookup_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LookupConceptRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LookupConceptResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Lookup Concept",
+        "tags": [
+          "taxonomy"
         ]
       }
     }

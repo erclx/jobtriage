@@ -22,6 +22,7 @@
 
 - When you need to verify agent behavior (tool selection, prompt edits, model output, SSE shape), drive the running stack directly via `curl -X POST http://localhost:3000/api/chat`. Do not ask the user to open the browser and paste prompts unless the test requires visual rendering. Probe multiple times to surface non-determinism, since local Ollama is sampling-noisy.
 - A minimal probe body: `{"messages":[{"id":"u1","role":"user","parts":[{"type":"text","text":"<prompt>"}]}],"profile":null}` with header `x-jobtriage-provider: ollama` for the local path or `Authorization: Bearer sk-ant-...` for the deployed Anthropic path.
+- To exercise the deploy posture (live JobTech path, `lookupConcept` plus live `searchJobs`) on the local Ollama branch without burning Anthropic credits, add `x-jobtriage-mode: deploy` to the curl headers, or open the browser at `http://127.0.0.1:3000/?mode=deploy` so the chat client sends the same header. The route gates the override on the absence of `process.env.VERCEL`, so production traffic cannot force the posture.
 - Read tool-call ordering with `grep -oE '"toolName":"[a-zA-Z]+"'` and final text with `grep -oE '"delta":"[^"]*"'`. The user runs visual checks (card layout, overflow, theme contrast).
 - Before loading a local model, start `scripts/monitor.sh` and check host RAM via PowerShell. Override `num_ctx` to 8192 via `OLLAMA_NUM_CTX` or route `providerOptions`. Ollama's default 131k allocates a KV cache that spills WSL2 into Windows host RAM on 30B-class models. Abort if host is already at 80%.
 - When a model ignores a prompt rule across 3-5 curl probes at the working temperature, stop tightening the prompt. Document it as a known limitation in the PR body and queue a model-swap or guard-rail follow-up instead.
@@ -53,7 +54,7 @@
 - `src/`: [description]
 - `.claude/`: planning docs (requirements, architecture, wireframes, design, tasks)
 - `.claude/evals/agent-conversations.md`: numbered manual prompts for chat surface testing, seed fixture for the v6 agent-eval harness. Each case lists expected tools, expected behavior, and known regression alarms. Run before opening a chat-touching PR.
-- `.claude/evals/*.json`: structured fixtures consumed by `web/scripts/model-probe.ts`. Each file declares a `kind` (`discipline` for tool-call probes, `language` for language-detection probes) plus a `probes` array. Select via `PROBE_FIXTURE=.claude/evals/<file>.json` when running the harness.
+- `.claude/evals/*.json`: structured fixtures consumed by `web/scripts/model-probe.ts`. Each file declares a `kind` plus a `probes` array. Supported kinds: `discipline` (chitchat versus tool-warranted), `language` (English versus Swedish detection), `pairing` (data tool plus spatial-tool pairing), `general-profile` (cross-profession deploy posture, carries inline `profiles` map keyed by `profileKey`, harness sends `x-jobtriage-mode: deploy`). Select via `PROBE_FIXTURE=.claude/evals/<file>.json` when running the harness.
 - `.claude/review/`: gitignored scratch for review and UI-test output, overwritten on each run
 - `wiki/`: durable reusable technical knowledge that outlives any single project decision (model landscapes, tool-stack notes, integration playbooks). Pages survive plan-file deletion when tasks ship.
 

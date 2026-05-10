@@ -51,6 +51,10 @@ cd python && uv run jobtriage mark-status <ad-id> applied --note 'submitted via 
 
 ## Hybrid retrieval ablation
 
+The hybrid retrieval stack (BM25 plus dense embeddings plus reciprocal rank fusion over a local SQLite corpus) ships in this repo and powers the Typer CLI plus the local Next.js dev surface. The deployed demo at the live URL takes a different path. It calls the JobTech taxonomy and JobSearch APIs directly so it can answer for any profession a visitor pastes, instead of being pinned to the maintainer's AI-engineering corpus. The numbers below describe the repo and CLI story, reproducible end-to-end against the checked-in golden set.
+
+_Repo and CLI configuration. The deployed demo serves live JobTech results and does not exercise these retrieval modes._
+
 50-query Swedish golden set against a 59-ad corpus from Spotify, Klarna, Volvo Group, Volvo Cars, Ericsson, HT Engineering, Stig Ericsson Bil, Montico, and Isaksson Rekrytering. Embeddings from `intfloat/multilingual-e5-base`. Reproduce via `uv run jobtriage evaluate`.
 
 | Configuration | precision@1 | precision@5 | precision@10 | recall@10 | p50 ms | p95 ms |
