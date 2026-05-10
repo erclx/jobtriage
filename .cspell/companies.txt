@@ -1,6 +1,8 @@
 Clarifai
 figma
 Isaksson
+Jobsearch
+Jobtechdev
 Klarna
 Montico
 Onestream
