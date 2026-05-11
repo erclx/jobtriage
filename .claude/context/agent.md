@@ -9,16 +9,18 @@ The agent loop is the project's core IP and the most-edited surface. This entry 
 
 ## Layer responsibilities
 
-- `web/src/lib/agent/tools.ts` exports two tool registries. `jobtriageTools = {...dataTools, ...spatialTools}` for local mode covers the full seven data tools paired with eight spatial tools. `deployJobtriageTools = {...deployDataTools, ...spatialTools}` swaps the corpus-dependent data tools (`searchJobs`, `semanticSearch`, `triageBatch`, `deadlineWatch`) for live variants and adds `lookupConcept` as the setup gate.
-- `web/src/lib/agent/system-prompt.ts` exports `buildSystemPrompt(profile, today, mode)`. Two base prompts (`LOCAL_BASE`, `DEPLOY_BASE`) carry the tool list and pairing rules per mode. Profile content sandwiches between `PROFILE_HEADER` and `PROFILE_FOOTER`. When `profile` is null or whitespace-only the sandwich is omitted entirely and the agent skips `connectProfileToAds`.
-- `web/src/app/api/chat/route.ts` orchestrates per-request resolution. `resolveProvider(request)` reads `x-jobtriage-provider`, routes to Ollama factory or a BYOK builder. `resolveAgentMode(providerName, request)` reads `x-jobtriage-mode`. Tool selection is `mode === 'deploy' ? deployJobtriageTools : jobtriageTools`. The loop is hard-capped via `stopWhen: stepCountIs(8)`.
-- `web/scripts/model-probe.ts` drives the chat route from outside, loads a `kind`-tagged fixture from `.claude/evals/`, and emits a markdown comparison per provider or per model. For Ollama, restarts the web server between model batches via `bun run restart:web` with `OLLAMA_MODEL_ID` set. For BYOK, no restart and requires `PROBE_API_KEY`. See `evals.md`.
+- `web/src/lib/agent/tools.ts` owns the two tool registries (`jobtriageTools` local, `deployJobtriageTools` deploy)
+- `web/src/lib/agent/system-prompt.ts` owns `buildSystemPrompt` and the two base prompts per mode
+- `web/src/app/api/chat/route.ts` orchestrates per-request provider and mode resolution
+- `web/scripts/model-probe.ts` drives the chat route against `.claude/evals/` fixtures, see `evals.md`
 
 ## Decisions
 
 ### Tool registry split per posture
 
 Local mode keeps the corpus tools because the maintainer's SQLite corpus is the right shape for daily personal triage. Deploy mode excludes corpus-dependent tools because a maintainer-curated corpus cannot serve any visitor's profile. The split is enforced at the registry layer, not at runtime. A deploy request never sees the corpus tools in the system prompt or in the SDK tool registry.
+
+Specifically, deploy swaps `searchJobs`, `semanticSearch`, `triageBatch`, and `deadlineWatch` for live variants, drops the corpus-only tools entirely, and adds `lookupConcept` as the setup gate that resolves user-facing terms to JobTech taxonomy ids.
 
 ### Provider switch via header
 
@@ -64,4 +66,5 @@ JobTech `/search` filters occupation concept ids via `occupation-name`, not `occ
 - `x-jobtriage-mode` default is empty, not `local`. The resolver falls through to step 2 when the header is absent or anything other than `deploy`.
 - The system prompt is rebuilt per request, not cached. The `today` field is the request's date in ISO, so the date used in deadline reasoning is server-side and stable across the agent's loop.
 - Profile content flows from the chat request body (`profile` field), not from a header or cookie. The browser pulls profile from `SESSION_KEYS.profile` and posts it inline. No persistence server-side.
+- When `profile` is null or whitespace-only, `buildSystemPrompt` omits the `PROFILE_HEADER`/`PROFILE_FOOTER` sandwich entirely and the agent skips `connectProfileToAds` per the base prompts.
 - Endpoint mapping for the seven local data tools: `searchJobs` and `semanticSearch` hit `/v1/jobs/search` and `/v1/jobs/semantic`. `matchProfile` and `compareRoles` share `/v1/jobs/details`. `triageBatch` calls `/v1/jobs/triage`. `deadlineWatch` calls `/v1/jobs/deadline`. `trackStatus` reads `GET /v1/engagements/status`. The deploy posture remaps `searchJobs` to `/v1/jobs/live-search`, `matchProfile` and `compareRoles` to `/v1/jobs/live-details`, and adds `lookupConcept` against `/v1/taxonomy/lookup`. See `python.md` for backend route ownership.

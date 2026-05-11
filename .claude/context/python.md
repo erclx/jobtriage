@@ -55,14 +55,24 @@ The `storage/` schema reserves a nullable `embedding` BLOB column on `ad_chunks`
 
 ## Layer responsibilities
 
-- `jobtech/`: async httpx client and pydantic models. `JobTechClient.search` paginates the structured `/search` endpoint for ingestion. `live_search` runs a single-page free-text plus structured live search and returns ads with description text inline for the deploy posture. `fetch_ad` hits `/ad/{id}` for live single-ad detail. `search_concepts` queries the taxonomy `suggesters/autocomplete` endpoint across the occupation-name and region taxonomies in parallel and returns a list of `Concept(concept_id, preferred_label, type)` records. The CLI imports these directly.
-- `api/`: thin FastAPI layer. `app_factory()` mounts `routers/health.py`, `routers/jobs.py`, `routers/engagements.py`, and `routers/taxonomy.py`. The lifespan warms the embedder once on startup. The CLI imports the Python tools directly without going through HTTP. `JobSearchRequest.occupation_concept_id` and `LiveJobSearchRequest.occupation_concept_id` validate against the JobTech 4-3-3 alphanumeric nanoid pattern and return 422 on fabricated ids. `JOBTRIAGE_RRF_FLOOR` (default 0.025) drops below-floor results at the `triage` and `semantic` endpoints to suppress noise on adversarial queries. `filter_only_search` is left untouched since it returns recent ads regardless of relevance score. Endpoint-to-tool mapping for both postures lives in `.claude/context/agent.md`.
-- `storage/`: SQLite schema, paragraph-then-length chunker, append-mostly ingest with filter-scoped deactivation. Ingest writes both `ad_chunks` and `ad_chunks_fts` rows together.
-- `embeddings.py`: `Embedder` Protocol plus `SentenceTransformerEmbedder` for multilingual-e5. Lazy-loads the model on first encode and applies the `passage:`/`query:` prefixes that e5 requires.
-- `retrieval.py`: `bm25_search` over FTS5, `dense_search` over the embedding column, `reciprocal_rank_fusion` (k=60 default), and `hybrid_search` that composes them.
-- `evals/`: pydantic-validated golden-set loader and the four-configuration runner. Details in `.claude/context/evals.md`.
-- `engagement.py`: `record_status` appends rows to a markdown engagement log, `read_status` parses entries for one ad id. Single-writer file, no SQLite mirror per ARCHITECTURE.md.
-- `cli/`: Typer commands. `sweep` ingests from JobTech, `index` backfills embeddings, `search` runs hybrid retrieval, `mark-status` records engagement state. The `evaluate` and `evaluate-embeddings` commands belong to the retrieval-ablation stack documented in `.claude/context/evals.md`.
+- `jobtech/` owns the async httpx JobTech client and pydantic models
+- `api/` owns the thin FastAPI HTTP wrapper, request schemas, and lifespan
+- `storage/` owns the SQLite schema, paragraph-then-length chunker, and append-mostly ingest
+- `embeddings.py` owns the `multilingual-e5` wrapper with passage/query prefixes
+- `retrieval.py` owns BM25, dense cosine, and the RRF fusion that composes them
+- `evals/` owns the golden-set loader and four-configuration runner, details in `.claude/context/evals.md`
+- `engagement.py` owns the markdown engagement log reader and writer
+- `cli/` owns the Typer commands (`sweep`, `index`, `search`, `mark-status`), plus `evaluate` and `evaluate-embeddings` covered in `.claude/context/evals.md`
+
+## Decisions
+
+### JobTech concept-id format validation at the request schema
+
+`JobSearchRequest.occupation_concept_id` and `LiveJobSearchRequest.occupation_concept_id` validate against the JobTech 4-3-3 alphanumeric nanoid pattern (e.g., `X9jv_K2b_m48`). Fabricated ids return 422 with an actionable message. The v4.2 audit caught the agent inventing ids like `occupation-12345` on adversarial prompts, which silently returned the unfiltered global corpus because no boundary check existed. A structured 422 lets the model recover into a different tool, instead of looking like the corpus has no matches.
+
+### RRF floor scoped to corpus endpoints
+
+`JOBTRIAGE_RRF_FLOOR` (default `0.025`) drops below-floor results at `/v1/jobs/triage` and `/v1/jobs/semantic` only. `/v1/jobs/search` and `/v1/jobs/live-search` are left untouched since they filter recent ads regardless of relevance score. Full rationale in `.claude/context/retrieval.md`.
 
 ## Conventions
 

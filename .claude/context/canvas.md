@@ -9,11 +9,11 @@ Spatial workspace rendered to the right of the chat rail. Retrieved ads become R
 
 ## Layer responsibilities
 
-- `web/src/features/canvas/canvas-state.ts` owns the reducer and the `CanvasState` shape. Thirteen action types map to spatial-tool dispatches plus `setNodePosition` (drag) and `hydrate` (sessionStorage). `appliedToolCallIds` caps at 100 entries via `uniquePush` and dedupes spatial dispatches by tool-call id.
-- `web/src/features/canvas/canvas-provider.tsx` reads `SESSION_KEYS.canvas` once on mount, merges with `INITIAL_CANVAS_STATE`, and writes every reducer output back to sessionStorage.
-- `web/src/features/canvas/canvas-surface.tsx` wraps `ReactFlowProvider`, computes layout via `buildLayout(state)`, translates layout nodes to React Flow nodes with `state.nodePositions` overriding layout coordinates, and dispatches `setNodePosition` on drag end. View tabs (triage, timeline, compare, shortlist) dispatch `setView` with no `toolCallId` to mark user-initiated.
-- `web/src/features/canvas/canvas-bridge.tsx` consumes the AI SDK `messages` array. For data tools (state `output-available`), calls `ingestAds(registry, output)` to cache ad data in a `useRef<Map>`. For spatial tools, calls `toCanvasAction(toolName, part, registry)` and dispatches the resulting `CanvasAction`. Registry persists across renders, ads flow in before spatial tools consume them.
-- `web/src/features/canvas/views/layout.ts` owns the five layout strategies (grid, group, timeline, compare, shortlist). `buildLayout(state)` is memoized.
+- `canvas-state.ts` owns the reducer, `CanvasState` shape, and thirteen action types
+- `canvas-provider.tsx` owns sessionStorage hydration and write-through
+- `canvas-surface.tsx` owns the React Flow root, layout translation, and drag dispatch
+- `canvas-bridge.tsx` translates AI SDK tool parts into reducer dispatches via `toCanvasAction`
+- `views/layout.ts` owns the five layout strategies (grid, group, timeline, compare, shortlist)
 
 ## Data-spatial pairing
 
@@ -67,3 +67,5 @@ When a user drags a node, `setNodePosition` writes to `state.nodePositions[nodeI
 - Bridge expects `message.parts[i]` to have `type` starting with `tool-` or equal to `dynamic-tool`, `state === 'output-available'`, and a `toolCallId`. `output` for data tools must have shape `{ results?: AdCardData[] }` with `ad_id` as a string. Spatial dispatches are deduped by `toolCallId`, so re-emitting the same tool-call drops the duplicate dispatch.
 - Ad node minimal shape: `ad_id`, `headline`, `employer_name`, `municipality`, `days_until_deadline`, `application_deadline`, `description_excerpt`, `webpage_url`. Missing ads render "Loading ad".
 - Match link tone is computed by `matchToneFor(score)` in `match-tone.ts`. Edge strokeWidth and opacity scale with score. Stroke color maps to `MATCH_TONE_STROKE` (strong, consider, pass).
+- View tabs (triage, timeline, compare, shortlist) dispatch `setView` without a `toolCallId` to mark the change as user-initiated. The reducer uses the absence as the signal.
+- `appliedToolCallIds` caps at 100 entries via `uniquePush`. Older entries get evicted, so a long session can in principle re-dispatch a stale tool-call. Not observed in practice with the 8-step cap, but worth knowing.
