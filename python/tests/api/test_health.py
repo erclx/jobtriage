@@ -3,8 +3,8 @@
 from fastapi.testclient import TestClient
 
 
-def test_healthz_reports_runtime_configuration(client: TestClient) -> None:
-    response = client.get('/healthz')
+def test_health_reports_runtime_configuration(client: TestClient) -> None:
+    response = client.get('/health')
 
     assert response.status_code == 200
     body = response.json()

@@ -14,7 +14,7 @@ def test_openapi_endpoint_exposes_registered_routes(client: TestClient) -> None:
     assert response.status_code == 200
     schema = response.json()
     paths = schema['paths']
-    assert '/healthz' in paths
+    assert '/health' in paths
     assert '/v1/jobs/search' in paths
     assert '/v1/jobs/semantic' in paths
 
