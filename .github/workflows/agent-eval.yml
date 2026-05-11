@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       providers:
-        description: 'Comma-separated providers. Default `gemini` is free tier; add `anthropic` or `openai` to opt into paid runs.'
+        description: 'Comma-separated providers. Default `gemini` is free tier. Add `anthropic` or `openai` to opt into paid runs.'
         required: false
         default: 'gemini'
       fixture:
