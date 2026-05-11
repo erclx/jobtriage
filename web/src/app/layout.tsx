@@ -15,8 +15,9 @@ const SITE_URL =
     : 'https://jobtriage.vercel.app')
 
 const TITLE = 'jobtriage'
+// Mirrors the README hook. Keep the two strings aligned when copy changes.
 const DESCRIPTION =
-  'Free-form chat over the Swedish JobTech jobs board. Ask which roles fit your profile and have deadlines before next Friday.'
+  'Triage Swedish job ads against any profile in a live agent workspace.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

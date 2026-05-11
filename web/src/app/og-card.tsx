@@ -1,6 +1,8 @@
 import { ImageResponse } from 'next/og'
 
-export const ogCardAlt = 'jobtriage: free-form chat over Swedish JobTech ads'
+// Mirrors the README hook. Keep the two strings aligned when copy changes.
+export const ogCardAlt =
+  'jobtriage: triage Swedish job ads against any profile in a live agent workspace'
 export const ogCardSize = { width: 1200, height: 630 }
 export const ogCardContentType = 'image/png'
 
@@ -50,8 +52,8 @@ export function renderOgCard() {
             maxWidth: 1000,
           }}
         >
-          "Which Stockholm AI roles mention agentic systems and close before
-          Friday?"
+          "Show Stockholm nursing roles with deadlines this week, ranked by my
+          profile fit"
         </div>
       </div>
       <div
