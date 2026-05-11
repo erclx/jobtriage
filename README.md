@@ -79,7 +79,7 @@ Other public projects in adjacent space and the gap jobtriage fills:
 
 ## Build approach
 
-Built with Claude Code as the primary agent, planned through the `.claude/` planning docs ([requirements](.claude/REQUIREMENTS.md), [architecture](.claude/ARCHITECTURE.md), [tasks](.claude/TASKS.md)) and gated by the [coding standards](.claude/rules). The full setup is reproducible from [CLAUDE.md](CLAUDE.md).
+Built with Claude Code as the primary agent, planned through the `.claude/` planning docs ([requirements](.claude/REQUIREMENTS.md), [architecture](.claude/ARCHITECTURE.md), [tasks](.claude/TASKS.md)) and gated by the [coding standards](.claude/rules). The full setup is reproducible from the [Claude config](CLAUDE.md).
 
 ## Documentation
 
