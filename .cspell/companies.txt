@@ -8,5 +8,6 @@ Klarna
 Montico
 Onestream
 OpenAI
+Vercel
 Webflow
 Yocto

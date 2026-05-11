@@ -2,7 +2,7 @@
 
 ## Overview
 
-Two-folder layout: `web/` runs a Next.js app with the agent loop in the browser, and `python/` runs a FastAPI backend wrapping the actual tools. The frontend orchestrates the LLM via the Vercel AI SDK and calls FastAPI endpoints when tools execute. SQLite holds the shared ad corpus and ships embedded with the deployed Fly.io image. A separate Typer CLI imports the same Python tools directly, bypassing the web shell for local daily use.
+Two-folder layout: `web/` runs a Next.js app with the agent loop in the browser, and `python/` runs a FastAPI backend wrapping the actual tools. The frontend orchestrates the LLM via the Vercel AI SDK and calls FastAPI endpoints when tools execute. SQLite holds the shared ad corpus for the local CLI and dev surface. The deployed Cloud Run image is slim and skips the corpus, since v4.10's live JobTech path renders corpus-backed tools unused in production. A separate Typer CLI imports the same Python tools directly, bypassing the web shell for local daily use.
 
 Five layers, in request-flow order:
 
@@ -26,7 +26,7 @@ Dense embeddings alone miss exact keyword matches like model names ("Mastra", "L
 
 ### SQLite over an external vector database
 
-FTS5 for keywords and a numpy in-process cosine over a chunk-level embedding column for vectors. One file, no extra service, ships embedded in the Fly.io image. External vector DBs add deploy complexity and a network hop. Active ad volume (low thousands at a time) sits well within SQLite's range, and brute-force scan is sub-millisecond at that size. `sqlite-vec` stays on the path for when corpus growth makes brute force unprofitable.
+FTS5 for keywords and a numpy in-process cosine over a chunk-level embedding column for vectors. One file, no extra service, used by the CLI and the local browser dev surface. The deployed Cloud Run image omits the corpus entirely, since v4.10 routes deploy traffic through live JobTech. External vector DBs add deploy complexity and a network hop. Active ad volume (low thousands at a time) sits well within SQLite's range, and brute-force scan is sub-millisecond at that size. `sqlite-vec` stays on the path for when corpus growth makes brute force unprofitable.
 
 ### Two-folder repo over a workspace monorepo
 
@@ -102,7 +102,7 @@ The button hides cleanly on browsers without `SpeechRecognition` (Firefox, Safar
 - **Tool-call trace UI density**: resolved at v4. Cards always render above the trace tree. The trace tree is collapsed by default behind a one-line summary header like `Triaged batch · Completed`. Recruiters get a clean transcript by default. Engineers expand per-tool to inspect inputs and outputs.
 - **Multilingual embedding ablation timing**: resolved at v5.2. The three-model comparison (e5-base, e5-large, `all-MiniLM-L6-v2` as the English-only baseline) runs through the harness via a separate `evaluate-embeddings` CLI on a 50-query Swedish golden set. The canonical pipeline still indexes with e5-base. The ablation encodes chunks in memory per model so it does not disturb `var/jobtriage.db`. README publishes both tables side by side.
 - **Eval cadence**: resolved at v2. Nightly via GitHub Actions cron at 03:00 UTC, with a `workflow_dispatch` escape hatch. The current eval harness is pure retrieval and does not call an LLM, so the API-budget concern does not apply yet. When v3 introduces LLM tool calls, split the LLM-eval subset into a dispatch-only or weekly job to cap the maintainer key.
-- **Ad corpus freshness in deploy** (decide at v5): rebuild the SQLite file and redeploy nightly, or run ingestion inside the container with a persistent Fly.io volume.
+- **Ad corpus freshness in deploy**: resolved at v5. The Cloud Run image ships in slim mode (`JOBTRIAGE_DEPLOY_MODE=slim`) and omits the SQLite corpus and sentence-transformers entirely, since v4.10 gated corpus-backed tools out of the deploy provider branch. Corpus-dependent endpoints return 503 in slim mode. Corpus freshness only matters for the local CLI and local browser dev surface, where the existing sweep workflow handles it.
 - **Reranker on or off by default**: shipped off and deferred out of v1. The retrieval module exposes a clean seam so a cross-encoder rerank can land later without churn. Decision flips at the start of v2 once `evaluate` produces baseline precision numbers against a real golden set.
 
 ### RRF score floor at the triage and semantic boundaries
