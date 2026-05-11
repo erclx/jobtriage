@@ -5,7 +5,7 @@ description: Cloud Run backend, Vercel frontend, and Cloudflare custom domain
 
 # Deployment
 
-Two surfaces ship the public demo: the Python FastAPI backend runs on Google Cloud Run, the Next.js frontend on Vercel. A custom domain at Cloudflare points at Vercel. The deployed image is BYOK and stateless. Anthropic, OpenAI, and Gemini keys live in the visitor's browser sessionStorage and forward per request.
+Two surfaces ship the public demo: the Python FastAPI backend runs on Google Cloud Run, the Next.js frontend on Vercel. A custom domain at Cloudflare points at Vercel. The deployed image is BYOK and stateless. Anthropic, OpenAI, and Gemini keys live in the visitor's browser sessionStorage and forward per request. The gate also exposes a no-key mock path that replays pre-canned SSE fixtures from `web/src/features/mock/scripts/` so a visitor without a key can still see the agent and the spatial canvas.
 
 ## Backend (Cloud Run)
 

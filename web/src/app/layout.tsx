@@ -17,7 +17,7 @@ const SITE_URL =
 const TITLE = 'jobtriage'
 // Mirrors the README hook. Keep the two strings aligned when copy changes.
 const DESCRIPTION =
-  'Triage Swedish job ads against any profile in a live agent workspace, with retrieval and a spatial canvas in one tab.'
+  'Triage Swedish job ads in a live agent workspace with retrieval and a spatial canvas. Try the demo with no key, or bring your own.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

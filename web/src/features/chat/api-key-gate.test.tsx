@@ -218,6 +218,87 @@ describe('ApiKeyGate', () => {
     )
   })
 
+  it('should clear the auto-populated profile when switching from mock to BYOK', async () => {
+    window.sessionStorage.setItem(SESSION_KEYS.provider, 'mock')
+    window.sessionStorage.setItem(
+      SESSION_KEYS.profile,
+      '# Demo profile\n- nurse',
+    )
+    const user = userEvent.setup()
+
+    render(
+      <ApiKeyGate switchRequested onResolveSwitch={() => {}}>
+        <div>protected</div>
+      </ApiKeyGate>,
+    )
+
+    const input = await screen.findByLabelText(/Anthropic API key/i)
+    await user.type(input, 'sk-ant-real')
+    await user.click(screen.getByRole('button', { name: /start chat/i }))
+
+    expect(window.sessionStorage.getItem(SESSION_KEYS.provider)).toBe(
+      'anthropic',
+    )
+    expect(window.sessionStorage.getItem(SESSION_KEYS.profile)).toBeNull()
+  })
+
+  it('should keep the profile when switching between BYOK and Ollama', async () => {
+    window.sessionStorage.setItem(SESSION_KEYS.apiKey, 'sk-ant-existing')
+    window.sessionStorage.setItem(SESSION_KEYS.provider, 'anthropic')
+    window.sessionStorage.setItem(
+      SESSION_KEYS.profile,
+      '# Real profile\n- senior engineer',
+    )
+    const user = userEvent.setup()
+
+    render(
+      <ApiKeyGate switchRequested onResolveSwitch={() => {}}>
+        <div>protected</div>
+      </ApiKeyGate>,
+    )
+
+    await user.click(
+      await screen.findByRole('button', { name: /Use local Ollama/i }),
+    )
+
+    expect(window.sessionStorage.getItem(SESSION_KEYS.provider)).toBe('ollama')
+    expect(window.sessionStorage.getItem(SESSION_KEYS.profile)).toBe(
+      '# Real profile\n- senior engineer',
+    )
+  })
+
+  it('should set provider to mock and unmount the gate on demo onramp click', async () => {
+    const user = userEvent.setup()
+    render(
+      <ApiKeyGate>
+        <div>protected</div>
+      </ApiKeyGate>,
+    )
+
+    await user.click(
+      await screen.findByRole('button', { name: /Try the demo, no key/i }),
+    )
+
+    expect(await screen.findByText('protected')).toBeInTheDocument()
+    expect(window.sessionStorage.getItem(SESSION_KEYS.provider)).toBe('mock')
+    expect(window.sessionStorage.getItem(SESSION_KEYS.apiKey)).toBeNull()
+  })
+
+  it('should keep the demo onramp visible alongside the BYOK provider picker', async () => {
+    render(
+      <ApiKeyGate>
+        <div>protected</div>
+      </ApiKeyGate>,
+    )
+
+    expect(
+      await screen.findByRole('button', { name: /Try the demo, no key/i }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: /Bring your own API key/i }),
+    ).toBeInTheDocument()
+  })
+
   it('should persist a valid Anthropic key and unmount the gate', async () => {
     const user = userEvent.setup()
     render(

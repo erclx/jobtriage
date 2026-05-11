@@ -11,6 +11,8 @@ import type { NextRequest } from 'next/server'
 import { createOllama } from 'ollama-ai-provider-v2'
 import { z } from 'zod'
 
+import { replayFallbackText, replayMockScript } from '@/features/mock/replay'
+import { findMockScript } from '@/features/mock/scripts'
 import { type AgentMode, buildSystemPrompt } from '@/lib/agent/system-prompt'
 import { deployJobtriageTools, jobtriageTools } from '@/lib/agent/tools'
 
@@ -101,11 +103,6 @@ function resolveAgentMode(
 }
 
 export async function POST(request: NextRequest): Promise<Response> {
-  const resolved = resolveProvider(request)
-  if (resolved instanceof Response) {
-    return resolved
-  }
-
   let body: unknown
   try {
     body = await request.json()
@@ -116,6 +113,20 @@ export async function POST(request: NextRequest): Promise<Response> {
   const parsed = ChatRequestSchema.safeParse(body)
   if (!parsed.success) {
     return jsonError(400, 'Invalid chat request payload')
+  }
+
+  if (request.headers.get('x-jobtriage-provider') === 'mock') {
+    const prompt = extractLastUserText(parsed.data.messages)
+    const script = findMockScript(prompt)
+    if (script) return replayMockScript(script)
+    return replayFallbackText(
+      'This is the no-key demo, so free-form questions are not wired up. Pick a suggestion chip, or switch to BYOK from the header to ask your own question.',
+    )
+  }
+
+  const resolved = resolveProvider(request)
+  if (resolved instanceof Response) {
+    return resolved
   }
 
   const today = new Date().toISOString().slice(0, 10)
@@ -143,6 +154,27 @@ export async function POST(request: NextRequest): Promise<Response> {
         : message
     },
   })
+}
+
+function extractLastUserText(messages: readonly unknown[]): string {
+  for (let i = messages.length - 1; i >= 0; i -= 1) {
+    const message = messages[i]
+    if (!message || typeof message !== 'object') continue
+    const candidate = message as { role?: unknown; parts?: unknown }
+    if (candidate.role !== 'user') continue
+    if (!Array.isArray(candidate.parts)) continue
+    const textParts = candidate.parts
+      .map((part) => {
+        if (!part || typeof part !== 'object') return null
+        const typed = part as { type?: unknown; text?: unknown }
+        if (typed.type !== 'text' || typeof typed.text !== 'string') return null
+        return typed.text
+      })
+      .filter((text): text is string => text !== null)
+    if (textParts.length === 0) continue
+    return textParts.join('').trim()
+  }
+  return ''
 }
 
 function extractErrorMessage(error: unknown): string {

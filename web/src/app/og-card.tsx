@@ -65,7 +65,7 @@ export function renderOgCard() {
         }}
       >
         <span>{displayUrl}</span>
-        <span>Bring your own key</span>
+        <span>Try the demo, no key needed</span>
       </div>
     </div>,
     { ...ogCardSize },

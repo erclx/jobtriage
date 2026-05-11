@@ -329,6 +329,80 @@ describe('POST /api/chat', () => {
     expect(toolNames).not.toContain('triageBatch')
   })
 
+  it('should replay a fixture without calling streamText when provider is mock and prompt matches', async () => {
+    const response = await POST(
+      buildRequest({
+        authorization: null,
+        provider: 'mock',
+        body: {
+          messages: [
+            {
+              id: 'u1',
+              role: 'user',
+              parts: [
+                {
+                  type: 'text',
+                  text: 'Show me Stockholm AI engineering roles',
+                },
+              ],
+            },
+          ],
+        },
+      }) as Parameters<typeof POST>[0],
+    )
+
+    expect(streamTextMock).not.toHaveBeenCalled()
+    expect(response.status).toBe(200)
+    expect(response.headers.get('x-vercel-ai-ui-message-stream')).toBe('v1')
+
+    const reader = response.body?.getReader()
+    if (!reader) throw new Error('Missing body')
+    const decoder = new TextDecoder()
+    let acc = ''
+    while (true) {
+      const { value, done } = await reader.read()
+      if (done) break
+      acc += decoder.decode(value)
+    }
+    expect(acc).toContain('"type":"tool-input-available"')
+    expect(acc).toContain('"toolName":"searchJobs"')
+    expect(acc).toContain('"type":"tool-output-available"')
+    expect(acc.endsWith('data: [DONE]\n\n')).toBe(true)
+  })
+
+  it('should fall back to a text-only assistant message when mock prompt does not match a fixture', async () => {
+    const response = await POST(
+      buildRequest({
+        authorization: null,
+        provider: 'mock',
+        body: {
+          messages: [
+            {
+              id: 'u1',
+              role: 'user',
+              parts: [{ type: 'text', text: 'free-form unmatched question' }],
+            },
+          ],
+        },
+      }) as Parameters<typeof POST>[0],
+    )
+
+    expect(streamTextMock).not.toHaveBeenCalled()
+    expect(response.status).toBe(200)
+
+    const reader = response.body?.getReader()
+    if (!reader) throw new Error('Missing body')
+    const decoder = new TextDecoder()
+    let acc = ''
+    while (true) {
+      const { value, done } = await reader.read()
+      if (done) break
+      acc += decoder.decode(value)
+    }
+    expect(acc.toLowerCase()).toContain('switch to byok')
+    expect(acc).not.toContain('tool-input-available')
+  })
+
   it('omits the profile block when no profile is supplied', async () => {
     mockStreamResult()
     await POST(

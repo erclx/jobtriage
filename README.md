@@ -1,13 +1,14 @@
 # jobtriage
 
-Triage Swedish job ads against any profile in a live agent workspace, with retrieval and a spatial canvas in one tab. Paste a profile, ask in plain language, watch the agent fan retrieved ads onto a canvas alongside its tool-call trace. Demo runs on bring-your-own-key.
+Triage Swedish job ads against any profile in a live agent workspace, with retrieval and a spatial canvas in one tab. Paste a profile, ask in plain language, watch the agent fan retrieved ads onto a canvas alongside its tool-call trace.
 
-Live demo: [jobtriage.erclx.dev](https://jobtriage.erclx.dev)
+Live demo: [jobtriage.erclx.dev](https://jobtriage.erclx.dev). The scripted demo path needs no key. Bring an Anthropic, OpenAI, or Gemini key to drive the agent yourself.
 
 ## Features
 
 - Works for any profession. The deployed demo resolves "nursing in Stockholm" or "chef in Malmö" to JobTech taxonomy concepts on the fly, then runs the agent against live Platsbanken results.
 - Spatial workspace. Retrieved ads land as draggable nodes on a React Flow canvas with four canonical views: triage clusters, deadline timeline, side-by-side compare, and a pinned shortlist.
+- No-key demo path. The gate exposes a "Try the demo" button that replays a scripted session against live JobTech ads. Tool traces, cards, and the spatial canvas render identically to a real agent run.
 - Bring-your-own-key. The deployed demo holds nothing server-side. The gate accepts an Anthropic, OpenAI, or Gemini key (browser sessionStorage only), or routes through local Ollama for a zero-key path.
 
 ## Quickstart

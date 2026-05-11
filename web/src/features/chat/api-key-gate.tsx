@@ -1,6 +1,6 @@
 'use client'
 
-import { CpuIcon, KeyRoundIcon } from 'lucide-react'
+import { CpuIcon, KeyRoundIcon, SparklesIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
@@ -10,6 +10,7 @@ import {
   BYOK_PROVIDERS,
   type ByokProvider,
   getByokProviderMeta,
+  MOCK_MARKER,
   OLLAMA_MARKER,
   SESSION_KEYS,
 } from '@/features/chat/storage-keys'
@@ -46,7 +47,10 @@ export function ApiKeyGate({
   const inputRef = useRef<HTMLInputElement>(null)
   const previouslyFocusedRef = useRef<HTMLElement | null>(null)
 
-  const hasStoredProvider = storedProvider === 'ollama' || Boolean(storedKey)
+  const hasStoredProvider =
+    storedProvider === 'ollama' ||
+    storedProvider === 'mock' ||
+    Boolean(storedKey)
   const showGate = !hasStoredProvider || switchRequested
   const isSwitchOverlay = switchRequested && hasStoredProvider
 
@@ -92,6 +96,9 @@ export function ApiKeyGate({
     if (typeof window === 'undefined') return
     window.sessionStorage.removeItem(SESSION_KEYS.chat)
     window.sessionStorage.removeItem(SESSION_KEYS.canvas)
+    if (storedProvider === MOCK_MARKER) {
+      window.sessionStorage.removeItem(SESSION_KEYS.profile)
+    }
   }
 
   function handleProviderChange(next: ByokProvider) {
@@ -121,6 +128,12 @@ export function ApiKeyGate({
     resolveSwitch()
   }
 
+  function handleTryDemo() {
+    if (isSwitchOverlay) clearSessionState()
+    setStoredProvider(MOCK_MARKER)
+    resolveSwitch()
+  }
+
   function handleCancelSwitch() {
     setDraft('')
     setError(null)
@@ -128,9 +141,31 @@ export function ApiKeyGate({
     resolveSwitch()
   }
 
+  const showDemoOnramp = !(isSwitchOverlay && storedProvider === 'mock')
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
       <div className="w-full max-w-md space-y-4">
+        {showDemoOnramp ? (
+          <>
+            <Button
+              type="button"
+              size="lg"
+              className="w-full"
+              onClick={handleTryDemo}
+            >
+              <SparklesIcon className="size-4" aria-hidden />
+              Try the demo, no key
+            </Button>
+
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              <div className="h-px flex-1 bg-border" />
+              <span>or bring your own key</span>
+              <div className="h-px flex-1 bg-border" />
+            </div>
+          </>
+        ) : null}
+
         <form
           className="space-y-5 rounded-lg border bg-card p-6 shadow-sm"
           onSubmit={handleSubmit}

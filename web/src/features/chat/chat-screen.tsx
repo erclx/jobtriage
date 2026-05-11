@@ -56,6 +56,7 @@ import {
   useSpeechRecognition,
 } from '@/features/chat/use-speech-recognition'
 import { VoiceInputButton } from '@/features/chat/voice-input-button'
+import { MOCK_PROMPTS } from '@/features/mock/prompts'
 import { cn } from '@/lib/utils'
 
 const isBrowser = typeof window !== 'undefined'
@@ -117,6 +118,8 @@ export function ChatScreen({ onSwitchProvider }: ChatScreenProps = {}) {
 }
 
 function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
+  const [storedProvider] = useSessionValue(SESSION_KEYS.provider)
+  const isMockMode = storedProvider === 'mock'
   const [storedProfile] = useSessionValue(SESSION_KEYS.profile)
   const [storedRailWidth, setStoredRailWidth] = useSessionValue(
     SESSION_KEYS.railWidth,
@@ -245,11 +248,19 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
     }
   }, [messages, status])
 
+  const [, setStoredProfile] = useSessionValue(SESSION_KEYS.profile)
   const handleSeed = useCallback(
     (text: string) => {
+      if (isMockMode) {
+        const match = MOCK_PROMPTS.find((entry) => entry.prompt === text)
+        if (match) {
+          setStoredProfile(match.profile)
+          latestProfile = match.profile
+        }
+      }
       void sendMessage({ text })
     },
-    [sendMessage],
+    [isMockMode, sendMessage, setStoredProfile],
   )
 
   const handleProfileChange = useCallback((next: string) => {
@@ -286,6 +297,10 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
       <PromptInput
         className="chat-prompt-input"
         onSubmit={(message) => {
+          if (isMockMode) {
+            handleSwitchProvider()
+            return
+          }
           const text = message.text.trim()
           if (!text) return
           stopVoice()
@@ -295,22 +310,42 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
       >
         <PromptInputBody>
           <PromptInputTextarea
-            value={input}
-            placeholder="Ask about Swedish job ads..."
-            onChange={(event) => setInput(event.target.value)}
+            value={isMockMode ? '' : input}
+            placeholder={
+              isMockMode
+                ? 'Paste a key to ask your own question.'
+                : 'Ask about Swedish job ads...'
+            }
+            onChange={(event) => {
+              if (isMockMode) return
+              setInput(event.target.value)
+            }}
+            readOnly={isMockMode}
+            aria-disabled={isMockMode}
+            tabIndex={isMockMode ? -1 : 0}
           />
         </PromptInputBody>
         <PromptInputFooter>
           <PromptInputTools>
-            <VoiceInputButton
-              isSupported={isVoiceSupported}
-              isListening={isVoiceListening}
-              onToggle={handleVoiceToggle}
-            />
+            {isMockMode ? (
+              <button
+                type="button"
+                onClick={handleSwitchProvider}
+                className="text-xs font-medium text-primary underline-offset-2 hover:underline"
+              >
+                Switch to BYOK
+              </button>
+            ) : (
+              <VoiceInputButton
+                isSupported={isVoiceSupported}
+                isListening={isVoiceListening}
+                onToggle={handleVoiceToggle}
+              />
+            )}
           </PromptInputTools>
           <PromptInputSubmit
             status={status}
-            disabled={!isStreaming && input.trim() === ''}
+            disabled={isMockMode || (!isStreaming && input.trim() === '')}
             onClick={isStreaming ? () => stop() : undefined}
           />
         </PromptInputFooter>
@@ -395,7 +430,11 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
 
           {isEmpty ? (
             <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-6">
-              <EmptyState onSelect={handleSeed} />
+              <EmptyState
+                onSelect={handleSeed}
+                mode={isMockMode ? 'mock' : 'default'}
+                mockPrompts={MOCK_PROMPTS}
+              />
               <div className="w-full">{promptInput}</div>
             </div>
           ) : (
