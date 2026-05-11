@@ -4,8 +4,17 @@
 
 ## Context
 
-- Read `.claude/` state docs (`TASKS.md`, `ARCHITECTURE.md`, `REQUIREMENTS.md`, `DESIGN.md`, `WIREFRAMES.md`) before changes, when present. The `claude-feature` skill loads them in parallel.
-- Coding standards live in `.claude/rules/` and load automatically. Always-on rules apply every session. Path-scoped rules apply to files matching their `paths:` glob.
+Four-tier ownership model. Know which tier holds what before reading or writing.
+
+- `README.md`: public pitch and 60-second setup for an outside visitor. No internal contracts.
+- `docs/`: contributor-facing reference rendered on github.com. Setup commands, CI structure, deploy procedures, script tables. Audience is a human reading on the repo page.
+- `.claude/context/`: per-domain working knowledge for Claude Code editing that domain. Layer responsibilities, decisions, gotchas, hidden contracts. See `.claude/context/index.md` for the catalog. New entries follow `standards/context.md`.
+- `.claude/` planning docs (`TASKS.md`, `ARCHITECTURE.md`, `REQUIREMENTS.md`, `DESIGN.md`, `WIREFRAMES.md`, `DIAGRAMS.md`): always-loaded product-wide invariants. Read before changes, when present. The `claude-feature` skill loads them in parallel.
+- `.claude/rules/`: coding standards. Always-on rules apply every session. Path-scoped rules apply to files matching their `paths:` glob.
+
+Rule of thumb when a fact lives in two places: if a contributor needs it to run the project, `docs/`. If Claude needs it to modify the project safely, `.claude/context/`. If both, `docs/` carries a thin pointer and `.claude/context/` carries the depth.
+
+@.claude/context/index.md
 
 ## Behavior
 
@@ -18,6 +27,8 @@
 - This is a public repo. Do not write personal names into READMEs, `docs/`, `.claude/` planning docs, source comments, or commit messages. Use neutral phrasing like "the user", "a recruiter", or "a local file". Brief content under `.tmp/` is local context, not output.
 - Do not cite `.claude/` paths (TASKS.md, plans, review, .tmp) from PR bodies, READMEs, or other artifacts a reviewer reads. Inline the context or use neutral phrasing like "queued as a follow-up".
 - For deploy infrastructure (Cloud Run, Vercel, Cloudflare), prefer CLI over the dashboard. `gcloud` and `vercel` are authenticated locally and persist across sessions. Run inspection, redeploy, env-var, and domain commands from Bash rather than asking the user to click through. Confirm before destructive operations (delete service, force-push production, change live DNS).
+- Before any multi-path `rm` or `rm -rf`, list every target path in chat and wait for explicit confirmation. "Clean up X" authorizes a different destructive action than a previous one, never a blanket nuke.
+- Before proposing a new doc home for a convention (eval format, fixture kinds, scratch path), grep `CLAUDE.md` and `docs/` for the topic. Extend the existing entry over creating a new section.
 
 ## Testing the agent
 
@@ -45,18 +56,27 @@
 
 - Before writing or editing an artifact with a matching standard in `prompts/` or `standards/` (bash scripts, READMEs, PRs, commits, branches, snippets, skills, prose), read that file first and follow it.
 - When editing `README.md`, follow `standards/readme.md`. Keep it user-facing. Technical detail belongs in `docs/` or `.claude/`.
+- When editing `.claude/DIAGRAMS.md` or any markdown that embeds a Mermaid diagram, follow `standards/diagrams.md`. Vertical `flowchart TB`, short labels, explanation paragraph below each diagram.
 
 ## Commands
 
 - `bun run check` runs the full verify cascade. Full script reference in `docs/development.md`.
 - Do not run `bun run dev`. The script is disabled. Run `bun run restart:web` from the repo root for any local server need. It kills stale `next-server` and Playwright zombies, rebuilds, starts the server in the background with logs at `.claude/.tmp/restart/server.log`, and verifies the listening pid changed. Do not rely on `lsof -ti:3000`, it can miss `next-server`.
 
+## Output
+
+- After creating or modifying a file, include its path on its own line so terminal emulators can make it clickable. Do not paraphrase paths into prose ("the seeds folder", "your CLAUDE.md").
+- Use the path the user's editor can resolve. The editor is rooted at the main project root.
+- In the main worktree: relative from `pwd` works because `pwd` equals the editor root.
+- In a linked worktree (under `.claude/worktrees/<name>/`): use absolute paths. Relative paths from worktree `pwd` would not resolve against the editor's project root.
+- When the response covers multiple files, group paths under headers: `**Created:**`, `**Modified:**`, `**Deleted:**`. For single-file changes, the path on its own line is enough.
+
 ## Key paths
 
 - `src/`: [description]
 - `.claude/`: planning docs (requirements, architecture, wireframes, design, tasks)
-- `.claude/evals/agent-conversations.md`: numbered manual prompts for chat surface testing, seed fixture for the v6 agent-eval harness. Each case lists expected tools, expected behavior, and known regression alarms. Run before opening a chat-touching PR.
-- `.claude/evals/*.json`: structured fixtures consumed by `web/scripts/model-probe.ts`. Each file declares a `kind` plus a `probes` array. Supported kinds: `discipline` (chitchat versus tool-warranted), `language` (English versus Swedish detection), `pairing` (data tool plus spatial-tool pairing), `general-profile` (cross-profession deploy posture, carries inline `profiles` map keyed by `profileKey`, harness sends `x-jobtriage-mode: deploy`). Select via `PROBE_FIXTURE=.claude/evals/<file>.json` when running the harness.
+- `.claude/context/`: per-domain narrative loaded when editing that domain. See `.claude/context/index.md` for the catalog. Entries cover agent loop, canvas, web, python, retrieval, evals, development, deploy.
+- `.claude/evals/`: structured JSON fixtures consumed by `web/scripts/model-probe.ts`. See `.claude/context/evals.md` for fixture shape, `kind` semantics, and the `workflow_dispatch` posture.
 - `.claude/review/`: gitignored scratch for review and UI-test output, overwritten on each run
 - `wiki/`: durable reusable technical knowledge that outlives any single project decision (model landscapes, tool-stack notes, integration playbooks). Pages survive plan-file deletion when tasks ship.
 
@@ -91,7 +111,8 @@
 
 ## Worktrees
 
-- Implementation work runs in a linked worktree. From the main worktree, enter one with `/claude-worktree` before editing tracked files for a feature.
+- Default to working on the active branch in the main checkout. Reach for a linked worktree via `/claude-worktree` only when a concurrent session would otherwise fight over working-tree state.
 - Shared session scratch (`.claude/plans/`, `.claude/review/`, `.claude/memory/`, `.claude/TASKS.md`) lives at the main worktree root, not inside a linked worktree. From a linked worktree, resolve these paths against the main root via `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`. Fall back to `pwd` if not a git repo.
 - From a linked worktree, every `Edit` or `Write` to a tracked file (source, docs) must use a path starting with `pwd`. Only shared session scratch (`.claude/plans/`, `.claude/review/`, `.claude/memory/`, `.claude/TASKS.md`) resolves to the main worktree root.
 - The pre-push cspell check is blind to worktree changes because `useGitignore: true` walks up to the parent `.gitignore` that excludes `.claude/worktrees/`, and pushing from main scans `main`'s working tree, not the branch tip. Before pushing a worktree branch with new vocabulary (new product names, libs, jargon), spell-check the diff explicitly: `git diff --name-only main | grep -vE 'bun\.lock$|\.png$' | xargs bunx cspell --no-must-find-files --no-progress --no-gitignore`. Add unknown real words to the right `.cspell/<bucket>.txt` before pushing.
+- Push a worktree branch from the main checkout via `cd <main-root> && git push -u origin <branch>`, not `git -C <main-root> push`. The career-level CLAUDE.md documents the `git -C` form, but in this repo it triggers a phantom prettier failure under pre-push (`Unable to read file ".claude/.claude/review/..."`). The `cd` form runs the same hook cleanly.

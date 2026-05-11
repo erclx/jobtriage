@@ -98,8 +98,8 @@ web/
 - Path alias `@` maps to `./src` (configured in `tsconfig.json`).
 - Server components by default. Add `'use client'` only when required.
 - Domain UI lives under `src/features/`. Shared, generic UI lives under `src/components/`.
-- Data tools live in `src/lib/agent/tools.ts`, spatial tools in `src/lib/agent/spatial-tools.ts`. `tools.ts` exports two flat tool tables: `jobtriageTools` (the local-mode seven-tool corpus stack) and `deployJobtriageTools` (the deploy-mode subset: `lookupConcept`, live `searchJobs`, live `matchProfile`, live `compareRoles`, `trackStatus`, plus all spatial tools). `src/app/api/chat/route.ts` picks the active table via `resolveAgentMode(providerName, request)`. Local Ollama maps to `local`. Any other provider maps to `deploy`. The `x-jobtriage-mode: deploy` request header overrides the default outside Vercel so the harness and the dev browser path can exercise the deploy posture without an Anthropic key. The chat client sends that header when `?mode=deploy` is on the URL.
-- Spatial tools never call the FastAPI backend. They echo their input on the server. The `CanvasBridge` component on the client watches `tool-output-available` parts and dispatches reducer actions against `CanvasContext`.
+- Data tools live in `src/lib/agent/tools.ts`, spatial tools in `src/lib/agent/spatial-tools.ts`. Tool registry composition, mode resolution, and provider routing live in `.claude/context/agent.md`.
+- Canvas surface, reducer, bridge, and the eight spatial tools live in `.claude/context/canvas.md`.
 - Vendored shadcn and AI Elements primitives are not edited in place. Wrap them in feature components when extending behavior.
 - Tests colocate next to source as `*.test.ts` or `*.spec.ts`. Playwright specs live in `e2e/`.
 
@@ -112,33 +112,26 @@ web/
 
 ## Scripts
 
-| Command                 | Purpose                                                                                               |
-| ----------------------- | ----------------------------------------------------------------------------------------------------- |
-| `bun run dev`           | Disabled. Run `bun run restart:web` from the repo root instead, see [development.md](development.md). |
-| `bun run build`         | Production build                                                                                      |
-| `bun run start`         | Serve the production build                                                                            |
-| `bun run lint`          | ESLint, zero warnings                                                                                 |
-| `bun run lint:fix`      | Auto-fix ESLint                                                                                       |
-| `bun run typecheck`     | `tsc --noEmit`                                                                                        |
-| `bun run test`          | Vitest watch                                                                                          |
-| `bun run test:run`      | Vitest once                                                                                           |
-| `bun run test:coverage` | Vitest with coverage                                                                                  |
-| `bun run test:e2e`      | Playwright                                                                                            |
-| `bun run check`         | Full web verify                                                                                       |
-| `bun run favicon`       | Regenerate `src/app/favicon.ico` from `src/app/icon.svg` via Playwright                               |
-| `bun run screenshots`   | Capture canonical UI states to `.claude/review/screenshots/`, light and dark per state                |
+| Command                 | Purpose                                                                                                        |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `bun run dev`           | Disabled. Run `bun run restart:web` from the repo root instead. Rationale in `.claude/context/development.md`. |
+| `bun run build`         | Production build                                                                                               |
+| `bun run start`         | Serve the production build                                                                                     |
+| `bun run lint`          | ESLint, zero warnings                                                                                          |
+| `bun run lint:fix`      | Auto-fix ESLint                                                                                                |
+| `bun run typecheck`     | `tsc --noEmit`                                                                                                 |
+| `bun run test`          | Vitest watch                                                                                                   |
+| `bun run test:run`      | Vitest once                                                                                                    |
+| `bun run test:coverage` | Vitest with coverage                                                                                           |
+| `bun run test:e2e`      | Playwright                                                                                                     |
+| `bun run check`         | Full web verify                                                                                                |
+| `bun run favicon`       | Regenerate `src/app/favicon.ico` from `src/app/icon.svg` via Playwright                                        |
+| `bun run screenshots`   | Capture canonical UI states to `.claude/review/screenshots/`, light and dark per state                         |
 
 ## Provider switching
 
-The chat surface supports four providers, chosen at the gate and persisted in browser sessionStorage:
-
-- Anthropic via `@ai-sdk/anthropic`. The user's `sk-ant-...` key is forwarded as a Bearer header on each request and never persisted server-side. Default model id `claude-sonnet-4-5`, overridable via `ANTHROPIC_MODEL_ID`.
-- OpenAI via `@ai-sdk/openai`. The user's `sk-...` key is forwarded as a Bearer header on each request. Default model id `gpt-4o-mini`, overridable via `OPENAI_MODEL_ID`.
-- Gemini via `@ai-sdk/google`. The user's `AIza...` key is forwarded as a Bearer header on each request. AI Studio's free tier covers casual use. Default model id `gemini-2.5-flash`, overridable via `GEMINI_MODEL_ID`.
-- Local Ollama via `ollama-ai-provider-v2`. No key required. Defaults to `gemma4:26b` against `localhost:11434` with a context window of 8192 tokens. Override the model id with `OLLAMA_MODEL_ID`, the base URL with `OLLAMA_BASE_URL`, and the context window with `OLLAMA_NUM_CTX`. The bounded context keeps KV cache out of host RAM on WSL2. A reusable smoke harness at `web/scripts/model-probe.ts` reads probe fixtures from `.claude/evals/*.json` (selectable via `PROBE_FIXTURE`) for re-running tool-discipline and language-detection regressions on future model swaps. `PROBE_PROVIDER=openai|gemini|anthropic` plus `PROBE_API_KEY` and `PROBE_MODEL_ID` switches the same harness to the BYOK providers without restarting the server per model.
-
-The route handler at `src/app/api/chat/route.ts` reads the `x-jobtriage-provider` request header to pick the provider per request. All four branches share the same tool registry and system prompt. Any header other than `ollama`, `anthropic`, `openai`, or `gemini` returns a 400.
+The chat surface supports four providers (Anthropic, OpenAI, Gemini, local Ollama), chosen at the gate and persisted in browser sessionStorage. Header semantics, per-provider env var defaults, mode resolution, and the `VERCEL` gate live in `.claude/context/agent.md`. The model-probe smoke harness lives in `.claude/context/evals.md`.
 
 ## Deploy
 
-Vercel free tier. Wired in v5. The deployed bundle does not carry any provider key. End users supply their own Anthropic, OpenAI, or Gemini key at chat time, held in browser sessionStorage and sent with each request.
+Vercel free tier. Wired in v5. The deployed bundle does not carry any provider key. End users supply their own Anthropic, OpenAI, or Gemini key at chat time, held in browser sessionStorage and sent with each request. Platform gotchas live in `.claude/context/deploy.md`.

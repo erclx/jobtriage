@@ -123,10 +123,4 @@ For a visual smoke, open the URL in a cold browser tab, paste a key in the BYOK 
 
 Validate the OG card via the [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/) once the custom domain is live.
 
-## Known gotchas
-
-- `/healthz` is reserved by Cloud Run's edge. Use `/health`.
-- Vercel's Framework Preset must be `Next.js` for App Router routes to serve. Override toggles clear the preset.
-- Cloudflare proxy (orange cloud) breaks Vercel SSL. Use DNS-only.
-- Hobby plan defaults Deployment Protection on. Disable it for public demos.
-- Cloud Run reserved `min-instances 0` means first request after idle pays a ~1-5s cold-start. Acceptable for a BYOK demo where the user is already waiting on LLM streaming latency.
+> Platform gotchas (Cloud Run `/healthz` collision, Vercel framework preset, Cloudflare DNS-only mode, Hobby Deployment Protection) live in `.claude/context/deploy.md`.
