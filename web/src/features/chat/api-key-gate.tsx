@@ -161,7 +161,7 @@ export function ApiKeyGate({
                   <label
                     key={option.id}
                     className={cn(
-                      'flex cursor-pointer items-center justify-center rounded-md border px-3 py-2 text-sm font-medium transition-colors',
+                      'flex cursor-pointer items-center justify-center rounded-md border px-3 py-1.5 text-xs font-medium transition-colors',
                       'focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
                       isSelected
                         ? 'border-primary bg-primary text-primary-foreground'
@@ -205,7 +205,11 @@ export function ApiKeyGate({
               }}
               onBlur={() => {
                 const trimmed = draft.trim()
-                if (trimmed && !trimmed.startsWith(meta.prefixHint)) {
+                if (
+                  trimmed &&
+                  meta.prefixHint &&
+                  !trimmed.startsWith(meta.prefixHint)
+                ) {
                   setPrefixWarning(
                     `Most ${meta.label} keys start with ${meta.prefixHint}.`,
                   )

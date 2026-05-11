@@ -4,5 +4,6 @@ Isaksson
 Klarna
 Montico
 Onestream
+OpenAI
 Webflow
 Yocto
