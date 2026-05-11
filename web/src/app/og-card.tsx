@@ -52,8 +52,7 @@ export function renderOgCard() {
             maxWidth: 1000,
           }}
         >
-          "Show Stockholm nursing roles with deadlines this week, ranked by my
-          profile fit"
+          "Show me agentic AI roles in Sweden ranked by my profile fit"
         </div>
       </div>
       <div

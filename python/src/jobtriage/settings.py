@@ -1,6 +1,7 @@
 """Pydantic settings loaded from JOBTRIAGE_-prefixed environment variables."""
 
 from pathlib import Path
+from typing import Literal
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -17,6 +18,10 @@ class Settings(BaseSettings):
     jobtech_timeout_seconds: float = Field(default=30.0, gt=0)
     db_path: Path = Field(default=Path('jobtriage.db'))
     engagement_log_path: Path = Field(default=Path('engagements/log.md'))
+    # `slim` skips the embedder warmup and returns 503 from corpus-backed
+    # endpoints. Used by the Cloud Run deploy image, which carries no SQLite
+    # corpus and no sentence-transformers wheel.
+    deploy_mode: Literal['full', 'slim'] = Field(default='full')
     # Drop hybrid retrieval results below this RRF score at the triage and
     # semantic boundaries. Picked from pass-1 audit observations on the seed
     # corpus where adversarial queries returned cards at ~0.016 to 0.032; 0.025

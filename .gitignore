@@ -21,3 +21,4 @@ node_modules/
 
 # Runtime
 var/
+.vercel

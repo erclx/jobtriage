@@ -6,7 +6,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import cast
 
-from fastapi import Request
+from fastapi import HTTPException, Request
 
 from jobtriage.embeddings import (
     DEFAULT_MODEL_NAME,
@@ -16,6 +16,8 @@ from jobtriage.embeddings import (
 from jobtriage.settings import Settings, load_settings
 from jobtriage.storage.db import connect
 
+CORPUS_DISABLED_DETAIL = 'Corpus tools are disabled in deploy mode.'
+
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
@@ -23,7 +25,9 @@ def get_settings() -> Settings:
 
 
 def get_db_connection(request: Request) -> Iterator[sqlite3.Connection]:
-    settings = request.app.state.settings
+    settings = cast(Settings, request.app.state.settings)
+    if settings.deploy_mode == 'slim':
+        raise HTTPException(status_code=503, detail=CORPUS_DISABLED_DETAIL)
     conn = connect(settings.db_path)
     try:
         yield conn
@@ -34,7 +38,7 @@ def get_db_connection(request: Request) -> Iterator[sqlite3.Connection]:
 def get_embedder(request: Request) -> Embedder:
     embedder = getattr(request.app.state, 'embedder', None)
     if embedder is None:
-        raise RuntimeError('embedder is not initialized; check app lifespan')
+        raise HTTPException(status_code=503, detail=CORPUS_DISABLED_DETAIL)
     return cast(Embedder, embedder)
 
 

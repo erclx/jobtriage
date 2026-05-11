@@ -12,8 +12,8 @@ from jobtriage.settings import Settings
 router = APIRouter(tags=['health'])
 
 
-@router.get('/healthz', response_model=HealthResponse)
-async def healthz(
+@router.get('/health', response_model=HealthResponse)
+async def health(
     settings: Annotated[Settings, Depends(get_settings)],
 ) -> HealthResponse:
     return HealthResponse(

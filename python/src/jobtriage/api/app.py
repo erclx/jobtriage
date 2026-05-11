@@ -21,14 +21,20 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings = get_settings()
     app.state.settings = settings
 
-    embedder = build_embedder(model_name=DEFAULT_MODEL_NAME)
-    embedder.embed_query('warm-up')
-    app.state.embedder = embedder
-    logger.info(
-        'api_startup_complete db_path=%s model=%s',
-        settings.db_path,
-        DEFAULT_MODEL_NAME,
-    )
+    if settings.deploy_mode == 'slim':
+        app.state.embedder = None
+        logger.info(
+            'api_startup_complete deploy_mode=slim corpus_tools=disabled',
+        )
+    else:
+        embedder = build_embedder(model_name=DEFAULT_MODEL_NAME)
+        embedder.embed_query('warm-up')
+        app.state.embedder = embedder
+        logger.info(
+            'api_startup_complete db_path=%s model=%s',
+            settings.db_path,
+            DEFAULT_MODEL_NAME,
+        )
     try:
         yield
     finally:

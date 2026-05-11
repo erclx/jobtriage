@@ -952,9 +952,9 @@
   },
   "openapi": "3.1.0",
   "paths": {
-    "/healthz": {
+    "/health": {
       "get": {
-        "operationId": "healthz_healthz_get",
+        "operationId": "health_health_get",
         "responses": {
           "200": {
             "content": {
@@ -967,7 +967,7 @@
             "description": "Successful Response"
           }
         },
-        "summary": "Healthz",
+        "summary": "Health",
         "tags": [
           "health"
         ]

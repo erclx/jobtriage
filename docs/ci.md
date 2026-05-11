@@ -61,7 +61,7 @@ Defined in `.github/workflows/eval.yml`. Runs nightly at 03:00 UTC and on `workf
 
 ## Agent eval job
 
-Defined in `.github/workflows/agent-eval.yml`. Triggers on `workflow_dispatch` only so maintainer-funded providers stay capped. Inputs select which providers (`anthropic`, `openai`, `gemini`) to run and which fixture path to use. The job builds the web server, drives `web/scripts/model-probe.ts` against the chosen fixture with `PROBE_PROVIDER` and `PROBE_API_KEY` sourced from `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, and `GEMINI_API_KEY` secrets, then uploads the per-provider Markdown comparison as a build artifact. Providers without a configured secret emit a warning and skip.
+Defined in `.github/workflows/agent-eval.yml`. Triggers on `workflow_dispatch` only so maintainer-funded providers stay capped. The `providers` input defaults to `gemini` (free tier). Maintainers must explicitly type `anthropic` or `openai` into the input to opt into paid runs. The `fixture` input picks the JSON fixture under `.claude/evals/`. The job builds the web server, drives `web/scripts/model-probe.ts` against the chosen fixture with `PROBE_PROVIDER` and `PROBE_API_KEY` sourced from `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, and `GEMINI_API_KEY` secrets, then uploads the per-provider Markdown comparison as a build artifact. Providers without a configured secret emit a warning and skip.
 
 ## Running CI locally
 

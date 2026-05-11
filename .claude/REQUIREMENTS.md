@@ -43,11 +43,11 @@ The Swedish JobTech (Platsbanken) UI filters by occupation code, region, and dea
 - LLM in deploy: Anthropic via the AI SDK (BYOK)
 - LLM in development: Ollama with `qwen3-coder:30b`
 - CLI: Typer
-- Deploy: Vercel for the web surface, Fly.io for the backend
+- Deploy: Vercel for the web surface, Google Cloud Run for the backend
 
 ## Constraints
 
 - BYOK only. The deployed app does not carry an Anthropic key. End users supply their own at chat time, held in browser sessionStorage and sent with each request.
 - Public repo. Profile markdown is a per-session input, never persisted server-side. No personal data baked into the deployed image.
-- Free-tier hosting. Vercel and Fly.io free tiers must cover the demo workload.
+- Free-tier hosting. Vercel and Cloud Run free tiers must cover the demo workload.
 - The ad corpus is shared across all users since Platsbanken data is identical for everyone. Only the conversation and the pasted profile are per-session.

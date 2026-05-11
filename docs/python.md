@@ -97,4 +97,6 @@ Run from `python/` after `cd python`.
 
 ## Deploy
 
-Fly.io free tier. Wired in v5. The SQLite ad corpus ships embedded in the container image. No external vector database, no external services beyond the Anthropic key the end user supplies.
+Google Cloud Run on the Always Free tier, region `europe-west1`. The image ships in slim mode (`JOBTRIAGE_DEPLOY_MODE=slim`): no SQLite corpus and no `sentence-transformers`/`torch` wheel, since the deploy posture only calls `live-search`, `live-details`, `taxonomy/lookup`, and `engagements/status`. Corpus-backed endpoints return 503 in slim mode. The deployed image carries no provider keys: visitors supply Anthropic, OpenAI, or Gemini keys at chat time.
+
+For the full deploy sequence (Cloud Run build, Vercel project setup, Cloudflare DNS), see [deployment.md](deployment.md).
