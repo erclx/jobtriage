@@ -54,6 +54,19 @@ Hybrid retrieval (BM25 plus dense embeddings fused via reciprocal rank fusion ov
 
 Dense alone wins precision@1 on this corpus by 6 points over hybrid, and the multilingual table below shows the gap widens at the larger encoder. Hybrid still earns its place on recall and on adversarial queries where exact keyword matches (model names, employer-specific jargon) dominate. The score floor at `JOBTRIAGE_RRF_FLOOR=0.025` suppresses low-relevance noise at the API boundary. See the [retrieval reference](.claude/context/retrieval.md) for the chunking strategy and the embedding prefix contract.
 
+## Agent eval
+
+The agent loop is measured side by side per provider through `web/scripts/model-probe.ts`, which drives `/api/chat` against fixtures in `.claude/evals/*.json`. The `conversation` fixture (`agent-conversation.json`) asserts tool-call accuracy, ad-id recall, keyword recall, concept-id discipline, and tool-error recovery per probe. Static snapshot, refreshed on significant prompt or tool changes. Reproduce via `PROBE_FIXTURE=.claude/evals/agent-conversation.json bun web/scripts/model-probe.ts`.
+
+| Provider  | Model               | Passed | Tool-call accuracy | Keyword recall | Avg latency |
+| --------- | ------------------- | ------ | ------------------ | -------------- | ----------- |
+| ollama    | `gemma4:26b`        | 6/10   | 90%                | 50%            | 2299 ms     |
+| anthropic | `claude-sonnet-4-5` | -      | -                  | -              | -           |
+| openai    | `gpt-4o-mini`       | -      | -                  | -              | -           |
+| gemini    | `gemini-2.5-flash`  | -      | -                  | -              | -           |
+
+BYOK rows are populated via `workflow_dispatch` on the `Agent Eval` workflow with the maintainer key, kept off the nightly schedule to cap spend. Ad-id recall is reported only on probes scoped to the frozen local CLI corpus. Deploy-mode probes use keyword recall against snippets since the live JobTech ad set rotates daily.
+
 ## Multilingual embedding comparison
 
 Same 50-query golden set, swapping the encoder while holding the corpus, BM25 index, and harness constant. The English-only baseline (`all-MiniLM-L6-v2`) measures what the project would look like without multilingual support. Reproduce via `uv run jobtriage evaluate-embeddings`.

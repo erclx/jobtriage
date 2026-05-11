@@ -3,6 +3,18 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import {
+  type ConversationFixture,
+  type ConversationProbe,
+  type ConversationProbeReport,
+  type ConversationSummary,
+  evaluateConversationProbe,
+  type ParsedStream,
+  parseSseStream,
+  renderConversationMarkdown,
+  summarizeConversation,
+} from './probe-eval'
+
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = join(SCRIPT_DIR, '..', '..')
 const OUT_DIR = join(REPO_ROOT, '.claude', '.tmp', 'ollama-model-research')
@@ -117,12 +129,14 @@ type Fixture =
   | LanguageFixture
   | PairingFixture
   | GeneralProfileFixture
+  | ConversationFixture
 
 type AnyProbe =
   | DisciplineProbe
   | LanguageProbe
   | PairingProbe
   | GeneralProfileProbe
+  | ConversationProbe
 
 async function loadFixture(path: string): Promise<Fixture> {
   const raw = await readFile(path, 'utf-8')
@@ -131,7 +145,8 @@ async function loadFixture(path: string): Promise<Fixture> {
     parsed.kind !== 'discipline' &&
     parsed.kind !== 'language' &&
     parsed.kind !== 'pairing' &&
-    parsed.kind !== 'general-profile'
+    parsed.kind !== 'general-profile' &&
+    parsed.kind !== 'conversation'
   ) {
     throw new Error(`Unsupported fixture kind in ${path}`)
   }
@@ -146,6 +161,7 @@ interface ProbeResult {
   readonly latencyMs: number
   readonly textPreview: string
   readonly fullText: string
+  readonly parsed: ParsedStream
   readonly error?: string
 }
 
@@ -162,33 +178,15 @@ function buildBody(prompt: string, profile: string | null): string {
   })
 }
 
-const TOOL_NAME_RE = /"toolName":"([a-zA-Z]+)"/g
-const TEXT_DELTA_RE = /"delta":"((?:[^"\\]|\\.)*)"/g
-
-function parseSse(stream: string): {
-  readonly toolNames: readonly string[]
-  readonly text: string
-} {
-  const toolNames: string[] = []
+function uniquePreservingOrder(names: readonly string[]): readonly string[] {
   const seen = new Set<string>()
-  let m: RegExpExecArray | null
-  while ((m = TOOL_NAME_RE.exec(stream)) !== null) {
-    const name = m[1]
-    if (name && !seen.has(name)) {
-      seen.add(name)
-      toolNames.push(name)
-    }
+  const out: string[] = []
+  for (const name of names) {
+    if (!name || seen.has(name)) continue
+    seen.add(name)
+    out.push(name)
   }
-
-  const textParts: string[] = []
-  while ((m = TEXT_DELTA_RE.exec(stream)) !== null) {
-    try {
-      textParts.push(JSON.parse(`"${m[1]}"`) as string)
-    } catch {
-      textParts.push(m[1] ?? '')
-    }
-  }
-  return { toolNames, text: textParts.join('') }
+  return out
 }
 
 const SWEDISH_MARKERS: ReadonlySet<string> = new Set([
@@ -268,14 +266,16 @@ async function runProbe(
         latencyMs: Date.now() - start,
         textPreview: '',
         fullText: '',
+        parsed: { toolCalls: [], toolNames: [], text: '' },
         error: `HTTP ${response.status}: ${errorText.slice(0, 160)}`,
       }
     }
 
     const stream = await response.text()
     const latencyMs = Date.now() - start
-    const { toolNames, text } = parseSse(stream)
-    const textPreview = text.replaceAll(/\s+/g, ' ').slice(0, 120)
+    const parsed = parseSseStream(stream)
+    const toolNames = uniquePreservingOrder(parsed.toolNames)
+    const textPreview = parsed.text.replaceAll(/\s+/g, ' ').slice(0, 120)
 
     return {
       model,
@@ -284,7 +284,8 @@ async function runProbe(
       toolNames,
       latencyMs,
       textPreview,
-      fullText: text,
+      fullText: parsed.text,
+      parsed,
     }
   } catch (error) {
     return {
@@ -295,6 +296,7 @@ async function runProbe(
       latencyMs: Date.now() - start,
       textPreview: '',
       fullText: '',
+      parsed: { toolCalls: [], toolNames: [], text: '' },
       error: error instanceof Error ? error.message : String(error),
     }
   } finally {
@@ -371,11 +373,16 @@ interface GeneralProfileSummary {
   readonly errors: number
 }
 
+interface ConversationSummaryWithKind extends ConversationSummary {
+  readonly kind: 'conversation'
+}
+
 type ModelSummary =
   | DisciplineSummary
   | LanguageSummary
   | PairingSummary
   | GeneralProfileSummary
+  | ConversationSummaryWithKind
 
 function avgLatency(results: readonly ProbeResult[]): number {
   const ok = results.filter((r) => !r.error)
@@ -542,6 +549,15 @@ function renderMarkdown(
   results: readonly ProbeResult[],
   summaries: readonly ModelSummary[],
 ): string {
+  if (fixture.kind === 'conversation') {
+    return renderConversationMarkdown(
+      fixture,
+      conversationReports(results, fixture),
+      summaries.flatMap((s) => (s.kind === 'conversation' ? [s] : [])),
+      CHAT_URL,
+    )
+  }
+
   const lines: string[] = []
   lines.push(`# ${fixture.name} probe results`)
   lines.push('')
@@ -731,7 +747,47 @@ function summarizeForFixture(
   if (fixture.kind === 'general-profile') {
     return summarizeGeneralProfile(model, fixture, results)
   }
+  if (fixture.kind === 'conversation') {
+    const reports = conversationReports(
+      results.filter((r) => r.model === model),
+      fixture,
+    )
+    return { kind: 'conversation', ...summarizeConversation(model, reports) }
+  }
   return summarizeLanguage(model, fixture, results)
+}
+
+function conversationReports(
+  results: readonly ProbeResult[],
+  fixture: ConversationFixture,
+): readonly ConversationProbeReport[] {
+  const probesBySlug = new Map(fixture.probes.map((p) => [p.slug, p]))
+  return results.flatMap((result) => {
+    const probe = probesBySlug.get(result.probeSlug)
+    if (!probe) return []
+    const verdict = result.error
+      ? {
+          toolCallAccuracy: 0,
+          adIdRecall: null,
+          keywordRecall: null,
+          conceptIdDisciplineOk: null,
+          recoveryObserved: null,
+          pass: false,
+        }
+      : evaluateConversationProbe(probe, fixture, result.parsed)
+    return [
+      {
+        probeSlug: result.probeSlug,
+        category: result.category,
+        model: result.model,
+        toolNames: result.toolNames,
+        latencyMs: result.latencyMs,
+        textPreview: result.textPreview,
+        error: result.error ?? null,
+        verdict,
+      },
+    ]
+  })
 }
 
 function probeVerdict(fixture: Fixture, result: ProbeResult): string {
@@ -750,6 +806,12 @@ function probeVerdict(fixture: Fixture, result: ProbeResult): string {
     if (!probe) return 'missing probe'
     const verdict = evaluateGeneralProfile(probe, result.toolNames)
     return `gen: ${verdict} (got ${result.toolNames.join(',') || '-'})`
+  }
+  if (fixture.kind === 'conversation') {
+    const probe = fixture.probes.find((p) => p.slug === result.probeSlug)
+    if (!probe) return 'missing probe'
+    const verdict = evaluateConversationProbe(probe, fixture, result.parsed)
+    return `conversation: ${verdict.pass ? '✓' : '✗'} (tools: ${result.toolNames.join(',') || '-'})`
   }
   const probe = fixture.probes.find((p) => p.slug === result.probeSlug) as
     | LanguageProbe
@@ -779,9 +841,11 @@ async function main(): Promise<void> {
     }
   }
 
+  const skipRestart = process.env.PROBE_SKIP_RESTART === '1'
+
   for (const model of MODELS) {
     process.stdout.write(`\n=== ${model} ===\n`)
-    if (PROBE_PROVIDER === 'ollama') {
+    if (PROBE_PROVIDER === 'ollama' && !skipRestart) {
       try {
         await restartWebForModel(model)
       } catch (error) {
@@ -796,6 +860,7 @@ async function main(): Promise<void> {
           latencyMs: 0,
           textPreview: '',
           fullText: '',
+          parsed: { toolCalls: [], toolNames: [], text: '' },
           error: 'restart:web failed',
         }
         allResults.push(failure)
@@ -805,16 +870,11 @@ async function main(): Promise<void> {
     }
 
     const modelResults: ProbeResult[] = []
-    const isGeneralProfile = fixture.kind === 'general-profile'
     for (const probe of fixture.probes) {
-      const profile =
-        isGeneralProfile && 'profileKey' in probe
-          ? ((fixture as GeneralProfileFixture).profiles[probe.profileKey] ??
-            null)
-          : null
+      const profile = resolveProbeProfile(fixture, probe)
       const result = await runProbe(model, probe, {
         profile,
-        forceDeploy: isGeneralProfile,
+        forceDeploy: shouldForceDeploy(fixture, probe),
       })
       modelResults.push(result)
       process.stdout.write(
@@ -828,9 +888,48 @@ async function main(): Promise<void> {
   const markdown = renderMarkdown(fixture, allResults, summaries)
   const outPath = join(OUT_DIR, `smoke-${PROBE_PROVIDER}-${fixture.name}.md`)
   await writeFile(outPath, `${markdown}\n`)
-  process.stdout.write(`\n\nWrote ${outPath}\n\n`)
+  const jsonPath = join(OUT_DIR, `smoke-${PROBE_PROVIDER}-${fixture.name}.json`)
+  await writeFile(
+    jsonPath,
+    `${JSON.stringify(
+      {
+        fixture: fixture.name,
+        kind: fixture.kind,
+        provider: PROBE_PROVIDER,
+        endpoint: CHAT_URL,
+        runAt: new Date().toISOString(),
+        summaries,
+        results: allResults.map(({ parsed: _parsed, ...rest }) => rest),
+      },
+      null,
+      2,
+    )}\n`,
+  )
+  process.stdout.write(`\n\nWrote ${outPath}\n`)
+  process.stdout.write(`Wrote ${jsonPath}\n\n`)
   process.stdout.write(markdown)
   process.stdout.write('\n')
+}
+
+function resolveProbeProfile(fixture: Fixture, probe: AnyProbe): string | null {
+  if (fixture.kind === 'general-profile') {
+    const key = (probe as GeneralProfileProbe).profileKey
+    return fixture.profiles[key] ?? null
+  }
+  if (fixture.kind === 'conversation') {
+    const key = (probe as ConversationProbe).profileKey
+    if (!key) return null
+    return fixture.profiles?.[key] ?? null
+  }
+  return null
+}
+
+function shouldForceDeploy(fixture: Fixture, probe: AnyProbe): boolean {
+  if (fixture.kind === 'general-profile') return true
+  if (fixture.kind === 'conversation') {
+    return Boolean((probe as ConversationProbe).forceDeploy)
+  }
+  return false
 }
 
 await main()

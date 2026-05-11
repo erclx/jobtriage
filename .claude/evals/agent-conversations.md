@@ -5,7 +5,7 @@ description: Manual prompts to drive against /api/chat, seed for the v6 agent-ev
 
 # Agent conversation fixtures
 
-Manual chat prompts to drive against `/api/chat`. The v6 agent-eval harness will consume this file once it lands. UI-only cases for the canvas surface (pin, drag, rail resize, theme, dialog auto-save) live in `canvas-interactions.md`.
+Manual chat prompts to drive against `/api/chat`. The seed list below covers behaviors a human verifies during a smoke run. The automated executable form lives at `agent-conversation.json` (`conversation` kind), consumed by `web/scripts/model-probe.ts` to assert tool-call accuracy, ad-id recall, keyword recall, concept-id discipline, and tool-error recovery per probe. UI-only cases for the canvas surface (pin, drag, rail resize, theme, dialog auto-save) live in `canvas-interactions.md`.
 
 Each case keeps the prompt on a single line inside a `plaintext` block so it yanks cleanly in vim. Paste into the chat input on `http://127.0.0.1:3000`. Tick the matching box in the open PR's `## Testing` section after each run. Drop surprises in PR comments.
 
