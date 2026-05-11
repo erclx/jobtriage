@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       providers:
-        description: 'Comma-separated providers to run (anthropic, openai, gemini)'
+        description: 'Comma-separated providers. Default `gemini` is free tier; add `anthropic` or `openai` to opt into paid runs.'
         required: false
-        default: 'anthropic,openai,gemini'
+        default: 'gemini'
       fixture:
         description: 'Fixture path relative to repo root'
         required: false
