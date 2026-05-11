@@ -123,4 +123,4 @@ For a visual smoke, open the URL in a cold browser tab, paste a key in the BYOK 
 
 Validate the OG card via the [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/) once the custom domain is live.
 
-> Platform gotchas (Cloud Run `/healthz` collision, Vercel framework preset, Cloudflare DNS-only mode, Hobby Deployment Protection) live in `.claude/context/deploy.md`.
+> Platform gotchas (Cloud Run `/healthz` collision, Vercel framework preset, Cloudflare DNS-only mode, Hobby Deployment Protection) live in the [deploy context](../.claude/context/deploy.md).

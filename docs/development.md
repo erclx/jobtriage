@@ -13,7 +13,7 @@ Local dev workflow for this monorepo. Two stack folders sit beside a thin orches
 - `python/`: FastAPI backend and CLI, uv-managed, owns its lint, types, and tests.
 - Root: format, spelling, shell checks, plus the cascade that runs both stack verifies.
 
-> Per-stack structure and conventions live in `.claude/context/web.md` and `.claude/context/python.md`. Dev-rule rationale (why `bun run dev` is disabled, regen-and-gate, WSL2) lives in `.claude/context/development.md`.
+> Per-stack structure and conventions live in the [web context](../.claude/context/web.md) and [python context](../.claude/context/python.md). Dev-rule rationale (why `bun run dev` is disabled, regen-and-gate, WSL2) lives in the [development context](../.claude/context/development.md).
 
 ## Setup
 
@@ -79,7 +79,7 @@ bun run restart:web
 
 `bun run restart:web` calls `scripts/restart.sh`, which kills any stale `next-server` and Playwright zombies, rebuilds, starts the production server in the background, and verifies the listening pid changed before returning. Logs land at `.claude/.tmp/restart/server.log`. Re-run after each edit.
 
-`bun run dev` is disabled at the package level and exits 1. Hot reload is not available locally on this machine. Rationale lives in `.claude/context/development.md`.
+`bun run dev` is disabled at the package level and exits 1. Hot reload is not available locally on this machine. Rationale lives in the [development context](../.claude/context/development.md).
 
 ## Vercel preview deploys
 
@@ -109,7 +109,7 @@ Local LLM smoke runs (Ollama, the multilingual e5 embedder) can saturate WSL2 me
 ./scripts/monitor.sh > /tmp/mon.log 2>&1 &   # detach, background, single combined log
 ```
 
-The script samples Windows host RAM, WSL guest RAM, GPU VRAM and utilization, and loaded Ollama models. Warns at host RAM 85% or GPU util 90%. Rationale and abort thresholds live in `.claude/context/development.md`.
+The script samples Windows host RAM, WSL guest RAM, GPU VRAM and utilization, and loaded Ollama models. Warns at host RAM 85% or GPU util 90%. Rationale and abort thresholds live in the [development context](../.claude/context/development.md).
 
 ## Python commands
 
@@ -126,7 +126,7 @@ Run from `python/` after `cd python`.
 
 ## Shell scripts
 
-All `.sh` files live under `scripts/` in their owning folder. Do not place shell scripts elsewhere. Verify scripts follow `prompts/bash-script.md`.
+All `.sh` files live under `scripts/` in their owning folder. Do not place shell scripts elsewhere. Verify scripts follow the [bash-script prompt](../prompts/bash-script.md).
 
 ## Husky hooks
 
