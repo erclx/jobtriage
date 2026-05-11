@@ -32,6 +32,9 @@
     "**/bun.lock",
     "**/uv.lock",
     "web/src/components/ai-elements/**",
-    "web/src/components/ui/**"
+    "web/src/components/ui/**",
+    "web/src/features/mock/scripts/stockholm-*.ts",
+    "web/src/features/mock/scripts/compare-*.ts",
+    "web/src/features/mock/scripts/deadline-*.ts"
   ]
 }
