@@ -34,7 +34,7 @@ The boundary between Python and TypeScript is HTTP, not in-process imports. Work
 
 ### BYOK over a funded demo
 
-The maintainer cannot fund every visitor's API spend. End users supply their own Anthropic key at chat time, held in browser sessionStorage and sent with each request, never persisted server-side. Tradeoff: lower demo conversion than a one-click flow. A landing-page screencast is the fallback for visitors without a key.
+The maintainer cannot fund every visitor's API spend. End users supply their own Anthropic, OpenAI, or Gemini key at chat time, held in browser sessionStorage and sent with each request, never persisted server-side. The gate exposes a provider picker that defaults to Anthropic and surfaces Gemini's free tier as the lowest-friction onramp for first-time visitors. The picker selection persists in `SESSION_KEYS.provider` alongside the key and forwards via the existing `x-jobtriage-provider` header so the route handler routes through the matching SDK (`@ai-sdk/anthropic`, `@ai-sdk/openai`, `@ai-sdk/google`). Per-provider model id defaults are pinned in `web/src/app/api/chat/route.ts` and overridable via `ANTHROPIC_MODEL_ID`, `OPENAI_MODEL_ID`, and `GEMINI_MODEL_ID` so a workstation A/Bs without a code edit. The maintainer-funded nightly LLM eval runs behind `workflow_dispatch` only in `.github/workflows/agent-eval.yml` so the cap stays intact. Tradeoff: lower demo conversion than a one-click flow. A landing-page screencast is the fallback for visitors without a key.
 
 ### Live JobTech path in deploy, hybrid retrieval in repo and CLI
 

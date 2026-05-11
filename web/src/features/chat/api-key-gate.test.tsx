@@ -14,7 +14,7 @@ describe('ApiKeyGate', () => {
     window.sessionStorage.clear()
   })
 
-  it('renders the gate when no key is stored', async () => {
+  it('should render the gate when no key is stored', async () => {
     render(
       <ApiKeyGate>
         <div>protected</div>
@@ -23,13 +23,13 @@ describe('ApiKeyGate', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: /Bring your own Anthropic key/i,
+        name: /Bring your own API key/i,
       }),
     ).toBeInTheDocument()
     expect(screen.queryByText('protected')).not.toBeInTheDocument()
   })
 
-  it('renders children when a key is already in sessionStorage', async () => {
+  it('should render children when a key is already in sessionStorage', async () => {
     window.sessionStorage.setItem(SESSION_KEYS.apiKey, 'sk-ant-existing')
 
     render(
@@ -41,7 +41,54 @@ describe('ApiKeyGate', () => {
     expect(await screen.findByText('protected')).toBeInTheDocument()
   })
 
-  it('rejects keys that do not start with sk-ant-', async () => {
+  it('should default the provider picker to Anthropic', async () => {
+    render(
+      <ApiKeyGate>
+        <div>protected</div>
+      </ApiKeyGate>,
+    )
+
+    const anthropicRadio = await screen.findByRole('radio', {
+      name: 'Anthropic',
+    })
+    expect(anthropicRadio).toBeChecked()
+    expect(screen.getByLabelText(/Anthropic API key/i)).toBeInTheDocument()
+  })
+
+  it('should swap label, placeholder, and helper link when switching to OpenAI', async () => {
+    const user = userEvent.setup()
+    render(
+      <ApiKeyGate>
+        <div>protected</div>
+      </ApiKeyGate>,
+    )
+
+    await user.click(await screen.findByRole('radio', { name: 'OpenAI' }))
+
+    expect(screen.getByLabelText(/OpenAI API key/i)).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('sk-...')).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: /Get an OpenAI key/i }),
+    ).toBeInTheDocument()
+  })
+
+  it('should surface the free-tier hint when Gemini is selected', async () => {
+    const user = userEvent.setup()
+    render(
+      <ApiKeyGate>
+        <div>protected</div>
+      </ApiKeyGate>,
+    )
+
+    await user.click(await screen.findByRole('radio', { name: 'Gemini' }))
+
+    expect(
+      screen.getByRole('link', { name: /free Gemini key/i }),
+    ).toBeInTheDocument()
+    expect(screen.getByText(/Free tier/i)).toBeInTheDocument()
+  })
+
+  it('should show a soft prefix warning on blur but allow submit', async () => {
     const user = userEvent.setup()
     render(
       <ApiKeyGate>
@@ -50,14 +97,83 @@ describe('ApiKeyGate', () => {
     )
 
     const input = await screen.findByLabelText(/Anthropic API key/i)
-    await user.type(input, 'wrong-key-shape')
+    await user.type(input, 'wrong-shape')
+    await user.tab()
+
+    expect(screen.getByRole('status')).toHaveTextContent(/sk-ant-/i)
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+
     await user.click(screen.getByRole('button', { name: /start chat/i }))
 
-    expect(screen.getByRole('alert')).toHaveTextContent(/sk-ant-/i)
-    expect(window.sessionStorage.getItem(SESSION_KEYS.apiKey)).toBeNull()
+    expect(await screen.findByText('protected')).toBeInTheDocument()
+    expect(window.sessionStorage.getItem(SESSION_KEYS.apiKey)).toBe(
+      'wrong-shape',
+    )
   })
 
-  it('renders over a stored provider when switchRequested and cancels without clearing', async () => {
+  it('should persist provider as openai when OpenAI is submitted', async () => {
+    const user = userEvent.setup()
+    render(
+      <ApiKeyGate>
+        <div>protected</div>
+      </ApiKeyGate>,
+    )
+
+    await user.click(await screen.findByRole('radio', { name: 'OpenAI' }))
+    const input = screen.getByLabelText(/OpenAI API key/i)
+    await user.type(input, 'sk-openai-test')
+    await user.click(screen.getByRole('button', { name: /start chat/i }))
+
+    expect(await screen.findByText('protected')).toBeInTheDocument()
+    expect(window.sessionStorage.getItem(SESSION_KEYS.provider)).toBe('openai')
+    expect(window.sessionStorage.getItem(SESSION_KEYS.apiKey)).toBe(
+      'sk-openai-test',
+    )
+  })
+
+  it('should persist provider as gemini when Gemini is submitted', async () => {
+    const user = userEvent.setup()
+    render(
+      <ApiKeyGate>
+        <div>protected</div>
+      </ApiKeyGate>,
+    )
+
+    await user.click(await screen.findByRole('radio', { name: 'Gemini' }))
+    const input = screen.getByLabelText(/Gemini API key/i)
+    await user.type(input, 'AIza-test-key')
+    await user.click(screen.getByRole('button', { name: /start chat/i }))
+
+    expect(await screen.findByText('protected')).toBeInTheDocument()
+    expect(window.sessionStorage.getItem(SESSION_KEYS.provider)).toBe('gemini')
+    expect(window.sessionStorage.getItem(SESSION_KEYS.apiKey)).toBe(
+      'AIza-test-key',
+    )
+  })
+
+  it('should not persist provider when the user changes radios without submitting', async () => {
+    window.sessionStorage.setItem(SESSION_KEYS.apiKey, 'sk-ant-existing')
+    window.sessionStorage.setItem(SESSION_KEYS.provider, 'anthropic')
+    const onResolveSwitch = vi.fn()
+    const user = userEvent.setup()
+
+    render(
+      <ApiKeyGate switchRequested onResolveSwitch={onResolveSwitch}>
+        <div>protected</div>
+      </ApiKeyGate>,
+    )
+
+    await user.click(await screen.findByRole('radio', { name: 'OpenAI' }))
+    await user.click(
+      screen.getByRole('button', { name: /Cancel and keep current provider/i }),
+    )
+
+    expect(window.sessionStorage.getItem(SESSION_KEYS.provider)).toBe(
+      'anthropic',
+    )
+  })
+
+  it('should render over a stored provider when switchRequested and cancels without clearing', async () => {
     window.sessionStorage.setItem(SESSION_KEYS.apiKey, 'sk-ant-existing')
     const onResolveSwitch = vi.fn()
     const user = userEvent.setup()
@@ -69,7 +185,7 @@ describe('ApiKeyGate', () => {
     )
 
     expect(
-      screen.getByRole('heading', { name: /Bring your own Anthropic key/i }),
+      screen.getByRole('heading', { name: /Bring your own API key/i }),
     ).toBeInTheDocument()
     expect(screen.queryByText('protected')).not.toBeInTheDocument()
 
@@ -83,7 +199,7 @@ describe('ApiKeyGate', () => {
     )
   })
 
-  it('cancels the switch overlay on Escape without clearing storage', async () => {
+  it('should cancel the switch overlay on Escape without clearing storage', async () => {
     window.sessionStorage.setItem(SESSION_KEYS.apiKey, 'sk-ant-existing')
     const onResolveSwitch = vi.fn()
     const user = userEvent.setup()
@@ -102,7 +218,7 @@ describe('ApiKeyGate', () => {
     )
   })
 
-  it('persists a valid key and unmounts the gate', async () => {
+  it('should persist a valid Anthropic key and unmount the gate', async () => {
     const user = userEvent.setup()
     render(
       <ApiKeyGate>
@@ -117,6 +233,9 @@ describe('ApiKeyGate', () => {
     expect(await screen.findByText('protected')).toBeInTheDocument()
     expect(window.sessionStorage.getItem(SESSION_KEYS.apiKey)).toBe(
       'sk-ant-valid',
+    )
+    expect(window.sessionStorage.getItem(SESSION_KEYS.provider)).toBe(
+      'anthropic',
     )
   })
 })
