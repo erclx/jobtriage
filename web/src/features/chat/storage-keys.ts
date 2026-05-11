@@ -45,7 +45,7 @@ export const BYOK_PROVIDERS: readonly ByokProviderMeta[] = [
   {
     id: 'gemini',
     label: 'Gemini',
-    placeholder: 'AIza...',
+    placeholder: 'AIzaSy...',
     prefixHint: 'AIza',
     signupLabel: 'Get a free Gemini key',
     signupUrl: 'https://aistudio.google.com/apikey',
