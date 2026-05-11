@@ -26,6 +26,7 @@
 - Read tool-call ordering with `grep -oE '"toolName":"[a-zA-Z]+"'` and final text with `grep -oE '"delta":"[^"]*"'`. The user runs visual checks (card layout, overflow, theme contrast).
 - Before loading a local model, start `scripts/monitor.sh` and check host RAM via PowerShell. Override `num_ctx` to 8192 via `OLLAMA_NUM_CTX` or route `providerOptions`. Ollama's default 131k allocates a KV cache that spills WSL2 into Windows host RAM on 30B-class models. Abort if host is already at 80%.
 - When a model ignores a prompt rule across 3-5 curl probes at the working temperature, stop tightening the prompt. Document it as a known limitation in the PR body and queue a model-swap or guard-rail follow-up instead.
+- When UI changes alter canonical states (BYOK gate, profile dialog, canvas, chat) or introduce new ones, update `web/scripts/screenshots.ts` first, then run `bun run screenshots`. Eyeball the PNGs against `.claude/WIREFRAMES.md`. Skip for copy-only or single-component tweaks where the existing capture still represents the surface.
 
 ## Shipping
 
