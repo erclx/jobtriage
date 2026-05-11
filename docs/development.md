@@ -83,6 +83,24 @@ bun run restart:web
 
 Do not use `bun run dev`. The script is disabled at the package level and exits 1. Turbopack's file watcher walks the AI Elements + shadcn dep tree and freezes WSL2 (vercel/next.js #87796, #91161, #66326). The Playwright `webServer` runs `build && start` for the same reason. Hot reload is not available locally on this machine.
 
+## Vercel preview deploys
+
+Every push to a branch with an open PR triggers a Vercel preview deploy. The build takes about two minutes and produces two URLs in the PR comment:
+
+- Per-commit immutable URL (`jobtriage-<commitHash>-erics-projects-...`): always reflects that exact commit
+- Per-branch alias (`jobtriage-git-<branch>-erics-projects-...`): always points at the latest commit on the branch
+
+Use the preview deploy when:
+
+- A reviewer needs to click and see the change without a local checkout
+- The change needs cross-device verification (phone, Safari, Edge)
+- An OG card crawler needs to fetch the page (LinkedIn Post Inspector, Slack, Twitter Card Validator cannot reach localhost)
+- Verifying that Vercel env vars and build settings produce the expected runtime
+
+Stay on `bun run restart:web` for the inner loop. Local builds reflect edits in seconds, previews take minutes. Previews are for the outer loop: reviewing actual deploy behavior on real Vercel and Cloud Run infrastructure.
+
+Deployment Protection is off for this project. Preview URLs are publicly accessible. If a branch ever needs gated previews, toggle Deployment Protection to `Only Preview Deployments` under Vercel project settings.
+
 ## Hardware monitor
 
 Local LLM smoke runs (Ollama with `gemma4:26b`, the multilingual e5 embedder) can saturate WSL2 memory or push the Windows host into swap. WSL2 caps the guest at half the host by default, so the Linux side reports a much smaller ceiling than the physical install. `scripts/monitor.sh` samples four pressure sources every 3s:
