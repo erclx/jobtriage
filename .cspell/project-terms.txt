@@ -9,11 +9,13 @@ chunker
 codegen
 collapsibles
 colour
+erclx
 excinfo
 executemany
 executescript
 Flen
 Floby
+gcloudignore
 GPQA
 grayscale
 jobtech

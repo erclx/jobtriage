@@ -1,4 +1,5 @@
 Clarifai
+Cloudflare
 figma
 Isaksson
 Jobsearch

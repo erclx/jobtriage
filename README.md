@@ -1,6 +1,8 @@
 # jobtriage
 
-Triage Swedish job ads against any profile in a live agent workspace. Paste a profile, ask in plain language, watch the agent fan retrieved ads onto a spatial canvas alongside its tool-call trace. Demo runs on bring-your-own-key.
+Triage Swedish job ads against any profile in a live agent workspace, with retrieval and a spatial canvas in one tab. Paste a profile, ask in plain language, watch the agent fan retrieved ads onto a canvas alongside its tool-call trace. Demo runs on bring-your-own-key.
+
+Live demo: [jobtriage.erclx.dev](https://jobtriage.erclx.dev)
 
 ## Features
 
@@ -88,3 +90,7 @@ Built with Claude Code as the primary agent, planned through the `.claude/` plan
 - [CI](docs/ci.md) covers the GitHub Actions job structure.
 - [Architecture](.claude/ARCHITECTURE.md) covers the five-layer request flow and key technical decisions.
 - [Requirements](.claude/REQUIREMENTS.md) covers the problem statement, MVP features, and constraints.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
