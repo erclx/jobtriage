@@ -18,7 +18,7 @@ Both fields feed `.claude/context/index.md` when regenerated.
 
 These cover most entries. Add domain-specific headings as needed. Do not pad an entry with empty sections.
 
-- `## Layer responsibilities`: which folders own what, how the domain is sliced.
+- `## Layer responsibilities`: which folders own what, how the domain is sliced. One line per item, owns-X form. Implementation detail moves to `## Decisions` or `## Hidden contracts`.
 - `## Decisions`: non-obvious technical choices that do not fit `ARCHITECTURE.md` and would otherwise need re-deriving from code.
 - `## Gotchas`: workarounds, things tried and rejected, scar tissue worth preserving.
 
