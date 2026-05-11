@@ -9,9 +9,11 @@ Local dev workflow for this monorepo. Two stack folders sit beside a thin orches
 
 ## Layout
 
-- `web/`: Next.js app, bun-managed, owns its lint, tests, and build. See [web.md](web.md).
-- `python/`: FastAPI backend and CLI, uv-managed, owns its lint, types, and tests. See [python.md](python.md).
+- `web/`: Next.js app, bun-managed, owns its lint, tests, and build.
+- `python/`: FastAPI backend and CLI, uv-managed, owns its lint, types, and tests.
 - Root: format, spelling, shell checks, plus the cascade that runs both stack verifies.
+
+> Per-stack structure and conventions live in the [web context](../.claude/context/web.md) and [python context](../.claude/context/python.md). Dev-rule rationale (why `bun run dev` is disabled, regen-and-gate, WSL2) lives in the [development context](../.claude/context/development.md).
 
 ## Setup
 
@@ -27,11 +29,7 @@ Local dev workflow for this monorepo. Two stack folders sit beside a thin orches
 | --------------- | ------------------------------------------------------------------------------ | ----------- |
 | `bun run check` | Format, spell, shell, python (ruff, mypy, pytest), web (typecheck, lint, test) | ~5s         |
 
-`check` runs on every `git push` via the husky `pre-push` hook. `next build` and Playwright e2e stay out of the cascade by design. The previous scaffold ran `next build` in `pre-push` and froze under WSL2. CI now runs the build on every PR instead. Run `cd web && bun run build` and `cd web && bun run test:e2e` manually before opening a PR if you want full parity.
-
-The python verify also regenerates `python/openapi.json` and fails if the working copy drifts. After backend changes that move endpoints or schemas, the regeneration is automatic. Commit the diff alongside the source change.
-
-When adding a regen-and-gate pattern (FastAPI OpenAPI export, codegen, schema dumps), append the artifact path to `.prettierignore` in the same commit. Otherwise prettier and the regen disagree on layout and the freshness check fails on every push.
+`check` runs on every `git push` via the husky `pre-push` hook. The python verify also regenerates `python/openapi.json` and fails if the working copy drifts. Commit the regenerated file alongside the source change.
 
 ## Root scripts
 
@@ -81,7 +79,7 @@ bun run restart:web
 
 `bun run restart:web` calls `scripts/restart.sh`, which kills any stale `next-server` and Playwright zombies, rebuilds, starts the production server in the background, and verifies the listening pid changed before returning. Logs land at `.claude/.tmp/restart/server.log`. Re-run after each edit.
 
-Do not use `bun run dev`. The script is disabled at the package level and exits 1. Turbopack's file watcher walks the AI Elements + shadcn dep tree and freezes WSL2 (vercel/next.js #87796, #91161, #66326). The Playwright `webServer` runs `build && start` for the same reason. Hot reload is not available locally on this machine.
+`bun run dev` is disabled at the package level and exits 1. Hot reload is not available locally on this machine. Rationale lives in the [development context](../.claude/context/development.md).
 
 ## Vercel preview deploys
 
@@ -103,14 +101,7 @@ Deployment Protection is off for this project. Preview URLs are publicly accessi
 
 ## Hardware monitor
 
-Local LLM smoke runs (Ollama with `gemma4:26b`, the multilingual e5 embedder) can saturate WSL2 memory or push the Windows host into swap. WSL2 caps the guest at half the host by default, so the Linux side reports a much smaller ceiling than the physical install. `scripts/monitor.sh` samples four pressure sources every 3s:
-
-- Windows host RAM via `powershell.exe Get-CimInstance Win32_OperatingSystem`
-- WSL guest RAM via `/proc/meminfo`
-- GPU VRAM and utilization via `nvidia-smi`
-- Loaded Ollama models via `ollama ps`
-
-Run it in a separate terminal before starting any local model:
+Local LLM smoke runs (Ollama, the multilingual e5 embedder) can saturate WSL2 memory. Run `scripts/monitor.sh` in a separate terminal before starting any local model:
 
 ```bash
 ./scripts/monitor.sh                         # 3s interval, frame UI on stderr, samples on stdout
@@ -118,7 +109,7 @@ Run it in a separate terminal before starting any local model:
 ./scripts/monitor.sh > /tmp/mon.log 2>&1 &   # detach, background, single combined log
 ```
 
-The script writes tab-separated samples to stdout for piping into `column`, `tee`, or a log file. The timeline UI and threshold warnings (`!` lines for host RAM at 85% or GPU util at 90%) write to stderr. Ctrl-C exits cleanly via the trap.
+The script samples Windows host RAM, WSL guest RAM, GPU VRAM and utilization, and loaded Ollama models. Warns at host RAM 85% or GPU util 90%. Rationale and abort thresholds live in the [development context](../.claude/context/development.md).
 
 ## Python commands
 
@@ -135,10 +126,10 @@ Run from `python/` after `cd python`.
 
 ## Shell scripts
 
-All `.sh` files live under `scripts/` in their owning folder. Do not place shell scripts elsewhere. Verify scripts follow `prompts/bash-script.md`.
+All `.sh` files live under `scripts/` in their owning folder. Do not place shell scripts elsewhere. Verify scripts follow the [bash-script prompt](../prompts/bash-script.md).
 
 ## Husky hooks
 
 - `pre-commit`: runs `lint-staged` against staged files (prettier, cspell, shfmt, shellcheck).
 - `commit-msg`: runs `commitlint` against the conventional commit format.
-- `pre-push`: runs `bun run check` (the full cascade). After pushing, run `git status`. If files changed, commit the diff as `style(<scope>):` and push again.
+- `pre-push`: runs `bun run check` (the full cascade). The cascade may reformat. After pushing, run `git status`. If files changed, commit the diff as `style(<scope>):` and push again. Do not skip with `--no-verify`.

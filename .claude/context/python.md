@@ -17,7 +17,7 @@ FastAPI backend, Python tools, and Typer CLI. The same Python modules power the 
 - `httpx` for the JobTech API client
 - `ruff` for lint and format, `mypy` for strict types, `pytest` for tests
 
-Typer, httpx, pydantic, and pydantic-settings shipped in v0. The hybrid retriever, embedder, and eval harness shipped in v1. FastAPI shipped in v2 per [ARCHITECTURE.md](../.claude/ARCHITECTURE.md).
+Typer, httpx, pydantic, and pydantic-settings shipped in v0. The hybrid retriever, embedder, and eval harness shipped in v1. FastAPI shipped in v2 per `.claude/ARCHITECTURE.md`.
 
 ## Layout
 
@@ -55,14 +55,24 @@ The `storage/` schema reserves a nullable `embedding` BLOB column on `ad_chunks`
 
 ## Layer responsibilities
 
-- `jobtech/`: async httpx client and pydantic models. `JobTechClient.search` paginates the structured `/search` endpoint for ingestion. `live_search` runs a single-page free-text plus structured live search and returns ads with description text inline for the deploy posture. `fetch_ad` hits `/ad/{id}` for live single-ad detail. `search_concepts` queries the taxonomy `suggesters/autocomplete` endpoint across the occupation-name and region taxonomies in parallel and returns a list of `Concept(concept_id, preferred_label, type)` records. The CLI imports these directly.
-- `api/`: thin FastAPI layer. `app_factory()` mounts `routers/health.py`, `routers/jobs.py`, `routers/engagements.py`, and `routers/taxonomy.py`. The lifespan warms the embedder once on startup. The corpus path: `POST /v1/jobs/search` and `POST /v1/jobs/semantic` back the `searchJobs` and `semanticSearch` tools, `POST /v1/jobs/details` returns description excerpts for one or more ad ids and serves both `matchProfile` and `compareRoles`, `POST /v1/jobs/triage` runs hybrid retrieval and returns ranked ads with description excerpts in one call for `triageBatch`, `POST /v1/jobs/deadline` filters active ads by application-deadline window for `deadlineWatch`. The deploy posture path: `POST /v1/taxonomy/lookup` resolves user-facing terms to JobTech concept ids for `lookupConcept`, `POST /v1/jobs/live-search` runs free-text plus structured live search against JobTech with description excerpts inline for the deploy `searchJobs`, `POST /v1/jobs/live-details` fetches one or more ads from JobTech `/ad/{id}` for the deploy `matchProfile` and `compareRoles`. `GET /v1/engagements/status` reads the markdown engagement log via `engagement.read_status` for `trackStatus`. The CLI keeps importing the Python tools directly without going through HTTP. `JobSearchRequest.occupation_concept_id` and `LiveJobSearchRequest.occupation_concept_id` validate against the JobTech 4-3-3 alphanumeric nanoid pattern and return 422 on fabricated ids. `JOBTRIAGE_RRF_FLOOR` (default 0.025) drops below-floor results at the `triage` and `semantic` endpoints to suppress noise on adversarial queries. `filter_only_search` is left untouched since it returns recent ads regardless of relevance score.
-- `storage/`: SQLite schema, paragraph-then-length chunker, append-mostly ingest with filter-scoped deactivation. Ingest writes both `ad_chunks` and `ad_chunks_fts` rows together.
-- `embeddings.py`: `Embedder` Protocol plus `SentenceTransformerEmbedder` for multilingual-e5. Lazy-loads the model on first encode and applies the `passage:`/`query:` prefixes that e5 requires.
-- `retrieval.py`: `bm25_search` over FTS5, `dense_search` over the embedding column, `reciprocal_rank_fusion` (k=60 default), and `hybrid_search` that composes them.
-- `evals/`: pydantic-validated golden-set loader and a four-configuration runner (filter-only, bm25-only, dense-only, hybrid). Emits precision-at-k, recall@10, and p50/p95 latency. Adds an embedding-ablation runner that encodes chunks in memory per model and compares e5-base, e5-large, and `all-MiniLM-L6-v2` on dense and hybrid configurations without touching `ad_chunks.embedding`.
-- `engagement.py`: `record_status` appends rows to a markdown engagement log, `read_status` parses entries for one ad id. Single-writer file, no SQLite mirror per ARCHITECTURE.md.
-- `cli/`: Typer commands. `sweep` ingests from JobTech, `index` backfills embeddings, `search` runs hybrid retrieval, `evaluate` runs the four-configuration ablation harness, `evaluate-embeddings` runs the per-model encoder comparison, `mark-status` records engagement state.
+- `jobtech/` owns the async httpx JobTech client and pydantic models
+- `api/` owns the thin FastAPI HTTP wrapper, request schemas, and lifespan
+- `storage/` owns the SQLite schema, paragraph-then-length chunker, and append-mostly ingest
+- `embeddings.py` owns the `multilingual-e5` wrapper with passage/query prefixes
+- `retrieval.py` owns BM25, dense cosine, and the RRF fusion that composes them
+- `evals/` owns the golden-set loader and four-configuration runner, details in `.claude/context/evals.md`
+- `engagement.py` owns the markdown engagement log reader and writer
+- `cli/` owns the Typer commands (`sweep`, `index`, `search`, `mark-status`), plus `evaluate` and `evaluate-embeddings` covered in `.claude/context/evals.md`
+
+## Decisions
+
+### JobTech concept-id format validation at the request schema
+
+`JobSearchRequest.occupation_concept_id` and `LiveJobSearchRequest.occupation_concept_id` validate against the JobTech 4-3-3 alphanumeric nanoid pattern (e.g., `X9jv_K2b_m48`). Fabricated ids return 422 with an actionable message. The v4.2 audit caught the agent inventing ids like `occupation-12345` on adversarial prompts, which silently returned the unfiltered global corpus because no boundary check existed. A structured 422 lets the model recover into a different tool, instead of looking like the corpus has no matches.
+
+### RRF floor scoped to corpus endpoints
+
+`JOBTRIAGE_RRF_FLOOR` (default `0.025`) drops below-floor results at `/v1/jobs/triage` and `/v1/jobs/semantic` only. `/v1/jobs/search` and `/v1/jobs/live-search` are left untouched since they filter recent ads regardless of relevance score. Full rationale in `.claude/context/retrieval.md`.
 
 ## Conventions
 
@@ -99,4 +109,4 @@ Run from `python/` after `cd python`.
 
 Google Cloud Run on the Always Free tier, region `europe-west1`. The image ships in slim mode (`JOBTRIAGE_DEPLOY_MODE=slim`): no SQLite corpus and no `sentence-transformers`/`torch` wheel, since the deploy posture only calls `live-search`, `live-details`, `taxonomy/lookup`, and `engagements/status`. Corpus-backed endpoints return 503 in slim mode. The deployed image carries no provider keys: visitors supply Anthropic, OpenAI, or Gemini keys at chat time.
 
-For the full deploy sequence (Cloud Run build, Vercel project setup, Cloudflare DNS), see [deployment.md](deployment.md).
+For the full deploy sequence (Cloud Run build, Vercel project setup, Cloudflare DNS), see `docs/deployment.md`. Platform gotchas live in `.claude/context/deploy.md`.

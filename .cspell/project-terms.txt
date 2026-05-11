@@ -16,6 +16,7 @@ executescript
 Flen
 Floby
 gcloudignore
+goldenset
 GPQA
 grayscale
 jobtech
@@ -23,9 +24,11 @@ jobtriage
 Kista
 MMLU
 nanoids
+pyharness
 Rasterizes
 seniorroller
 timespec
+topk
 Torslanda
 Uddevalla
 Växjö
