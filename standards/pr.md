@@ -20,7 +20,6 @@ description: Pull request title and body conventions
 - Do not include future promises or speculative documentation
 - Do not explain obvious changes (formatting, renaming variables)
 - Do not duplicate commit messages verbatim
-- Do not reference internal version labels (`v4.4`, `v6`, etc.). They stale fast as scope evolves. Cross-refs like `#8` stay allowed when they add navigational value.
 
 ## Sections
 

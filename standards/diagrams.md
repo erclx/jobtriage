@@ -1,16 +1,16 @@
 ---
-title: Diagram standard
-description: Conventions for Mermaid diagrams in `.claude/DIAGRAMS.md` and elsewhere
+title: Diagram reference
+description: Conventions for Mermaid diagrams in .claude/DIAGRAMS.md
 ---
 
-# Diagram standard
+# Diagram reference
 
-Applies to Mermaid diagrams in `.claude/DIAGRAMS.md` and any other markdown that embeds one. Goal: diagrams that render cleanly inside VS Code's Mermaid preview (narrow column) and read pedagogically without prose context.
+Applies to Mermaid diagrams in `.claude/DIAGRAMS.md`. Goal: diagrams that render cleanly in narrow-column renderers (VS Code preview, GitHub PR view, Cursor) and read pedagogically without surrounding prose.
 
 ## Layout
 
-- Use `flowchart TB` (top-bottom) by default. Vertical stacks render inside the VS Code preview without horizontal scroll.
-- Avoid `flowchart LR` and side-by-side subgraphs. They overflow the editor pane on most monitors.
+- Use `flowchart TB` (top-bottom) by default. Vertical stacks render inside narrow editor panes without horizontal scroll.
+- Avoid `flowchart LR` and side-by-side subgraphs. They overflow narrow renderers on most monitors.
 - Keep node labels short. Three or four words max. Detail goes in the paragraph below the diagram.
 - Use `<br/>` for a second short line on a node when the label is two ideas, never for a sentence.
 - Subgraphs are for grouping unrelated lanes (offline versus online, browser versus server). Do not subgraph a single linear flow.
