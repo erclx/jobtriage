@@ -6,7 +6,7 @@ Triage Swedish job ads against any profile in a live agent workspace. Paste a pr
 
 - Works for any profession. The deployed demo resolves "nursing in Stockholm" or "chef in Malmö" to JobTech taxonomy concepts on the fly, then runs the agent against live Platsbanken results.
 - Spatial workspace. Retrieved ads land as draggable nodes on a React Flow canvas with four canonical views: triage clusters, deadline timeline, side-by-side compare, and a pinned shortlist.
-- Bring-your-own-key. The deployed demo holds nothing server-side. Paste an Anthropic key into the gate (browser sessionStorage only) or click through to local Ollama for a zero-key path.
+- Bring-your-own-key. The deployed demo holds nothing server-side. The gate accepts an Anthropic, OpenAI, or Gemini key (browser sessionStorage only), or routes through local Ollama for a zero-key path.
 
 ## Quickstart
 
@@ -27,7 +27,7 @@ bun run restart:web      # Next.js production build, see docs/development.md
 
 ## How it works
 
-The chat surface runs in the browser on the Vercel AI SDK. Each user turn fires the agent loop on a thin Next.js route handler that forwards the user-supplied Anthropic key as a Bearer token. Provider selection is per-request: the BYOK gate persists the choice in browser sessionStorage and sends it back as a header so the route can swap between `@ai-sdk/anthropic` and `ollama-ai-provider-v2` without a code edit.
+The chat surface runs in the browser on the Vercel AI SDK. Each user turn fires the agent loop on a thin Next.js route handler that forwards the user-supplied API key as a Bearer token. Provider selection is per-request: the BYOK gate persists the choice in browser sessionStorage and sends it back as a header so the route can swap between Anthropic, OpenAI, Gemini, and local Ollama providers without a code edit.
 
 Two postures share the same agent shell. The deployed demo runs `lookupConcept` against the JobTech taxonomy, then `searchJobs` against the live JobSearch API, then reasons in-context with `matchProfile` and `compareRoles` over the returned ads. The local CLI and the local browser dev surface keep the corpus-dependent stack: hybrid retrieval (BM25 plus dense over `multilingual-e5-base`) fused with reciprocal rank fusion, plus deadline filtering and engagement tracking against a local markdown log.
 

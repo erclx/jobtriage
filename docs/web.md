@@ -12,7 +12,7 @@ Next.js 16 App Router app. Owns the chat UI, the agent loop via the Vercel AI SD
 - Next.js 16 with the App Router and Turbopack
 - React 19
 - Tailwind v4 via `@tailwindcss/postcss`
-- Vercel AI SDK v6 with `@ai-sdk/anthropic` for the deployed demo and `ollama-ai-provider-v2` for local dev
+- Vercel AI SDK v6 with `@ai-sdk/anthropic`, `@ai-sdk/openai`, and `@ai-sdk/google` for the deployed demo, plus `ollama-ai-provider-v2` for local dev
 - React Flow v12 (`@xyflow/react`) for the spatial canvas
 - AI Elements component library for chat surfaces, vendored under `src/components/ai-elements/`
 - shadcn/ui primitives, vendored under `src/components/ui/`
@@ -130,13 +130,15 @@ web/
 
 ## Provider switching
 
-The chat surface supports two providers, chosen at the gate and persisted in browser sessionStorage:
+The chat surface supports four providers, chosen at the gate and persisted in browser sessionStorage:
 
-- Anthropic via `@ai-sdk/anthropic`. The user's `sk-ant-...` key is forwarded as a Bearer header on each request and never persisted server-side.
-- Local Ollama via `ollama-ai-provider-v2`. No key required. Defaults to `gemma4:26b` against `localhost:11434` with a context window of 8192 tokens. Override the model id with `OLLAMA_MODEL_ID`, the base URL with `OLLAMA_BASE_URL`, and the context window with `OLLAMA_NUM_CTX`. The bounded context keeps KV cache out of host RAM on WSL2. A reusable smoke harness at `web/scripts/model-probe.ts` reads probe fixtures from `.claude/evals/*.json` (selectable via `PROBE_FIXTURE`) for re-running tool-discipline and language-detection regressions on future model swaps.
+- Anthropic via `@ai-sdk/anthropic`. The user's `sk-ant-...` key is forwarded as a Bearer header on each request and never persisted server-side. Default model id `claude-sonnet-4-5`, overridable via `ANTHROPIC_MODEL_ID`.
+- OpenAI via `@ai-sdk/openai`. The user's `sk-...` key is forwarded as a Bearer header on each request. Default model id `gpt-4o-mini`, overridable via `OPENAI_MODEL_ID`.
+- Gemini via `@ai-sdk/google`. The user's `AIza...` key is forwarded as a Bearer header on each request. AI Studio's free tier covers casual use. Default model id `gemini-2.5-flash`, overridable via `GEMINI_MODEL_ID`.
+- Local Ollama via `ollama-ai-provider-v2`. No key required. Defaults to `gemma4:26b` against `localhost:11434` with a context window of 8192 tokens. Override the model id with `OLLAMA_MODEL_ID`, the base URL with `OLLAMA_BASE_URL`, and the context window with `OLLAMA_NUM_CTX`. The bounded context keeps KV cache out of host RAM on WSL2. A reusable smoke harness at `web/scripts/model-probe.ts` reads probe fixtures from `.claude/evals/*.json` (selectable via `PROBE_FIXTURE`) for re-running tool-discipline and language-detection regressions on future model swaps. `PROBE_PROVIDER=openai|gemini|anthropic` plus `PROBE_API_KEY` and `PROBE_MODEL_ID` switches the same harness to the BYOK providers without restarting the server per model.
 
-The route handler at `src/app/api/chat/route.ts` reads the `x-jobtriage-provider` request header to pick the provider per request. Both branches share the same tool registry and system prompt.
+The route handler at `src/app/api/chat/route.ts` reads the `x-jobtriage-provider` request header to pick the provider per request. All four branches share the same tool registry and system prompt. Any header other than `ollama`, `anthropic`, `openai`, or `gemini` returns a 400.
 
 ## Deploy
 
-Vercel free tier. Wired in v5. The deployed bundle does not carry an Anthropic key. End users supply their own at chat time, held in browser sessionStorage and sent with each request.
+Vercel free tier. Wired in v5. The deployed bundle does not carry any provider key. End users supply their own Anthropic, OpenAI, or Gemini key at chat time, held in browser sessionStorage and sent with each request.

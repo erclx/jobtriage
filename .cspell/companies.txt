@@ -6,5 +6,6 @@ Jobtechdev
 Klarna
 Montico
 Onestream
+OpenAI
 Webflow
 Yocto

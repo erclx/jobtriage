@@ -1,4 +1,6 @@
 import { createAnthropic } from '@ai-sdk/anthropic'
+import { createGoogleGenerativeAI } from '@ai-sdk/google'
+import { createOpenAI } from '@ai-sdk/openai'
 import {
   convertToModelMessages,
   type LanguageModel,
@@ -20,11 +22,17 @@ const ChatRequestSchema = z.object({
   profile: z.string().max(20_000).nullable().optional(),
 })
 
-const ANTHROPIC_MODEL_ID = 'claude-sonnet-4-5'
+const ANTHROPIC_MODEL_ID = process.env.ANTHROPIC_MODEL_ID ?? 'claude-sonnet-4-5'
+const OPENAI_MODEL_ID = process.env.OPENAI_MODEL_ID ?? 'gpt-4o-mini'
+const GEMINI_MODEL_ID = process.env.GEMINI_MODEL_ID ?? 'gemini-2.5-flash'
 const OLLAMA_MODEL_ID = process.env.OLLAMA_MODEL_ID ?? 'gemma4:26b'
 const OLLAMA_BASE_URL =
   process.env.OLLAMA_BASE_URL ?? 'http://localhost:11434/api'
 const OLLAMA_NUM_CTX = Number(process.env.OLLAMA_NUM_CTX ?? '8192')
+
+const BYOK_PROVIDERS = ['anthropic', 'openai', 'gemini'] as const
+type ByokProvider = (typeof BYOK_PROVIDERS)[number]
+type ProviderName = ByokProvider | 'ollama'
 
 function jsonError(status: number, message: string): Response {
   return new Response(JSON.stringify({ error: message }), {
@@ -35,16 +43,35 @@ function jsonError(status: number, message: string): Response {
 
 interface ResolvedProvider {
   model: LanguageModel
-  providerName: 'anthropic' | 'ollama'
+  providerName: ProviderName
   redactSecret?: string
 }
 
-function resolveProvider(request: NextRequest): ResolvedProvider | Response {
-  const provider = request.headers.get('x-jobtriage-provider') ?? 'anthropic'
+function isByokProvider(value: string): value is ByokProvider {
+  return (BYOK_PROVIDERS as readonly string[]).includes(value)
+}
 
-  if (provider === 'ollama') {
+function buildByokModel(provider: ByokProvider, apiKey: string): LanguageModel {
+  switch (provider) {
+    case 'anthropic':
+      return createAnthropic({ apiKey })(ANTHROPIC_MODEL_ID)
+    case 'openai':
+      return createOpenAI({ apiKey })(OPENAI_MODEL_ID)
+    case 'gemini':
+      return createGoogleGenerativeAI({ apiKey })(GEMINI_MODEL_ID)
+  }
+}
+
+function resolveProvider(request: NextRequest): ResolvedProvider | Response {
+  const header = request.headers.get('x-jobtriage-provider') ?? 'anthropic'
+
+  if (header === 'ollama') {
     const ollama = createOllama({ baseURL: OLLAMA_BASE_URL })
     return { model: ollama(OLLAMA_MODEL_ID), providerName: 'ollama' }
+  }
+
+  if (!isByokProvider(header)) {
+    return jsonError(400, `Unknown provider: ${header}`)
   }
 
   const authHeader = request.headers.get('authorization') ?? ''
@@ -52,18 +79,18 @@ function resolveProvider(request: NextRequest): ResolvedProvider | Response {
     ? authHeader.slice('Bearer '.length).trim()
     : ''
   if (!apiKey) {
-    return jsonError(401, 'Missing Authorization: Bearer <Anthropic key>')
+    return jsonError(401, `Missing Authorization: Bearer <${header} key>`)
   }
-  const anthropic = createAnthropic({ apiKey })
+
   return {
-    model: anthropic(ANTHROPIC_MODEL_ID),
-    providerName: 'anthropic',
+    model: buildByokModel(header, apiKey),
+    providerName: header,
     redactSecret: apiKey,
   }
 }
 
 function resolveAgentMode(
-  providerName: 'anthropic' | 'ollama',
+  providerName: ProviderName,
   request: NextRequest,
 ): AgentMode {
   const headerOverride = request.headers.get('x-jobtriage-mode')

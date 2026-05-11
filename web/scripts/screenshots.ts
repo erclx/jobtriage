@@ -265,6 +265,22 @@ const CASES: readonly CaptureCase[] = [
     },
   },
   {
+    surface: 'byok',
+    name: 'openai',
+    seed: { localStorage: { theme: 'placeholder' } },
+    act: async (page) => {
+      await page.getByText('OpenAI', { exact: true }).click()
+    },
+  },
+  {
+    surface: 'byok',
+    name: 'gemini',
+    seed: { localStorage: { theme: 'placeholder' } },
+    act: async (page) => {
+      await page.getByText('Gemini', { exact: true }).click()
+    },
+  },
+  {
     surface: 'profile',
     name: 'empty',
     seed: authedSeed(),
