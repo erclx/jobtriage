@@ -18,6 +18,8 @@ node_modules/
 .claude/scheduled_tasks.lock
 .claude/worktrees/
 .claude/TASKS.md
+.claude/briefs/
+.claude/ROADMAP.md
 
 # Runtime
 var/

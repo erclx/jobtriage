@@ -9,7 +9,7 @@ Four-tier ownership model. Know which tier holds what before reading or writing.
 - `README.md`: public pitch and 60-second setup for an outside visitor. No internal contracts.
 - `docs/`: contributor-facing reference rendered on github.com. Setup commands, CI structure, deploy procedures, script tables. Audience is a human reading on the repo page.
 - `.claude/context/`: per-domain working knowledge for Claude Code editing that domain. Layer responsibilities, decisions, gotchas, hidden contracts. See `.claude/context/index.md` for the catalog. New entries follow `standards/context.md`.
-- `.claude/` planning docs (`TASKS.md`, `ARCHITECTURE.md`, `REQUIREMENTS.md`, `DESIGN.md`, `WIREFRAMES.md`, `DIAGRAMS.md`): always-loaded product-wide invariants. Read before changes, when present. The `claude-feature` skill loads them in parallel.
+- `.claude/` planning docs (`TASKS.md`, `ARCHITECTURE.md`, `REQUIREMENTS.md`, `DESIGN.md`, `DIAGRAMS.md`): always-loaded product-wide invariants. Read before changes, when present. The `claude-feature` skill loads them in parallel. Wireframes live in `.claude/wireframes/` and load on demand per surface.
 - `.claude/rules/`: coding standards. Always-on rules apply every session. Path-scoped rules apply to files matching their `paths:` glob.
 
 Rule of thumb when a fact lives in two places: if a contributor needs it to run the project, `docs/`. If Claude needs it to modify the project safely, `.claude/context/`. If both, `docs/` carries a thin pointer and `.claude/context/` carries the depth.
@@ -38,13 +38,14 @@ Rule of thumb when a fact lives in two places: if a contributor needs it to run 
 - Read tool-call ordering with `grep -oE '"toolName":"[a-zA-Z]+"'` and final text with `grep -oE '"delta":"[^"]*"'`. The user runs visual checks (card layout, overflow, theme contrast).
 - Before loading a local model, start `scripts/monitor.sh` and check host RAM via PowerShell. Override `num_ctx` to 8192 via `OLLAMA_NUM_CTX` or route `providerOptions`. Ollama's default 131k allocates a KV cache that spills WSL2 into Windows host RAM on 30B-class models. Abort if host is already at 80%.
 - When a model ignores a prompt rule across 3-5 curl probes at the working temperature, stop tightening the prompt. Document it as a known limitation in the PR body and queue a model-swap or guard-rail follow-up instead.
-- When UI changes alter canonical states (BYOK gate, profile dialog, canvas, chat) or introduce new ones, update `web/scripts/screenshots.ts` first, then run `bun run screenshots`. Eyeball the PNGs against `.claude/WIREFRAMES.md`. Skip for copy-only or single-component tweaks where the existing capture still represents the surface.
+- The canonical UI inventory lives in `web/scripts/screenshots.ts` as surface-level capture cases (`byok`, `chat`, `profile`, `canvas`). When a change alters how an existing case renders, rerun `bun run screenshots` and eyeball the diff against `.claude/wireframes/<surface>.md`. When a change introduces a layout configuration the harness does not yet cover, add a capture case first, then run. Component-only tweaks that do not change any captured PNG are exempt.
 
 ## Shipping
 
 - After implementing a feature, run `bun run check` plus the test suite for the surfaces you touched. Fix what fails before opening a PR.
 - After implementing a feature, run it end-to-end against real data (live API, populated database, deployed surface) and paste the output into the PR body under a `Live smoke` section. If a live run is impossible, say so explicitly instead of claiming success.
 - Keep PR bodies evergreen. Beyond the `## Live smoke` block, run logs, follow-up notes, and polish narratives go into PR comments via `gh pr comment`, not the body.
+- After a local commit on a feature branch, stop and hand control back. Push only when the user signals after browser verification. User-invoked skills that push by design (`/toolkit:git-ship`, `/toolkit:git-followup`) are exempt for that invocation only. Manual edits made between skill invocations require a fresh push signal.
 
 ## Indexes
 
@@ -56,6 +57,7 @@ Rule of thumb when a fact lives in two places: if a contributor needs it to run 
 
 - Before writing or editing an artifact with a matching standard in `prompts/` or `standards/` (bash scripts, READMEs, PRs, commits, branches, snippets, skills, prose), read that file first and follow it.
 - When editing `README.md`, follow `standards/readme.md`. Keep it user-facing. Technical detail belongs in `docs/` or `.claude/`.
+- When writing or updating `.claude/context/<domain>.md`, follow `standards/context.md`.
 - When editing `.claude/DIAGRAMS.md` or any markdown that embeds a Mermaid diagram, follow `standards/diagrams.md`. Vertical `flowchart TB`, short labels, explanation paragraph below each diagram.
 
 ## Commands
@@ -76,6 +78,7 @@ Rule of thumb when a fact lives in two places: if a contributor needs it to run 
 - `src/`: [description]
 - `.claude/`: planning docs (requirements, architecture, wireframes, design, tasks)
 - `.claude/context/`: per-domain narrative loaded when editing that domain. See `.claude/context/index.md` for the catalog. Entries cover agent loop, canvas, web, python, retrieval, evals, development, deploy.
+- `.claude/wireframes/`: per-surface ASCII layouts loaded on demand, indexed via `.claude/wireframes/index.md`
 - `.claude/evals/`: structured JSON fixtures consumed by `web/scripts/model-probe.ts`. See `.claude/context/evals.md` for fixture shape, `kind` semantics, and the `workflow_dispatch` posture.
 - `.claude/review/`: gitignored scratch for review and UI-test output, overwritten on each run
 - `wiki/`: durable reusable technical knowledge that outlives any single project decision (model landscapes, tool-stack notes, integration playbooks). Pages survive plan-file deletion when tasks ship.
@@ -83,6 +86,7 @@ Rule of thumb when a fact lives in two places: if a contributor needs it to run 
 ## Spelling
 
 - When cspell flags a word, rewrite typos. Add real terms to the right file under `.cspell/`: `companies.txt` for orgs and products, `people.txt` for person names, `tech-stack.txt` for tools and libs, `project-terms.txt` for everything else (jargon, acronyms, place names, project handles).
+- Auto-generated fixtures pulled from external APIs (JobTech, taxonomy) go in `cspell.json` ignorePaths, not `.cspell/<bucket>.txt`. Keep hand-authored `index.ts` and `types.ts` scanned.
 - Keep dictionary files sorted alphabetically.
 - `@cspell/dict-sv` covers Swedish words. Do not add them to the custom txt files unless cspell still flags them after the dict is loaded.
 
