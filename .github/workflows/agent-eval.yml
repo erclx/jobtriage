@@ -102,9 +102,20 @@ jobs:
           PROBE_FIXTURE: .claude/evals/agent-general-profile.json
         run: bun scripts/model-probe.ts
 
+      - name: Run conversation fixture
+        if: steps.gate.outputs.skip != 'true' && steps.secret.outputs.skip != 'true'
+        working-directory: web
+        env:
+          PROBE_PROVIDER: ${{ matrix.provider }}
+          PROBE_API_KEY: ${{ steps.secret.outputs.key }}
+          PROBE_FIXTURE: .claude/evals/agent-conversation.json
+        run: bun scripts/model-probe.ts
+
       - name: Upload results
         if: always() && steps.gate.outputs.skip != 'true' && steps.secret.outputs.skip != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: agent-eval-${{ matrix.provider }}
-          path: .claude/.tmp/ollama-model-research/smoke-*.md
+          path: |
+            .claude/.tmp/ollama-model-research/smoke-*.md
+            .claude/.tmp/ollama-model-research/smoke-*.json

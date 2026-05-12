@@ -35,8 +35,9 @@ uv run jobtriage evaluate-embeddings --golden <path> [--db <path>] [--json-out <
 
 ### Layer responsibilities
 
-- `web/scripts/model-probe.ts` is the fixture-agnostic driver. Loads a JSON fixture, dispatches probes by `kind` field, emits one markdown table per provider or per model.
-- `.claude/evals/*.json` carry the fixtures. Each declares a `kind` plus a `probes` array. Supported kinds: `discipline`, `language`, `pairing`, `general-profile`.
+- `web/scripts/model-probe.ts` is the fixture-agnostic driver. Loads a JSON fixture, dispatches probes by `kind` field, emits one markdown table per provider or per model alongside a structured JSON artifact.
+- `web/scripts/probe-eval.ts` holds the pure SSE parser, the conversation-kind evaluators (tool-call accuracy, ad-id recall, keyword recall, concept-id discipline, recovery detection), and the markdown emitter. Imported by both the harness and `probe-eval.test.ts`.
+- `.claude/evals/*.json` carry the fixtures. Each declares a `kind` plus a `probes` array. Supported kinds: `discipline`, `language`, `pairing`, `general-profile`, `conversation`.
 - `.github/workflows/agent-eval.yml` wires the harness into GitHub Actions on `workflow_dispatch` only.
 
 ### Fixture kinds
@@ -45,6 +46,7 @@ uv run jobtriage evaluate-embeddings --golden <path> [--db <path>] [--json-out <
 - **`language`** (`agent-language.json`): English versus Swedish. Text-based detection via Swedish marker-word set (min 2 hits).
 - **`pairing`** (`agent-spatial-pairing.json`): data tool plus paired spatial tool. Verdict per probe: full, partial, missing, unexpected-tool. Includes `fallbackSpatialTools` for accepted substitutions.
 - **`general-profile`** (`agent-general-profile.json`): cross-profession deploy posture. Carries an inline `profiles` map keyed by `profileKey` (ai-engineer, nurse, marketer, chef). Harness sends `x-jobtriage-mode: deploy` via `forceDeploy: true`.
+- **`conversation`** (`agent-conversation.json`): per-probe expected tools, expected ad ids in top-k, expected response keywords, and per-probe `pass_criteria` thresholds layered over fixture-level defaults. Verdict combines tool-call accuracy (set match by default, ordered match opt-in), ad-id recall against a frozen scope (`local-only` or `skip` for deploy probes), keyword recall on the joined assistant text, concept-id discipline (lookupConcept precedes searchJobs OR ids match the JobTech nanoid format), and recovery detection (a named tool fires after a captured `tool-output-error`). Per-probe `forceDeploy` lets one fixture mix local-corpus and deploy-posture probes.
 
 ### Request shape
 
@@ -63,15 +65,15 @@ The harness posts to `PROBE_CHAT_URL` (default `http://localhost:3000/api/chat`)
 }
 ```
 
-Response is the AI SDK SSE stream. The harness regex-parses tool calls with `/"toolName":"([a-zA-Z]+)"/g` and text deltas with `/"delta":"(...)"/g`.
+Response is the AI SDK SSE stream. The harness walks each `data:` line, decodes the JSON envelope, and builds an ordered `toolCalls` array keyed by `toolCallId` (capturing `tool-input-available`, `tool-output-available`, `tool-output-error`, and `text-delta` events). The discipline, language, pairing, and general-profile kinds consume the flat `toolNames` list. The conversation kind also reads `toolCalls[].input` and `toolCalls[].output` so the evaluator can assert ad-id recall and concept-id discipline against captured payloads.
 
 ### `workflow_dispatch` posture and secrets
 
 - `agent-eval.yml` triggers on `workflow_dispatch` only. No cron. The maintainer-funded providers stay capped.
 - Inputs: `providers` (comma-separated, default `gemini` for the free tier), `fixture` (default `.claude/evals/agent-discipline.json`).
 - Per-provider gating reads `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`. Providers without a configured secret emit a warning and skip.
-- Each run starts a local web server (`bun build && bun start`), polls health, then drives the harness twice: the dispatch-supplied fixture, then `agent-general-profile.json` hardcoded.
-- Output lands at `.claude/.tmp/ollama-model-research/smoke-{provider}-{fixture-name}.md` and uploads as a build artifact.
+- Each run starts a local web server (`bun build && bun start`), polls health, then drives the harness three times: the dispatch-supplied fixture, then `agent-general-profile.json`, then `agent-conversation.json`.
+- Output lands at `.claude/.tmp/ollama-model-research/smoke-{provider}-{fixture-name}.md` plus a peer `.json` artifact and uploads both as a build artifact.
 
 ### Deploy posture override
 
@@ -84,5 +86,7 @@ General-profile runs flip `forceDeploy: true`, which sends `x-jobtriage-mode: de
 ## Gotchas
 
 - For Ollama, the harness calls `bun run restart:web` between model batches with `OLLAMA_MODEL_ID` set in env. Restart timeout defaults to 120s. A timed-out restart fails that model and continues to the next.
+- `PROBE_SKIP_RESTART=1` short-circuits the restart for a maintainer iterating against an already-running local server. The default leaves restarts on so per-model A/B runs stay clean.
 - BYOK runs skip the restart and require `PROBE_API_KEY` set per provider.
 - The `kind` field is required. The harness dispatches by `kind` and an unknown value fails fast. Add a new probe shape by extending the dispatch table, not by reusing an existing `kind`.
+- Multi-turn discipline is not covered. `/api/chat` is single-shot stateless and the harness sends one user turn per probe. v6.1 will add a per-probe `turns: []` thread that pipes assistant replies back into the next request body.
