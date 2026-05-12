@@ -471,6 +471,41 @@ const CASES: readonly CaptureCase[] = [
     target: (page) => focusAdNode(page, SAMPLE_AD_IDS[0]),
   },
   {
+    surface: 'canvas',
+    name: 'export-empty',
+    seed: chatSeed(
+      [
+        userMessage('Find Stockholm AI roles.'),
+        assistantMessage([SEARCH_TOOL_PART_OUTPUT, PLACE_ADS_PART]),
+      ],
+      buildPlaceAdsCanvasState(),
+    ),
+  },
+  {
+    surface: 'canvas',
+    name: 'export-open',
+    seed: chatSeed(
+      [
+        userMessage('Pin the Acme role and export.'),
+        assistantMessage([
+          SEARCH_TOOL_PART_OUTPUT,
+          PLACE_ADS_PART,
+          {
+            type: 'tool-pinToShortlist',
+            toolCallId: 'call-pin-1',
+            state: 'output-available',
+            input: { ad_id: SAMPLE_AD_IDS[0] },
+            output: { ok: true },
+          },
+        ]),
+      ],
+      buildPinnedCanvasState(),
+    ),
+    act: async (page) => {
+      await page.getByRole('button', { name: 'Export shortlist' }).click()
+    },
+  },
+  {
     surface: 'byok',
     name: 'mobile-375',
     viewport: MOBILE_VIEWPORT,

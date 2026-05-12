@@ -14,6 +14,7 @@ Spatial workspace rendered to the right of the chat rail. Retrieved ads become R
 - `canvas-surface.tsx` owns the React Flow root, layout translation, and drag dispatch
 - `canvas-bridge.tsx` translates AI SDK tool parts into reducer dispatches via `toCanvasAction`
 - `views/layout.ts` owns the five layout strategies (grid, group, timeline, compare, shortlist)
+- `export/` owns the shortlist export module: pure markdown and CSV builders, filename slug, blob-plus-anchor download, and the split-button toolbar entry. Reads `state.pinnedAdIds`, `state.adRegistry`, and `state.profileMatches`. Does not dispatch.
 
 ## Data-spatial pairing
 

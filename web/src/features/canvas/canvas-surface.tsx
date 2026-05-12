@@ -26,6 +26,7 @@ import {
   useCanvas,
 } from '@/features/canvas/canvas-state'
 import { MatchEdge } from '@/features/canvas/edges/match-edge'
+import { ExportShortlistButton } from '@/features/canvas/export/export-shortlist-button'
 import { AdNode } from '@/features/canvas/nodes/ad-node'
 import { GroupNode } from '@/features/canvas/nodes/group-node'
 import { ProfileNode } from '@/features/canvas/nodes/profile-node'
@@ -150,6 +151,7 @@ function CanvasInner({ onEditProfile }: CanvasSurfaceProps) {
         view={state.view}
         onChange={(view) => dispatch({ type: 'setView', view })}
         pinnedCount={state.pinnedAdIds.length}
+        demoUrl={resolveDemoUrl()}
       />
       <div className="relative min-h-0 flex-1">
         <ReactFlow
@@ -179,9 +181,15 @@ interface ViewSwitcherProps {
   readonly view: CanvasView
   readonly onChange: (view: CanvasView) => void
   readonly pinnedCount: number
+  readonly demoUrl: string
 }
 
-function ViewSwitcher({ view, onChange, pinnedCount }: ViewSwitcherProps) {
+function ViewSwitcher({
+  view,
+  onChange,
+  pinnedCount,
+  demoUrl,
+}: ViewSwitcherProps) {
   return (
     <div className="flex shrink-0 items-center gap-1 border-b bg-card/50 px-3 py-2 backdrop-blur">
       <LayersIcon className="size-4 text-muted-foreground" aria-hidden />
@@ -217,8 +225,16 @@ function ViewSwitcher({ view, onChange, pinnedCount }: ViewSwitcherProps) {
           )
         })}
       </div>
+      <ExportShortlistButton demoUrl={demoUrl} className="ml-auto" />
     </div>
   )
+}
+
+function resolveDemoUrl(): string {
+  const envUrl = process.env.NEXT_PUBLIC_SITE_URL
+  if (envUrl) return envUrl
+  if (typeof window !== 'undefined') return window.location.origin
+  return 'https://jobtriage.vercel.app'
 }
 
 function buildLayout(state: CanvasState) {
