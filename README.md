@@ -7,7 +7,7 @@ Live demo: [jobtriage.erclx.dev](https://jobtriage.erclx.dev). The scripted demo
 ## Features
 
 - Works for any profession. The deployed demo resolves "nursing in Stockholm" or "chef in Malmö" to JobTech taxonomy concepts on the fly, then runs the agent against live Platsbanken results.
-- Spatial workspace. Retrieved ads land as draggable nodes on a React Flow canvas with four canonical views: triage clusters, deadline timeline, side-by-side compare, and a pinned shortlist.
+- Spatial workspace. Retrieved ads land as draggable nodes on a React Flow canvas with four canonical views: triage clusters, deadline timeline, side-by-side compare, and a pinned shortlist that exports to markdown or CSV.
 - No-key demo path. The gate exposes a "Try the demo" button that replays a scripted session against live JobTech ads. Tool traces, cards, and the spatial canvas render identically to a real agent run.
 - Bring-your-own-key. The deployed demo holds nothing server-side. The gate accepts an Anthropic, OpenAI, or Gemini key (browser sessionStorage only), or routes through local Ollama for a zero-key path.
 

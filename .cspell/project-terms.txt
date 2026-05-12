@@ -30,6 +30,7 @@ jobtriage
 nanoids
 pyharness
 seniorroller
+slugified
 sthlm
 timespec
 topk
