@@ -11,6 +11,11 @@ on:
         description: 'Fixture path relative to repo root'
         required: false
         default: '.claude/evals/agent-discipline.json'
+      only_input_fixture:
+        description: 'When true, run only the dispatch-supplied `fixture` and skip the hardcoded general-profile and conversation steps. Use for surgical reruns against a single fixture.'
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: read
@@ -94,7 +99,7 @@ jobs:
         run: bun scripts/model-probe.ts
 
       - name: Run general-profile fixture
-        if: steps.gate.outputs.skip != 'true' && steps.secret.outputs.skip != 'true'
+        if: steps.gate.outputs.skip != 'true' && steps.secret.outputs.skip != 'true' && github.event.inputs.only_input_fixture != 'true'
         working-directory: web
         env:
           PROBE_PROVIDER: ${{ matrix.provider }}
@@ -103,7 +108,7 @@ jobs:
         run: bun scripts/model-probe.ts
 
       - name: Run conversation fixture
-        if: steps.gate.outputs.skip != 'true' && steps.secret.outputs.skip != 'true'
+        if: steps.gate.outputs.skip != 'true' && steps.secret.outputs.skip != 'true' && github.event.inputs.only_input_fixture != 'true'
         working-directory: web
         env:
           PROBE_PROVIDER: ${{ matrix.provider }}

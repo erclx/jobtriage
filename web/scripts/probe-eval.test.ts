@@ -395,10 +395,37 @@ describe('renderConversationMarkdown', () => {
         },
       ],
       'http://test',
+      0,
     )
 
     expect(out).toContain('| Model | Passed |')
     expect(out).toContain('piped \\| text')
     expect(out).toContain('1/1')
+  })
+
+  it('renders the inter-probe delay line in the header', () => {
+    const fixture = fixtureFor([
+      probe({ slug: 'a', expected_tools: ['triageBatch'] }),
+    ])
+    const out = renderConversationMarkdown(
+      fixture,
+      [],
+      [
+        {
+          model: 'm',
+          passed: 0,
+          total: 0,
+          avgToolCallAccuracy: 0,
+          avgAdIdRecall: null,
+          avgKeywordRecall: null,
+          avgLatencyMs: 0,
+          errors: 0,
+        },
+      ],
+      'http://test',
+      6500,
+    )
+
+    expect(out).toContain('Inter-probe delay: 6500ms')
   })
 })
