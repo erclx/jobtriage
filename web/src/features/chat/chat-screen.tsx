@@ -443,7 +443,11 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
                 <ConversationContent className="px-3 pb-6 pt-3">
                   {messages.map((message) => (
                     <Message from={message.role} key={message.id}>
-                      <MessageContent>
+                      <MessageContent
+                        className={
+                          message.role === 'assistant' ? 'w-full' : undefined
+                        }
+                      >
                         {message.parts.map((part, index) => {
                           if (part.type === 'text') {
                             return (
