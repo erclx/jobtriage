@@ -137,6 +137,7 @@ describe('ChatScreen', () => {
     useChatMock.mockReturnValue({
       messages: overrides.messages ?? [],
       sendMessage,
+      setMessages: vi.fn(),
       stop: vi.fn(),
       error: overrides.error,
       status: overrides.status ?? 'ready',

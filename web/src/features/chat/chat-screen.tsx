@@ -263,6 +263,19 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
     [isMockMode, sendMessage, setStoredProfile],
   )
 
+  const handleMockChipClick = useCallback(
+    (text: string) => {
+      setMessages([])
+      dispatchCanvas({ type: 'hydrate', state: INITIAL_CANVAS_STATE })
+      if (typeof window !== 'undefined') {
+        window.sessionStorage.removeItem(SESSION_KEYS.chat)
+        window.sessionStorage.removeItem(SESSION_KEYS.canvas)
+      }
+      handleSeed(text)
+    },
+    [dispatchCanvas, handleSeed, setMessages],
+  )
+
   const handleProfileChange = useCallback((next: string) => {
     latestProfile = next
   }, [])
@@ -431,7 +444,7 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
           {isEmpty ? (
             <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-6">
               <EmptyState
-                onSelect={handleSeed}
+                onSelect={isMockMode ? handleMockChipClick : handleSeed}
                 mode={isMockMode ? 'mock' : 'default'}
                 mockPrompts={MOCK_PROMPTS}
               />
@@ -482,7 +495,30 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
                 <ConversationScrollButton />
               </Conversation>
 
-              <div className="shrink-0 border-t p-3">{promptInput}</div>
+              <div className="shrink-0 border-t p-3">
+                {isMockMode ? (
+                  <div className="mb-3 flex flex-col gap-1.5">
+                    <p className="px-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                      Try another demo
+                    </p>
+                    <div className="flex flex-col gap-1.5">
+                      {MOCK_PROMPTS.map((entry) => (
+                        <button
+                          key={entry.prompt}
+                          type="button"
+                          onClick={() => handleMockChipClick(entry.prompt)}
+                          disabled={isStreaming}
+                          title={entry.prompt}
+                          className="cursor-pointer truncate rounded-md border border-border bg-background px-3 py-1.5 text-left text-xs leading-snug text-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {entry.chipLabel}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+                {promptInput}
+              </div>
             </>
           )}
         </aside>
