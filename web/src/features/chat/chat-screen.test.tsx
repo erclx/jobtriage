@@ -78,7 +78,9 @@ vi.mock('@/components/ai-elements/prompt-input', () => ({
   PromptInputFooter: ({ children }: { children: React.ReactNode }) => (
     <div>{children}</div>
   ),
-  PromptInputTools: () => null,
+  PromptInputTools: ({ children }: { children?: React.ReactNode }) => (
+    <div data-testid="prompt-input-tools">{children}</div>
+  ),
   PromptInputTextarea: (
     props: React.TextareaHTMLAttributes<HTMLTextAreaElement>,
   ) => <textarea aria-label="message" name="message" {...props} />,
@@ -135,6 +137,7 @@ describe('ChatScreen', () => {
     useChatMock.mockReturnValue({
       messages: overrides.messages ?? [],
       sendMessage,
+      setMessages: vi.fn(),
       stop: vi.fn(),
       error: overrides.error,
       status: overrides.status ?? 'ready',
@@ -233,6 +236,44 @@ describe('ChatScreen', () => {
     expect(window.sessionStorage.getItem(SESSION_KEYS.apiKey)).toBe(
       'sk-ant-test',
     )
+  })
+
+  it('should render demo-mode chips that send the scripted prompt when provider is mock', async () => {
+    const { sendMessage } = setupChat()
+    window.sessionStorage.removeItem(SESSION_KEYS.apiKey)
+    window.sessionStorage.setItem(SESSION_KEYS.provider, 'mock')
+    const user = userEvent.setup()
+
+    render(<ChatScreen />)
+
+    expect(
+      screen.getByRole('heading', { name: /Demo mode/i }),
+    ).toBeInTheDocument()
+    await user.click(
+      screen.getByRole('button', {
+        name: /Show me Stockholm AI engineering roles/i,
+      }),
+    )
+    expect(sendMessage).toHaveBeenCalledWith({
+      text: 'Show me Stockholm AI engineering roles',
+    })
+  })
+
+  it('should disable the textarea and surface the Switch to BYOK link when provider is mock', async () => {
+    setupChat()
+    window.sessionStorage.removeItem(SESSION_KEYS.apiKey)
+    window.sessionStorage.setItem(SESSION_KEYS.provider, 'mock')
+    const onSwitchProvider = vi.fn()
+    const user = userEvent.setup()
+
+    render(<ChatScreen onSwitchProvider={onSwitchProvider} />)
+
+    const textarea = screen.getByLabelText('message') as HTMLTextAreaElement
+    expect(textarea.readOnly).toBe(true)
+    expect(textarea.placeholder).toMatch(/Paste a key/i)
+
+    await user.click(screen.getByRole('button', { name: /Switch to BYOK/i }))
+    expect(onSwitchProvider).toHaveBeenCalledTimes(1)
   })
 
   it('should surface the error from useChat', () => {

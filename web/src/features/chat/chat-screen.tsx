@@ -56,6 +56,7 @@ import {
   useSpeechRecognition,
 } from '@/features/chat/use-speech-recognition'
 import { VoiceInputButton } from '@/features/chat/voice-input-button'
+import { MOCK_PROMPTS } from '@/features/mock/prompts'
 import { cn } from '@/lib/utils'
 
 const isBrowser = typeof window !== 'undefined'
@@ -117,6 +118,8 @@ export function ChatScreen({ onSwitchProvider }: ChatScreenProps = {}) {
 }
 
 function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
+  const [storedProvider] = useSessionValue(SESSION_KEYS.provider)
+  const isMockMode = storedProvider === 'mock'
   const [storedProfile] = useSessionValue(SESSION_KEYS.profile)
   const [storedRailWidth, setStoredRailWidth] = useSessionValue(
     SESSION_KEYS.railWidth,
@@ -124,6 +127,7 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
   const { state: canvasState, dispatch: dispatchCanvas } = useCanvas()
   const [profileOpen, setProfileOpen] = useState(false)
   const [confirmNewChatOpen, setConfirmNewChatOpen] = useState(false)
+  const [triedPrompts, setTriedPrompts] = useState<readonly string[]>([])
 
   const railWidth = useMemo(() => {
     const parsed = Number(storedRailWidth)
@@ -245,12 +249,44 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
     }
   }, [messages, status])
 
+  const [, setStoredProfile] = useSessionValue(SESSION_KEYS.profile)
   const handleSeed = useCallback(
     (text: string) => {
+      if (isMockMode) {
+        const match = MOCK_PROMPTS.find((entry) => entry.prompt === text)
+        if (match) {
+          setStoredProfile(match.profile)
+          latestProfile = match.profile
+        }
+      }
       void sendMessage({ text })
     },
-    [sendMessage],
+    [isMockMode, sendMessage, setStoredProfile],
   )
+
+  const handleMockChipClick = useCallback(
+    (text: string) => {
+      setMessages([])
+      dispatchCanvas({ type: 'hydrate', state: INITIAL_CANVAS_STATE })
+      if (typeof window !== 'undefined') {
+        window.sessionStorage.removeItem(SESSION_KEYS.chat)
+        window.sessionStorage.removeItem(SESSION_KEYS.canvas)
+      }
+      setTriedPrompts((prev) => (prev.includes(text) ? prev : [...prev, text]))
+      handleSeed(text)
+    },
+    [dispatchCanvas, handleSeed, setMessages],
+  )
+
+  const handleResetDemo = useCallback(() => {
+    setMessages([])
+    dispatchCanvas({ type: 'hydrate', state: INITIAL_CANVAS_STATE })
+    if (typeof window !== 'undefined') {
+      window.sessionStorage.removeItem(SESSION_KEYS.chat)
+      window.sessionStorage.removeItem(SESSION_KEYS.canvas)
+    }
+    setTriedPrompts([])
+  }, [dispatchCanvas, setMessages])
 
   const handleProfileChange = useCallback((next: string) => {
     latestProfile = next
@@ -273,6 +309,7 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
       window.sessionStorage.removeItem(SESSION_KEYS.chat)
       window.sessionStorage.removeItem(SESSION_KEYS.canvas)
     }
+    setTriedPrompts([])
     setConfirmNewChatOpen(false)
   }, [setMessages, dispatchCanvas])
 
@@ -286,6 +323,10 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
       <PromptInput
         className="chat-prompt-input"
         onSubmit={(message) => {
+          if (isMockMode) {
+            handleSwitchProvider()
+            return
+          }
           const text = message.text.trim()
           if (!text) return
           stopVoice()
@@ -295,22 +336,42 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
       >
         <PromptInputBody>
           <PromptInputTextarea
-            value={input}
-            placeholder="Ask about Swedish job ads..."
-            onChange={(event) => setInput(event.target.value)}
+            value={isMockMode ? '' : input}
+            placeholder={
+              isMockMode
+                ? 'Paste a key to ask your own question.'
+                : 'Ask about Swedish job ads...'
+            }
+            onChange={(event) => {
+              if (isMockMode) return
+              setInput(event.target.value)
+            }}
+            readOnly={isMockMode}
+            aria-disabled={isMockMode}
+            tabIndex={isMockMode ? -1 : 0}
           />
         </PromptInputBody>
         <PromptInputFooter>
           <PromptInputTools>
-            <VoiceInputButton
-              isSupported={isVoiceSupported}
-              isListening={isVoiceListening}
-              onToggle={handleVoiceToggle}
-            />
+            {isMockMode ? (
+              <button
+                type="button"
+                onClick={handleSwitchProvider}
+                className="text-xs font-medium text-primary underline-offset-2 hover:underline"
+              >
+                Switch to BYOK
+              </button>
+            ) : (
+              <VoiceInputButton
+                isSupported={isVoiceSupported}
+                isListening={isVoiceListening}
+                onToggle={handleVoiceToggle}
+              />
+            )}
           </PromptInputTools>
           <PromptInputSubmit
             status={status}
-            disabled={!isStreaming && input.trim() === ''}
+            disabled={isMockMode || (!isStreaming && input.trim() === '')}
             onClick={isStreaming ? () => stop() : undefined}
           />
         </PromptInputFooter>
@@ -395,7 +456,11 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
 
           {isEmpty ? (
             <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-6">
-              <EmptyState onSelect={handleSeed} />
+              <EmptyState
+                onSelect={isMockMode ? handleMockChipClick : handleSeed}
+                mode={isMockMode ? 'mock' : 'default'}
+                mockPrompts={MOCK_PROMPTS}
+              />
               <div className="w-full">{promptInput}</div>
             </div>
           ) : (
@@ -404,7 +469,11 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
                 <ConversationContent className="px-3 pb-6 pt-3">
                   {messages.map((message) => (
                     <Message from={message.role} key={message.id}>
-                      <MessageContent>
+                      <MessageContent
+                        className={
+                          message.role === 'assistant' ? 'w-full' : undefined
+                        }
+                      >
                         {message.parts.map((part, index) => {
                           if (part.type === 'text') {
                             return (
@@ -439,7 +508,18 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
                 <ConversationScrollButton />
               </Conversation>
 
-              <div className="shrink-0 border-t p-3">{promptInput}</div>
+              <div className="shrink-0 border-t p-3">
+                {isMockMode ? (
+                  <MockChipStrip
+                    triedPrompts={triedPrompts}
+                    isStreaming={isStreaming}
+                    onSelect={handleMockChipClick}
+                    onReset={handleResetDemo}
+                    onSwitchProvider={handleSwitchProvider}
+                  />
+                ) : null}
+                {promptInput}
+              </div>
             </>
           )}
         </aside>
@@ -513,6 +593,78 @@ function clampRail(value: number): number {
 
 function isSpatialToolPart(part: { type: string }): boolean {
   return SPATIAL_TOOL_TYPE_PREFIXES.some((prefix) => part.type === prefix)
+}
+
+interface MockChipStripProps {
+  readonly triedPrompts: readonly string[]
+  readonly isStreaming: boolean
+  readonly onSelect: (prompt: string) => void
+  readonly onReset: () => void
+  readonly onSwitchProvider: () => void
+}
+
+function MockChipStrip({
+  triedPrompts,
+  isStreaming,
+  onSelect,
+  onReset,
+  onSwitchProvider,
+}: MockChipStripProps) {
+  const remaining = useMemo(
+    () => MOCK_PROMPTS.filter((entry) => !triedPrompts.includes(entry.prompt)),
+    [triedPrompts],
+  )
+
+  if (remaining.length === 0) {
+    return (
+      <div className="mb-3 flex flex-col gap-2 rounded-md border border-border bg-muted/30 p-3">
+        <p className="text-xs leading-snug text-foreground">
+          That is the full demo. Switch to BYOK to ask your own questions, or
+          start over to replay any chip.
+        </p>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={onSwitchProvider}
+            disabled={isStreaming}
+            className="flex-1 cursor-pointer rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Switch to BYOK
+          </button>
+          <button
+            type="button"
+            onClick={onReset}
+            disabled={isStreaming}
+            className="cursor-pointer rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Start over
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="mb-3 flex flex-col gap-1.5">
+      <p className="px-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+        Try another demo
+      </p>
+      <div className="flex flex-col gap-1.5">
+        {remaining.map((entry) => (
+          <button
+            key={entry.prompt}
+            type="button"
+            onClick={() => onSelect(entry.prompt)}
+            disabled={isStreaming}
+            title={entry.prompt}
+            className="cursor-pointer truncate rounded-md border border-border bg-background px-3 py-1.5 text-left text-xs leading-snug text-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {entry.chipLabel}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 interface StreamingAutoScrollProps {

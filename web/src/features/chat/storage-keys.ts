@@ -12,9 +12,10 @@ export const RAIL_WIDTH_MIN = 320
 export const RAIL_WIDTH_MAX = 640
 
 export type ByokProvider = 'anthropic' | 'openai' | 'gemini'
-export type Provider = ByokProvider | 'ollama'
+export type Provider = ByokProvider | 'ollama' | 'mock'
 
 export const OLLAMA_MARKER = 'ollama'
+export const MOCK_MARKER = 'mock'
 
 export interface ByokProviderMeta {
   readonly id: ByokProvider
