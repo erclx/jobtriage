@@ -56,16 +56,15 @@ Dense alone wins precision@1 on this corpus by 6 points over hybrid, and the mul
 
 ## Agent eval
 
-The agent loop is measured side by side per provider through `web/scripts/model-probe.ts`, which drives `/api/chat` against fixtures in `.claude/evals/*.json`. The `conversation` fixture (`agent-conversation.json`) asserts tool-call accuracy, ad-id recall, keyword recall, concept-id discipline, and tool-error recovery per probe. Static snapshot, refreshed on significant prompt or tool changes. Reproduce via `PROBE_FIXTURE=.claude/evals/agent-conversation.json bun web/scripts/model-probe.ts`.
+The agent loop is measured side by side per provider through `web/scripts/model-probe.ts`, which drives `/api/chat` against fixtures in `.claude/evals/*.json`. The `conversation` fixture (`agent-conversation.json`) runs ten probes in deploy posture across six axes: multi-tool chains, concept-id discipline, profile-aware reasoning, adversarial queries, tool-error recovery, and citation discipline. Each probe asserts tool-call accuracy, keyword recall, and where applicable concept-id discipline and recovery detection. Static snapshot, refreshed on significant prompt or tool changes. Reproduce via `PROBE_FIXTURE=.claude/evals/agent-conversation.json bun web/scripts/model-probe.ts`.
 
 | Provider  | Model               | Passed | Tool-call accuracy | Keyword recall | Avg latency |
 | --------- | ------------------- | ------ | ------------------ | -------------- | ----------- |
-| ollama    | `gemma4:26b`        | 6/10   | 90%                | 50%            | 2299 ms     |
-| anthropic | `claude-sonnet-4-5` | -      | -                  | -              | -           |
+| anthropic | `claude-sonnet-4-5` | 5/10   | 92%                | 56%            | 31996 ms    |
 | openai    | `gpt-4o-mini`       | -      | -                  | -              | -           |
 | gemini    | `gemini-2.5-flash`  | -      | -                  | -              | -           |
 
-BYOK rows are populated via `workflow_dispatch` on the `Agent Eval` workflow with the maintainer key, kept off the nightly schedule to cap spend. Ad-id recall is reported only on probes scoped to the frozen local CLI corpus. Deploy-mode probes use keyword recall against snippets since the live JobTech ad set rotates daily.
+BYOK rows are populated via `workflow_dispatch` on the `Agent Eval` workflow with the maintainer key, kept off the nightly schedule to cap spend. Ad-id recall is reported only on probes scoped to the frozen local CLI corpus. Deploy-mode probes use keyword recall against snippets since the live JobTech ad set rotates daily. Local Ollama covers the local-corpus tools in `agent-discipline.json` and `agent-spatial-pairing.json`. Conversation fixture probes all force deploy mode so BYOK and Ollama see the same tool set when both run it.
 
 ## Multilingual embedding comparison
 
