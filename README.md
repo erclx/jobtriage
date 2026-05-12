@@ -66,6 +66,8 @@ The agent loop is measured side by side per provider through `web/scripts/model-
 
 BYOK rows are populated via `workflow_dispatch` on the `Agent Eval` workflow with the maintainer key, kept off the nightly schedule to cap spend. Ad-id recall is reported only on probes scoped to the frozen local CLI corpus. Deploy-mode probes use keyword recall against snippets since the live JobTech ad set rotates daily. Local Ollama covers the local-corpus tools in `agent-discipline.json` and `agent-spatial-pairing.json`. Conversation fixture probes all force deploy mode so BYOK and Ollama see the same tool set when both run it.
 
+OpenAI and Gemini rows backfill in v6.1. Gemini's free tier rate-limits when the workflow runs three fixtures back to back, so the harness needs a per-probe pacing knob before its row reads honestly. OpenAI needs a maintainer key configured as a repo secret.
+
 ## Multilingual embedding comparison
 
 Same 50-query golden set, swapping the encoder while holding the corpus, BM25 index, and harness constant. The English-only baseline (`all-MiniLM-L6-v2`) measures what the project would look like without multilingual support. Reproduce via `uv run jobtriage evaluate-embeddings`.
