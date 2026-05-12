@@ -390,7 +390,7 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
         <div>
           <h1 className="text-lg font-semibold">jobtriage</h1>
           <p className="text-xs text-muted-foreground">
-            Spatial agent workspace over Swedish JobTech ads
+            Live agent triages Swedish job ads against any profile.
           </p>
         </div>
         <div className="flex items-center gap-1">
