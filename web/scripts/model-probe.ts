@@ -3,6 +3,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { resolveInterProbeMs } from './lib/pacing'
 import {
   type ConversationFixture,
   type ConversationProbe,
@@ -46,6 +47,11 @@ const PROBE_PROVIDER: ProbeProvider = (
   : 'ollama'
 const PROBE_API_KEY = process.env.PROBE_API_KEY ?? ''
 const PROBE_MODEL_ID = process.env.PROBE_MODEL_ID ?? ''
+const INTER_PROBE_MS = resolveInterProbeMs(PROBE_PROVIDER, process.env)
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
 
 const MODELS_FROM_ENV = process.env.PROBE_MODELS?.split(',')
   .map((s) => s.trim())
@@ -555,6 +561,7 @@ function renderMarkdown(
       conversationReports(results, fixture),
       summaries.flatMap((s) => (s.kind === 'conversation' ? [s] : [])),
       CHAT_URL,
+      INTER_PROBE_MS,
     )
   }
 
@@ -564,6 +571,7 @@ function renderMarkdown(
   lines.push(`Run at: ${new Date().toISOString()}`)
   lines.push(`Endpoint: ${CHAT_URL}`)
   lines.push(`Fixture: ${fixture.name} (${fixture.kind})`)
+  lines.push(`Inter-probe delay: ${INTER_PROBE_MS}ms`)
   lines.push('')
   lines.push('## Summary')
   lines.push('')
@@ -870,7 +878,10 @@ async function main(): Promise<void> {
     }
 
     const modelResults: ProbeResult[] = []
-    for (const probe of fixture.probes) {
+    for (const [index, probe] of fixture.probes.entries()) {
+      if (index > 0 && INTER_PROBE_MS > 0) {
+        await sleep(INTER_PROBE_MS)
+      }
       const profile = resolveProbeProfile(fixture, probe)
       const result = await runProbe(model, probe, {
         profile,

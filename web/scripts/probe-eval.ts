@@ -371,6 +371,7 @@ export function renderConversationMarkdown(
   reports: readonly ConversationProbeReport[],
   summaries: readonly ConversationSummary[],
   endpoint: string,
+  interProbeMs: number,
 ): string {
   const lines: string[] = []
   lines.push(`# ${fixture.name} probe results`)
@@ -378,6 +379,7 @@ export function renderConversationMarkdown(
   lines.push(`Run at: ${new Date().toISOString()}`)
   lines.push(`Endpoint: ${endpoint}`)
   lines.push(`Fixture: ${fixture.name} (${fixture.kind})`)
+  lines.push(`Inter-probe delay: ${interProbeMs}ms`)
   lines.push('')
   lines.push('## Summary')
   lines.push('')
