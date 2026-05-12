@@ -127,6 +127,7 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
   const { state: canvasState, dispatch: dispatchCanvas } = useCanvas()
   const [profileOpen, setProfileOpen] = useState(false)
   const [confirmNewChatOpen, setConfirmNewChatOpen] = useState(false)
+  const [triedPrompts, setTriedPrompts] = useState<readonly string[]>([])
 
   const railWidth = useMemo(() => {
     const parsed = Number(storedRailWidth)
@@ -271,10 +272,21 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
         window.sessionStorage.removeItem(SESSION_KEYS.chat)
         window.sessionStorage.removeItem(SESSION_KEYS.canvas)
       }
+      setTriedPrompts((prev) => (prev.includes(text) ? prev : [...prev, text]))
       handleSeed(text)
     },
     [dispatchCanvas, handleSeed, setMessages],
   )
+
+  const handleResetDemo = useCallback(() => {
+    setMessages([])
+    dispatchCanvas({ type: 'hydrate', state: INITIAL_CANVAS_STATE })
+    if (typeof window !== 'undefined') {
+      window.sessionStorage.removeItem(SESSION_KEYS.chat)
+      window.sessionStorage.removeItem(SESSION_KEYS.canvas)
+    }
+    setTriedPrompts([])
+  }, [dispatchCanvas, setMessages])
 
   const handleProfileChange = useCallback((next: string) => {
     latestProfile = next
@@ -297,6 +309,7 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
       window.sessionStorage.removeItem(SESSION_KEYS.chat)
       window.sessionStorage.removeItem(SESSION_KEYS.canvas)
     }
+    setTriedPrompts([])
     setConfirmNewChatOpen(false)
   }, [setMessages, dispatchCanvas])
 
@@ -497,25 +510,13 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
 
               <div className="shrink-0 border-t p-3">
                 {isMockMode ? (
-                  <div className="mb-3 flex flex-col gap-1.5">
-                    <p className="px-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-                      Try another demo
-                    </p>
-                    <div className="flex flex-col gap-1.5">
-                      {MOCK_PROMPTS.map((entry) => (
-                        <button
-                          key={entry.prompt}
-                          type="button"
-                          onClick={() => handleMockChipClick(entry.prompt)}
-                          disabled={isStreaming}
-                          title={entry.prompt}
-                          className="cursor-pointer truncate rounded-md border border-border bg-background px-3 py-1.5 text-left text-xs leading-snug text-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          {entry.chipLabel}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+                  <MockChipStrip
+                    triedPrompts={triedPrompts}
+                    isStreaming={isStreaming}
+                    onSelect={handleMockChipClick}
+                    onReset={handleResetDemo}
+                    onSwitchProvider={handleSwitchProvider}
+                  />
                 ) : null}
                 {promptInput}
               </div>
@@ -592,6 +593,78 @@ function clampRail(value: number): number {
 
 function isSpatialToolPart(part: { type: string }): boolean {
   return SPATIAL_TOOL_TYPE_PREFIXES.some((prefix) => part.type === prefix)
+}
+
+interface MockChipStripProps {
+  readonly triedPrompts: readonly string[]
+  readonly isStreaming: boolean
+  readonly onSelect: (prompt: string) => void
+  readonly onReset: () => void
+  readonly onSwitchProvider: () => void
+}
+
+function MockChipStrip({
+  triedPrompts,
+  isStreaming,
+  onSelect,
+  onReset,
+  onSwitchProvider,
+}: MockChipStripProps) {
+  const remaining = useMemo(
+    () => MOCK_PROMPTS.filter((entry) => !triedPrompts.includes(entry.prompt)),
+    [triedPrompts],
+  )
+
+  if (remaining.length === 0) {
+    return (
+      <div className="mb-3 flex flex-col gap-2 rounded-md border border-border bg-muted/30 p-3">
+        <p className="text-xs leading-snug text-foreground">
+          That is the full demo. Switch to BYOK to ask your own questions, or
+          start over to replay any chip.
+        </p>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={onSwitchProvider}
+            disabled={isStreaming}
+            className="flex-1 cursor-pointer rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Switch to BYOK
+          </button>
+          <button
+            type="button"
+            onClick={onReset}
+            disabled={isStreaming}
+            className="cursor-pointer rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Start over
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="mb-3 flex flex-col gap-1.5">
+      <p className="px-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+        Try another demo
+      </p>
+      <div className="flex flex-col gap-1.5">
+        {remaining.map((entry) => (
+          <button
+            key={entry.prompt}
+            type="button"
+            onClick={() => onSelect(entry.prompt)}
+            disabled={isStreaming}
+            title={entry.prompt}
+            className="cursor-pointer truncate rounded-md border border-border bg-background px-3 py-1.5 text-left text-xs leading-snug text-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {entry.chipLabel}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 interface StreamingAutoScrollProps {
