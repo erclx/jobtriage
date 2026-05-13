@@ -112,21 +112,22 @@ web/
 
 ## Scripts
 
-| Command                 | Purpose                                                                                                        |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `bun run dev`           | Disabled. Run `bun run restart:web` from the repo root instead. Rationale in `.claude/context/development.md`. |
-| `bun run build`         | Production build                                                                                               |
-| `bun run start`         | Serve the production build                                                                                     |
-| `bun run lint`          | ESLint, zero warnings                                                                                          |
-| `bun run lint:fix`      | Auto-fix ESLint                                                                                                |
-| `bun run typecheck`     | `tsc --noEmit`                                                                                                 |
-| `bun run test`          | Vitest watch                                                                                                   |
-| `bun run test:run`      | Vitest once                                                                                                    |
-| `bun run test:coverage` | Vitest with coverage                                                                                           |
-| `bun run test:e2e`      | Playwright                                                                                                     |
-| `bun run check`         | Full web verify                                                                                                |
-| `bun run favicon`       | Regenerate `src/app/favicon.ico` from `src/app/icon.svg` via Playwright                                        |
-| `bun run screenshots`   | Capture canonical UI states to `.claude/review/screenshots/`, light and dark per state                         |
+| Command                 | Purpose                                                                                                                                                                                                                              |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `bun run dev`           | Disabled. Run `bun run restart:web` from the repo root instead. Rationale in `.claude/context/development.md`.                                                                                                                       |
+| `bun run build`         | Production build                                                                                                                                                                                                                     |
+| `bun run start`         | Serve the production build                                                                                                                                                                                                           |
+| `bun run lint`          | ESLint, zero warnings                                                                                                                                                                                                                |
+| `bun run lint:fix`      | Auto-fix ESLint                                                                                                                                                                                                                      |
+| `bun run typecheck`     | `tsc --noEmit`                                                                                                                                                                                                                       |
+| `bun run test`          | Vitest watch                                                                                                                                                                                                                         |
+| `bun run test:run`      | Vitest once                                                                                                                                                                                                                          |
+| `bun run test:coverage` | Vitest with coverage                                                                                                                                                                                                                 |
+| `bun run test:e2e`      | Playwright                                                                                                                                                                                                                           |
+| `bun run check`         | Full web verify                                                                                                                                                                                                                      |
+| `bun run favicon`       | Regenerate `src/app/favicon.ico` from `src/app/icon.svg` via Playwright                                                                                                                                                              |
+| `bun run screenshots`   | Capture canonical UI states to `.claude/review/screenshots/`, light and dark per state. Override `SCREENSHOT_BASE_URL` to target prod (outputs under `screenshots/<host>/`). Pass `--check-console-clean` to fail on `console.error` |
+| `bun run smoke:prod`    | Alias for `screenshots` against `https://jobtriage.erclx.dev` with console-clean assertion enabled                                                                                                                                   |
 
 ## Provider switching
 
