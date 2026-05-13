@@ -306,14 +306,20 @@ const CASES: readonly CaptureCase[] = [
       await page.getByLabel('Anthropic API key').blur()
     },
   },
-  {
-    surface: 'byok',
-    name: 'ollama',
-    seed: { localStorage: { theme: 'placeholder' } },
-    act: async (page) => {
-      await page.getByRole('button', { name: /use local ollama/i }).focus()
-    },
-  },
+  ...(IS_LOCALHOST
+    ? [
+        {
+          surface: 'byok' as const,
+          name: 'ollama',
+          seed: { localStorage: { theme: 'placeholder' } },
+          act: async (page: Page) => {
+            await page
+              .getByRole('button', { name: /use local ollama/i })
+              .focus()
+          },
+        },
+      ]
+    : []),
   {
     surface: 'byok',
     name: 'openai',
