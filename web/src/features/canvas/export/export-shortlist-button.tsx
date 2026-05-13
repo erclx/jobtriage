@@ -1,7 +1,7 @@
 'use client'
 
-import { ChevronDownIcon, DownloadIcon } from 'lucide-react'
-import { useCallback, useMemo, useState } from 'react'
+import { CheckIcon, ChevronDownIcon, DownloadIcon } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
@@ -28,6 +28,8 @@ import { selectShortlistEntries } from './select'
 import type { ShortlistEntry } from './types'
 
 const DEFAULT_FALLBACK = 'shortlist'
+const DOWNLOAD_DEBOUNCE_MS = 500
+const CONFIRMATION_DURATION_MS = 2500
 
 type Format = 'markdown' | 'csv'
 
@@ -78,34 +80,60 @@ export function ExportShortlistButton({
   const [open, setOpen] = useState(false)
   const [name, setName] = useState(() => defaultName(entries))
   const [seenSignature, setSeenSignature] = useState(() => entries[0]?.adId)
+  const [downloaded, setDownloaded] = useState(false)
+  const lastEmitAt = useRef(0)
+  const confirmationTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const signature = entries[0]?.adId
   if (signature !== seenSignature) {
     setSeenSignature(signature)
     setName(defaultName(entries))
   }
 
+  useEffect(() => {
+    return () => {
+      if (confirmationTimer.current) clearTimeout(confirmationTimer.current)
+    }
+  }, [])
+
+  const markDownloaded = useCallback(() => {
+    setDownloaded(true)
+    if (confirmationTimer.current) clearTimeout(confirmationTimer.current)
+    confirmationTimer.current = setTimeout(
+      () => setDownloaded(false),
+      CONFIRMATION_DURATION_MS,
+    )
+  }, [])
+
   const handleEmit = useCallback(
     (format: Format) => {
       if (entries.length === 0) return
+      const now = Date.now()
+      if (now - lastEmitAt.current < DOWNLOAD_DEBOUNCE_MS) return
+      lastEmitAt.current = now
       emit(entries, format, name, demoUrl)
       setOpen(false)
+      markDownloaded()
     },
-    [entries, name, demoUrl],
+    [entries, name, demoUrl, markDownloaded],
   )
 
   const handleQuickEmit = useCallback(
     (format: Format) => {
       if (entries.length === 0) return
+      const now = Date.now()
+      if (now - lastEmitAt.current < DOWNLOAD_DEBOUNCE_MS) return
+      lastEmitAt.current = now
       emit(entries, format, defaultName(entries), demoUrl)
+      markDownloaded()
     },
-    [entries, demoUrl],
+    [entries, demoUrl, markDownloaded],
   )
 
   const tooltip = isDisabled ? 'Pin an ad to enable export' : undefined
 
   return (
     <ButtonGroup
-      className={cn(className)}
+      className={cn('relative', className)}
       aria-label="Export shortlist"
       data-slot="export-shortlist"
     >
@@ -199,6 +227,17 @@ export function ExportShortlistButton({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      {downloaded ? (
+        <span
+          data-testid="export-shortlist-confirmation"
+          role="status"
+          aria-live="polite"
+          className="pointer-events-none absolute -bottom-7 right-0 inline-flex items-center gap-1 rounded-md border bg-card px-2 py-1 text-[10px] font-medium text-emerald-600 shadow-sm dark:text-emerald-400"
+        >
+          <CheckIcon className="size-3" aria-hidden />
+          Downloaded
+        </span>
+      ) : null}
     </ButtonGroup>
   )
 }

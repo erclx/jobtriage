@@ -69,7 +69,7 @@ export function ProfileDialog({
 
   const handleOpenChange = useCallback(
     (next: boolean) => {
-      if (!next && draft !== stored && draft.length <= MAX_PROFILE_CHARS) {
+      if (!next && draft !== stored) {
         persist(draft)
       }
       onOpenChange(next)
@@ -78,7 +78,6 @@ export function ProfileDialog({
   )
 
   function handleSave() {
-    if (overLimit) return
     persist(draft)
     setJustSaved(true)
     if (savedTimer.current) clearTimeout(savedTimer.current)
@@ -125,21 +124,24 @@ export function ProfileDialog({
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
             placeholder="## Role&#10;Senior AI engineer&#10;## Must-haves&#10;..."
-            aria-invalid={overLimit ? 'true' : 'false'}
             className="min-h-[55vh] flex-1 resize-none font-mono text-sm leading-relaxed"
           />
           <div className="flex items-center justify-between gap-2">
             <span
               className={cn(
                 'text-xs',
-                overLimit ? 'text-destructive' : 'text-muted-foreground',
+                overLimit
+                  ? 'text-amber-600 dark:text-amber-400'
+                  : 'text-muted-foreground',
               )}
+              aria-live="polite"
             >
               {draft.length.toLocaleString()} /{' '}
               {MAX_PROFILE_CHARS.toLocaleString()} chars
+              {overLimit ? ' (over soft cap)' : ''}
             </span>
             <div className="flex items-center gap-2">
-              {dirty && !overLimit ? (
+              {dirty ? (
                 <span
                   className="text-xs text-amber-600 dark:text-amber-400"
                   aria-live="polite"
@@ -169,11 +171,7 @@ export function ProfileDialog({
           >
             Clear
           </Button>
-          <Button
-            type="button"
-            onClick={handleSave}
-            disabled={!dirty || overLimit}
-          >
+          <Button type="button" onClick={handleSave} disabled={!dirty}>
             Save
           </Button>
         </DialogFooter>

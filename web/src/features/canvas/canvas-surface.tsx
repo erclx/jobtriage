@@ -172,6 +172,13 @@ function CanvasInner({ onEditProfile }: CanvasSurfaceProps) {
           <Background gap={24} size={1} />
           <Controls showInteractive={false} />
         </ReactFlow>
+        {state.view === 'shortlist' && state.pinnedAdIds.length === 0 ? (
+          <ShortlistEmptyState
+            onSwitchToTriage={() =>
+              dispatch({ type: 'setView', view: 'triage' })
+            }
+          />
+        ) : null}
       </div>
     </div>
   )
@@ -197,7 +204,7 @@ function ViewSwitcher({
         Canvas view
       </span>
       <div
-        role="tablist"
+        role="group"
         aria-label="Canvas view"
         className="flex items-center gap-1"
       >
@@ -208,8 +215,7 @@ function ViewSwitcher({
             <Button
               key={entry.id}
               type="button"
-              role="tab"
-              aria-selected={isActive}
+              aria-pressed={isActive}
               size="sm"
               variant={isActive ? 'secondary' : 'ghost'}
               className={cn('h-7 px-2.5 text-xs', isActive && 'font-semibold')}
@@ -226,6 +232,35 @@ function ViewSwitcher({
         })}
       </div>
       <ExportShortlistButton demoUrl={demoUrl} className="ml-auto" />
+    </div>
+  )
+}
+
+interface ShortlistEmptyStateProps {
+  readonly onSwitchToTriage: () => void
+}
+
+function ShortlistEmptyState({ onSwitchToTriage }: ShortlistEmptyStateProps) {
+  return (
+    <div
+      data-testid="shortlist-empty-state"
+      className="pointer-events-none absolute inset-0 flex items-center justify-center"
+    >
+      <div className="pointer-events-auto max-w-xs rounded-md border bg-card/90 px-4 py-3 text-center shadow-sm backdrop-blur">
+        <p className="text-sm font-medium text-foreground">No pinned ads yet</p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Pin ads from the triage view to build a shortlist.
+        </p>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="mt-2 h-7 px-2 text-xs"
+          onClick={onSwitchToTriage}
+        >
+          Go to triage
+        </Button>
+      </div>
     </div>
   )
 }
