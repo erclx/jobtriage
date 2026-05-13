@@ -299,6 +299,40 @@ describe('ApiKeyGate', () => {
     ).toBeInTheDocument()
   })
 
+  it('should hide the Ollama onramp when running under a Vercel deploy', async () => {
+    vi.stubEnv('NEXT_PUBLIC_VERCEL_ENV', 'production')
+
+    render(
+      <ApiKeyGate>
+        <div>protected</div>
+      </ApiKeyGate>,
+    )
+
+    expect(
+      await screen.findByRole('heading', {
+        name: /Bring your own API key/i,
+      }),
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /Use local Ollama/i }),
+    ).not.toBeInTheDocument()
+    expect(screen.queryByText(/Requires Ollama/i)).not.toBeInTheDocument()
+
+    vi.unstubAllEnvs()
+  })
+
+  it('should show the Ollama onramp on the local dev surface', async () => {
+    render(
+      <ApiKeyGate>
+        <div>protected</div>
+      </ApiKeyGate>,
+    )
+
+    expect(
+      await screen.findByRole('button', { name: /Use local Ollama/i }),
+    ).toBeInTheDocument()
+  })
+
   it('should persist a valid Anthropic key and unmount the gate', async () => {
     const user = userEvent.setup()
     render(

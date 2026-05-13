@@ -50,6 +50,8 @@ First surface every visitor sees. Only renders when no provider has been chosen 
 - Validate on blur: helper copy swaps to an amber warning when the draft does not start with the selected provider's expected prefix (`sk-ant-` for Anthropic, `sk-` for OpenAI, `AIza` for Gemini). The warning is informational, not blocking.
 - `Start chat` requires a non-empty trimmed value. Empty submit shows an inline `Paste your <provider> API key.` error. Prefix-blur warning never blocks submit.
 - Demo button writes `mock` to the provider slot, no key entry. Ollama button writes `ollama`, no key entry.
+- Ollama is hidden on the deployed Vercel surface (production and preview) because the Vercel function cannot reach the visitor's `localhost:11434`. The dev surface at `localhost:3000` shows the full provider list. Visibility resolves at build time via `process.env.NEXT_PUBLIC_VERCEL_ENV` (Vercel auto-exposes for Next.js builds, unset locally), so the deployed bundle ships without the Ollama section header, button, and helper copy. The switch-overlay variant inherits the same gate.
+- Anchored at `20vh` from the viewport top with a `2rem` floor on short screens. Sits above center deliberately so the title lands at the F-pattern's first stop, and card-top position stays stable as variants shrink (e.g. switch-overlay without onramp).
 
 ## Switch-provider overlay variant
 

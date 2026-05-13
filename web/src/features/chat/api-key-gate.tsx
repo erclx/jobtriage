@@ -34,6 +34,7 @@ export function ApiKeyGate({
   switchRequested = false,
   onResolveSwitch,
 }: ApiKeyGateProps) {
+  const isDeployed = Boolean(process.env.NEXT_PUBLIC_VERCEL_ENV)
   const [storedKey, setStoredKey] = useSessionValue(SESSION_KEYS.apiKey)
   const [storedProvider, setStoredProvider] = useSessionValue(
     SESSION_KEYS.provider,
@@ -144,7 +145,7 @@ export function ApiKeyGate({
   const showDemoOnramp = !(isSwitchOverlay && storedProvider === 'mock')
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
+    <div className="flex min-h-screen items-start justify-center bg-background px-4 pb-12 pt-[max(2rem,20vh)]">
       <div className="w-full max-w-md space-y-4">
         {showDemoOnramp ? (
           <>
@@ -299,26 +300,30 @@ export function ApiKeyGate({
           </Button>
         </form>
 
-        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-          <div className="h-px flex-1 bg-border" />
-          <span>or</span>
-          <div className="h-px flex-1 bg-border" />
-        </div>
+        {!isDeployed ? (
+          <>
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              <div className="h-px flex-1 bg-border" />
+              <span>or</span>
+              <div className="h-px flex-1 bg-border" />
+            </div>
 
-        <div className="space-y-2">
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            onClick={handleUseOllama}
-          >
-            <CpuIcon className="size-4" aria-hidden />
-            Use local Ollama
-          </Button>
-          <p className="text-center text-xs text-muted-foreground">
-            Requires Ollama with gemma4:26b on localhost:11434.
-          </p>
-        </div>
+            <div className="space-y-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={handleUseOllama}
+              >
+                <CpuIcon className="size-4" aria-hidden />
+                Use local Ollama
+              </Button>
+              <p className="text-center text-xs text-muted-foreground">
+                Requires Ollama with gemma4:26b on localhost:11434.
+              </p>
+            </div>
+          </>
+        ) : null}
 
         {switchRequested && hasStoredProvider ? (
           <Button
