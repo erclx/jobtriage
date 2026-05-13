@@ -152,10 +152,7 @@ async def test_live_search_fans_out_region_and_municipality(
     httpx_mock: HTTPXMock,
 ) -> None:
     httpx_mock.add_response(
-        url=(
-            f'{SEARCH_BASE_URL}/search?limit=2&offset=0&q=nurse'
-            '&region=PVZL_BQT_XtL'
-        ),
+        url=(f'{SEARCH_BASE_URL}/search?limit=2&offset=0&q=nurse&region=PVZL_BQT_XtL'),
         json={'hits': [], 'total': {'value': 0}},
     )
     httpx_mock.add_response(
