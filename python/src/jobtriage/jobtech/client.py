@@ -18,11 +18,16 @@ ConceptKind = Literal['occupation', 'region']
 
 _TAXONOMY_TYPES_BY_KIND: dict[ConceptKind, tuple[str, ...]] = {
     'occupation': ('occupation-name',),
-    'region': ('region',),
+    # JobTech splits Swedish locations into two taxonomy types. `region` covers
+    # län (e.g. Stockholms län), `municipality` covers kommun (e.g. Göteborg).
+    # The agent treats both as a single "region" concept, so the lookup fans
+    # out to both types and merges results.
+    'region': ('region', 'municipality'),
 }
 _RECOGNIZED_TAXONOMY_TYPES: dict[str, ConceptKind] = {
     'occupation-name': 'occupation',
     'region': 'region',
+    'municipality': 'region',
 }
 
 
@@ -127,28 +132,47 @@ class JobTechClient:
 
         Returns the raw ``Ad`` records (with ``description.text`` populated) so
         callers can build summaries with excerpts in one round trip.
+
+        The agent treats Swedish regions (län) and municipalities (kommun) as a
+        single "region" concept. JobTech splits them across two query params:
+        ``region`` for län and ``municipality`` for kommun. A län id sent under
+        ``municipality`` (or vice versa) returns zero hits silently. When a
+        location id is passed, fan out to both filters in parallel and merge
+        the active hits.
         """
         if limit < 1 or limit > MAX_PAGE_SIZE:
             raise ValueError(f'limit must be in [1, {MAX_PAGE_SIZE}]')
 
-        params: list[tuple[str, str | int | float | bool | None]] = [
+        base_params: list[tuple[str, str | int | float | bool | None]] = [
             ('limit', str(limit)),
             ('offset', '0'),
         ]
         if query:
-            params.append(('q', query))
+            base_params.append(('q', query))
         if occupation_concept_id:
             # JobTech's filter param for occupation-name concept ids is
             # `occupation-name`, not `occupation-concept-id`. The latter is
             # silently ignored and returns the unfiltered global corpus.
-            params.append(('occupation-name', occupation_concept_id))
-        if region:
-            params.append(('region', region))
+            base_params.append(('occupation-name', occupation_concept_id))
 
+        if region:
+            region_params = [*base_params, ('region', region)]
+            municipality_params = [*base_params, ('municipality', region)]
+            region_hits, municipality_hits = await asyncio.gather(
+                self._fetch_search_hits(region_params),
+                self._fetch_search_hits(municipality_params),
+            )
+            return _merge_hits([region_hits, municipality_hits])
+
+        return await self._fetch_search_hits(base_params)
+
+    async def _fetch_search_hits(
+        self,
+        params: list[tuple[str, str | int | float | bool | None]],
+    ) -> list[Ad]:
         response = await self._client.get(f'{self._base_url}/search', params=params)
         if response.status_code != httpx.codes.OK:
             raise JobTechAPIError(response.status_code, response.text[:200])
-
         payload = SearchResponse.model_validate_json(response.content)
         return [ad for ad in payload.hits if _ad_is_active(ad, None)]
 
@@ -216,6 +240,18 @@ class JobTechClient:
             fetch_kind('region'),
         )
         return [*occupations, *regions][:limit]
+
+
+def _merge_hits(buckets: list[list[Ad]]) -> list[Ad]:
+    seen: set[str] = set()
+    merged: list[Ad] = []
+    for bucket in buckets:
+        for ad in bucket:
+            if ad.id in seen:
+                continue
+            seen.add(ad.id)
+            merged.append(ad)
+    return merged
 
 
 def _ad_is_active(ad: Ad, deadline_before: date | None) -> bool:

@@ -41,6 +41,13 @@ async def test_search_concepts_maps_occupation_and_region_results(
             },
         ],
     )
+    httpx_mock.add_response(
+        url=(
+            f'{DEFAULT_TAXONOMY_BASE_URL}/v1/taxonomy/suggesters/autocomplete'
+            '?query-string=sjukskoterska&offset=0&limit=5&type=municipality'
+        ),
+        json=[],
+    )
 
     async with JobTechClient(SEARCH_BASE_URL) as client:
         concepts = await client.search_concepts('sjukskoterska', limit=5)
@@ -54,6 +61,49 @@ async def test_search_concepts_maps_occupation_and_region_results(
         Concept(
             concept_id='AvNB_uwa_6n6',
             preferred_label='Stockholms län',
+            type='region',
+        ),
+    ]
+
+
+async def test_search_concepts_returns_municipalities_as_region_kind(
+    httpx_mock: HTTPXMock,
+) -> None:
+    httpx_mock.add_response(
+        url=(
+            f'{DEFAULT_TAXONOMY_BASE_URL}/v1/taxonomy/suggesters/autocomplete'
+            '?query-string=goteborg&offset=0&limit=5&type=occupation-name'
+        ),
+        json=[],
+    )
+    httpx_mock.add_response(
+        url=(
+            f'{DEFAULT_TAXONOMY_BASE_URL}/v1/taxonomy/suggesters/autocomplete'
+            '?query-string=goteborg&offset=0&limit=5&type=region'
+        ),
+        json=[],
+    )
+    httpx_mock.add_response(
+        url=(
+            f'{DEFAULT_TAXONOMY_BASE_URL}/v1/taxonomy/suggesters/autocomplete'
+            '?query-string=goteborg&offset=0&limit=5&type=municipality'
+        ),
+        json=[
+            {
+                'taxonomy/id': 'PVZL_BQT_XtL',
+                'taxonomy/preferred-label': 'Göteborg',
+                'taxonomy/type': 'municipality',
+            },
+        ],
+    )
+
+    async with JobTechClient(SEARCH_BASE_URL) as client:
+        concepts = await client.search_concepts('goteborg', limit=5)
+
+    assert concepts == [
+        Concept(
+            concept_id='PVZL_BQT_XtL',
+            preferred_label='Göteborg',
             type='region',
         ),
     ]
@@ -96,6 +146,43 @@ async def test_live_search_returns_ads_with_excerpt(httpx_mock: HTTPXMock) -> No
 
     assert [ad.id for ad in ads] == ['live-1']
     assert ads[0].description_text.startswith('Vi söker')
+
+
+async def test_live_search_fans_out_region_and_municipality(
+    httpx_mock: HTTPXMock,
+) -> None:
+    httpx_mock.add_response(
+        url=(f'{SEARCH_BASE_URL}/search?limit=2&offset=0&q=nurse&region=PVZL_BQT_XtL'),
+        json={'hits': [], 'total': {'value': 0}},
+    )
+    httpx_mock.add_response(
+        url=(
+            f'{SEARCH_BASE_URL}/search?limit=2&offset=0&q=nurse'
+            '&municipality=PVZL_BQT_XtL'
+        ),
+        json={
+            'hits': [
+                {
+                    'id': 'live-2',
+                    'headline': 'Sjuksköterska, Göteborg',
+                    'description': {'text': 'Vi söker en erfaren sjuksköterska...'},
+                    'employer': {'name': 'Region Västra Götaland'},
+                    'workplace_address': {'municipality': 'Göteborg'},
+                },
+            ],
+            'total': {'value': 1},
+        },
+    )
+
+    async with JobTechClient(SEARCH_BASE_URL) as client:
+        ads = await client.live_search(
+            query='nurse',
+            occupation_concept_id=None,
+            region='PVZL_BQT_XtL',
+            limit=2,
+        )
+
+    assert [ad.id for ad in ads] == ['live-2']
 
 
 async def test_fetch_ad_returns_none_on_404(httpx_mock: HTTPXMock) -> None:
