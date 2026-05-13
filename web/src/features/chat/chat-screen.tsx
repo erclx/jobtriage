@@ -27,6 +27,12 @@ import {
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Button } from '@/components/ui/button'
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -394,37 +400,60 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
             Live agent triages Swedish job ads against any profile.
           </p>
         </div>
-        <div className="flex items-center gap-1">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={handleEditProfile}
-            aria-label="Edit profile"
-          >
-            <UserRoundIcon className="size-4" aria-hidden />
-            <span className="hidden sm:inline">{profileLabel}</span>
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={handleNewChatRequest}
-            disabled={
-              isStreaming ||
-              (isEmpty &&
-                canvasState.visibleAdIds.length === 0 &&
-                canvasState.pinnedAdIds.length === 0)
-            }
-            aria-label="Start a new chat"
-          >
-            <SparklesIcon className="size-4" aria-hidden />
-            <span className="hidden sm:inline">New chat</span>
-          </Button>
-          <ThemeToggle />
-          <Button type="button" variant="ghost" onClick={handleSwitchProvider}>
-            <LogOutIcon className="size-4" aria-hidden />
-            <span className="hidden sm:inline">Switch provider</span>
-          </Button>
-        </div>
+        <TooltipProvider delayDuration={200}>
+          <div className="flex items-center gap-1">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={handleEditProfile}
+                  aria-label="Edit profile"
+                >
+                  <UserRoundIcon className="size-4" aria-hidden />
+                  <span className="hidden sm:inline">{profileLabel}</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Edit profile</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={handleNewChatRequest}
+                  disabled={
+                    isStreaming ||
+                    (isEmpty &&
+                      canvasState.visibleAdIds.length === 0 &&
+                      canvasState.pinnedAdIds.length === 0)
+                  }
+                  aria-label="Start a new chat"
+                >
+                  <SparklesIcon className="size-4" aria-hidden />
+                  <span className="hidden sm:inline">New chat</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Start a new chat</TooltipContent>
+            </Tooltip>
+            <ThemeToggle />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={handleSwitchProvider}
+                  disabled={isStreaming}
+                  aria-label="Switch provider"
+                >
+                  <LogOutIcon className="size-4" aria-hidden />
+                  <span className="hidden sm:inline">Switch provider</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Switch provider</TooltipContent>
+            </Tooltip>
+          </div>
+        </TooltipProvider>
       </header>
 
       <div className="flex min-h-0 flex-1">
