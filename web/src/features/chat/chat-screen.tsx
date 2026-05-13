@@ -677,16 +677,18 @@ function MockChipStrip({
       </p>
       <div className="flex flex-col gap-1.5">
         {remaining.map((entry) => (
-          <button
+          <Button
             key={entry.prompt}
             type="button"
+            variant="outline"
+            size="sm"
             onClick={() => onSelect(entry.prompt)}
             disabled={isStreaming}
             title={entry.prompt}
-            className="cursor-pointer truncate rounded-md border border-border bg-background px-3 py-1.5 text-left text-xs leading-snug text-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full cursor-pointer justify-start truncate px-3 text-left text-xs"
           >
             {entry.chipLabel}
-          </button>
+          </Button>
         ))}
       </div>
     </div>
