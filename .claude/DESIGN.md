@@ -35,7 +35,7 @@ One row per role. Intent is a short phrase a human can picture. Value is a hex o
 | muted          | secondary text, helper, captions                      | `--muted-foreground`        |
 | accent         | borders, dividers, subtle separators                  | `--border`                  |
 | primary        | filled buttons, headline emphasis, profile match edge | `--primary`                 |
-| destructive    | tool errors, validation alerts                        | `--destructive`             |
+| destructive    | tool errors, validation alerts, live recording dot    | `--destructive`             |
 | warning        | unsaved changes hint on the profile dialog            | amber-600 / amber-400       |
 | match-strong   | profile-match score at or above 70%                   | emerald-600 / emerald-400   |
 | match-consider | profile-match score 40 to 69%                         | amber-600 / amber-400       |

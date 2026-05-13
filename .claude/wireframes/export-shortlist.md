@@ -53,4 +53,5 @@ Toolbar affordance pinned to the right end of the canvas view switcher. Lets a v
 - Markdown ships title, employer plus municipality, deadline, link, and the per-ad rationale (profile-match rationale when available, otherwise the ad excerpt). Ends with a `> Exported from <demo URL>` footer line.
 - CSV emits the same fields as one row per pinned ad, RFC 4180 escaped, with the demo URL appended as a trailing `# Exported from <url>` comment row.
 - The chevron menu emits with the default file name without opening the popover. Use it when the slug is already fine.
+- A transient `✓ Downloaded` chip appears under the button for 2.5 seconds after each successful emit (`role="status"`). A second click within 500 ms is ignored so a rapid double-click produces one download, not two.
 - Escape closes both overlays without emitting.
