@@ -354,13 +354,14 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
         <PromptInputFooter>
           <PromptInputTools>
             {isMockMode ? (
-              <button
+              <Button
                 type="button"
+                variant="link"
+                size="sm"
                 onClick={handleSwitchProvider}
-                className="text-xs font-medium text-primary underline-offset-2 hover:underline"
               >
                 Switch to BYOK
-              </button>
+              </Button>
             ) : (
               <VoiceInputButton
                 isSupported={isVoiceSupported}
@@ -623,22 +624,25 @@ function MockChipStrip({
           start over to replay any chip.
         </p>
         <div className="flex gap-2">
-          <button
+          <Button
             type="button"
+            variant="default"
+            size="sm"
             onClick={onSwitchProvider}
             disabled={isStreaming}
-            className="flex-1 cursor-pointer rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex-1"
           >
             Switch to BYOK
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={onReset}
             disabled={isStreaming}
-            className="cursor-pointer rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
           >
             Start over
-          </button>
+          </Button>
         </div>
       </div>
     )
