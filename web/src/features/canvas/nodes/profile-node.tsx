@@ -51,7 +51,7 @@ function ProfileNodeComponent({ data }: ProfileNodeRenderProps) {
       data-slot="profile-node"
       data-testid="profile-node"
       data-empty={isEmpty || undefined}
-      aria-label="Edit profile"
+      aria-label="Profile node"
       className="group flex w-72 flex-col gap-2 rounded-md border border-primary/40 bg-card px-3 py-2.5 text-left shadow-sm outline-none transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 data-[empty]:border-dashed data-[empty]:border-muted-foreground/40"
     >
       <Handle type="source" position={Position.Right} className="!bg-primary" />
