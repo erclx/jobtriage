@@ -16,9 +16,7 @@ const BASE_URL = process.env.SCREENSHOT_BASE_URL ?? 'http://localhost:3000'
 const BASE_URL_HOSTNAME = new URL(BASE_URL).hostname
 const IS_LOCALHOST =
   BASE_URL_HOSTNAME === 'localhost' || BASE_URL_HOSTNAME === '127.0.0.1'
-const OUT_DIR = IS_LOCALHOST
-  ? SCREENSHOTS_ROOT
-  : join(SCREENSHOTS_ROOT, BASE_URL_HOSTNAME)
+const OUT_DIR = join(SCREENSHOTS_ROOT, BASE_URL_HOSTNAME)
 const CHECK_CONSOLE_CLEAN =
   process.argv.includes('--check-console-clean') ||
   process.env.SMOKE_CONSOLE_CLEAN === '1'
@@ -803,14 +801,7 @@ async function ensureServer(): Promise<void> {
 }
 
 async function wipeOutDir(): Promise<void> {
-  if (IS_LOCALHOST) {
-    const surfaces = [...new Set(CASES.map((c) => c.surface))]
-    for (const surface of surfaces) {
-      await rm(join(OUT_DIR, surface), { recursive: true, force: true })
-    }
-  } else {
-    await rm(OUT_DIR, { recursive: true, force: true })
-  }
+  await rm(OUT_DIR, { recursive: true, force: true })
   await mkdir(OUT_DIR, { recursive: true })
 }
 
