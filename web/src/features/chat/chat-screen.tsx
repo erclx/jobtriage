@@ -133,6 +133,8 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
   const { state: canvasState, dispatch: dispatchCanvas } = useCanvas()
   const [profileOpen, setProfileOpen] = useState(false)
   const [confirmNewChatOpen, setConfirmNewChatOpen] = useState(false)
+  const [confirmSwitchProviderOpen, setConfirmSwitchProviderOpen] =
+    useState(false)
   const [triedPrompts, setTriedPrompts] = useState<readonly string[]>([])
 
   const railWidth = useMemo(() => {
@@ -302,6 +304,24 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
     onSwitchProvider?.()
   }, [onSwitchProvider])
 
+  const hasUnsavedWork =
+    !isEmpty ||
+    canvasState.visibleAdIds.length > 0 ||
+    canvasState.pinnedAdIds.length > 0
+
+  const handleSwitchProviderRequest = useCallback(() => {
+    if (isMockMode || !hasUnsavedWork) {
+      handleSwitchProvider()
+      return
+    }
+    setConfirmSwitchProviderOpen(true)
+  }, [handleSwitchProvider, hasUnsavedWork, isMockMode])
+
+  const handleSwitchProviderConfirm = useCallback(() => {
+    setConfirmSwitchProviderOpen(false)
+    handleSwitchProvider()
+  }, [handleSwitchProvider])
+
   const handleEditProfile = useCallback(() => setProfileOpen(true), [])
 
   const handleNewChatRequest = useCallback(() => {
@@ -442,7 +462,7 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
                 <Button
                   type="button"
                   variant="ghost"
-                  onClick={handleSwitchProvider}
+                  onClick={handleSwitchProviderRequest}
                   disabled={isStreaming}
                   aria-label="Switch provider"
                 >
@@ -588,6 +608,36 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
               onClick={handleNewChatConfirm}
             >
               Start new chat
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={confirmSwitchProviderOpen}
+        onOpenChange={setConfirmSwitchProviderOpen}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Switch provider?</DialogTitle>
+            <DialogDescription>
+              Submitting a new key clears the conversation, canvas, and pinned
+              shortlist along with your current key. Your profile stays.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setConfirmSwitchProviderOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={handleSwitchProviderConfirm}
+            >
+              Switch provider
             </Button>
           </DialogFooter>
         </DialogContent>
