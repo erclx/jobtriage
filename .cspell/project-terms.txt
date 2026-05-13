@@ -6,6 +6,7 @@ Floby
 GPQA
 Kista
 MMLU
+PVZL
 Rasterizes
 Torslanda
 Uddevalla
