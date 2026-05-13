@@ -295,7 +295,7 @@ export function ApiKeyGate({
             )}
           </div>
 
-          <Button type="submit" className="w-full">
+          <Button type="submit" size="lg" className="w-full">
             Start chat
           </Button>
         </form>
