@@ -22,10 +22,9 @@ export interface AdNodeData {
 
 interface AdNodeRenderProps {
   readonly data: AdNodeData
-  readonly selected?: boolean
 }
 
-function AdNodeComponent({ data, selected }: AdNodeRenderProps) {
+function AdNodeComponent({ data }: AdNodeRenderProps) {
   const { state, dispatch } = useCanvas()
   const ad = state.adRegistry[data.adId] as AdCardData | undefined
   const isPinned = state.pinnedAdIds.includes(data.adId)
@@ -62,7 +61,6 @@ function AdNodeComponent({ data, selected }: AdNodeRenderProps) {
       data-testid={`ad-node-${data.adId}`}
       className={cn(
         'flex w-72 flex-col gap-2 rounded-md border bg-card px-3 py-2.5 shadow-sm transition-shadow',
-        selected && 'ring-2 ring-ring/40',
         ad.days_until_deadline !== undefined &&
           ad.days_until_deadline <= 1 &&
           'ring-1 ring-amber-500/40 dark:ring-amber-400/30',

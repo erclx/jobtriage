@@ -34,6 +34,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { CanvasBridge } from '@/features/canvas/canvas-bridge'
 import { CanvasProvider } from '@/features/canvas/canvas-provider'
 import { INITIAL_CANVAS_STATE, useCanvas } from '@/features/canvas/canvas-state'
@@ -354,13 +360,14 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
         <PromptInputFooter>
           <PromptInputTools>
             {isMockMode ? (
-              <button
+              <Button
                 type="button"
+                variant="link"
+                size="sm"
                 onClick={handleSwitchProvider}
-                className="text-xs font-medium text-primary underline-offset-2 hover:underline"
               >
                 Switch to BYOK
-              </button>
+              </Button>
             ) : (
               <VoiceInputButton
                 isSupported={isVoiceSupported}
@@ -393,44 +400,60 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
             Live agent triages Swedish job ads against any profile.
           </p>
         </div>
-        <div className="flex items-center gap-1">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={handleEditProfile}
-            aria-label="Edit profile"
-          >
-            <UserRoundIcon className="size-4" aria-hidden />
-            <span className="hidden sm:inline">{profileLabel}</span>
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={handleNewChatRequest}
-            disabled={
-              isStreaming ||
-              (isEmpty &&
-                canvasState.visibleAdIds.length === 0 &&
-                canvasState.pinnedAdIds.length === 0)
-            }
-            aria-label="Start a new chat"
-          >
-            <SparklesIcon className="size-4" aria-hidden />
-            <span className="hidden sm:inline">New chat</span>
-          </Button>
-          <ThemeToggle />
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={handleSwitchProvider}
-          >
-            <LogOutIcon className="size-4" aria-hidden />
-            <span className="hidden sm:inline">Switch provider</span>
-          </Button>
-        </div>
+        <TooltipProvider delayDuration={200}>
+          <div className="flex items-center gap-1">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={handleEditProfile}
+                  aria-label="Edit profile"
+                >
+                  <UserRoundIcon className="size-4" aria-hidden />
+                  <span className="hidden sm:inline">{profileLabel}</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Edit profile</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={handleNewChatRequest}
+                  disabled={
+                    isStreaming ||
+                    (isEmpty &&
+                      canvasState.visibleAdIds.length === 0 &&
+                      canvasState.pinnedAdIds.length === 0)
+                  }
+                  aria-label="Start a new chat"
+                >
+                  <SparklesIcon className="size-4" aria-hidden />
+                  <span className="hidden sm:inline">New chat</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Start a new chat</TooltipContent>
+            </Tooltip>
+            <ThemeToggle />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={handleSwitchProvider}
+                  disabled={isStreaming}
+                  aria-label="Switch provider"
+                >
+                  <LogOutIcon className="size-4" aria-hidden />
+                  <span className="hidden sm:inline">Switch provider</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Switch provider</TooltipContent>
+            </Tooltip>
+          </div>
+        </TooltipProvider>
       </header>
 
       <div className="flex min-h-0 flex-1">
@@ -623,22 +646,25 @@ function MockChipStrip({
           start over to replay any chip.
         </p>
         <div className="flex gap-2">
-          <button
+          <Button
             type="button"
+            variant="default"
+            size="sm"
             onClick={onSwitchProvider}
             disabled={isStreaming}
-            className="flex-1 cursor-pointer rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex-1"
           >
             Switch to BYOK
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={onReset}
             disabled={isStreaming}
-            className="cursor-pointer rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
           >
             Start over
-          </button>
+          </Button>
         </div>
       </div>
     )
@@ -651,16 +677,18 @@ function MockChipStrip({
       </p>
       <div className="flex flex-col gap-1.5">
         {remaining.map((entry) => (
-          <button
+          <Button
             key={entry.prompt}
             type="button"
+            variant="outline"
+            size="sm"
             onClick={() => onSelect(entry.prompt)}
             disabled={isStreaming}
             title={entry.prompt}
-            className="cursor-pointer truncate rounded-md border border-border bg-background px-3 py-1.5 text-left text-xs leading-snug text-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full cursor-pointer justify-start truncate px-3 text-left text-xs"
           >
             {entry.chipLabel}
-          </button>
+          </Button>
         ))}
       </div>
     </div>

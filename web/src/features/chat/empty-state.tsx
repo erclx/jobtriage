@@ -52,7 +52,7 @@ export function EmptyState({
             type="button"
             variant="outline"
             size="sm"
-            className="h-auto w-full cursor-pointer justify-start whitespace-normal rounded-md px-3 py-2 text-left text-xs leading-snug"
+            className="w-full cursor-pointer justify-start truncate rounded-md px-3 text-left text-xs"
             onClick={() => onSelect(entry.prompt)}
             title={entry.prompt}
           >

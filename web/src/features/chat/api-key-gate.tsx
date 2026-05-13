@@ -198,7 +198,7 @@ export function ApiKeyGate({
                     key={option.id}
                     className={cn(
                       'flex cursor-pointer items-center justify-center rounded-md border px-3 py-1.5 text-xs font-medium transition-colors',
-                      'focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
+                      'focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50',
                       isSelected
                         ? 'border-primary bg-primary text-primary-foreground'
                         : 'border-border bg-background text-foreground hover:bg-accent hover:text-accent-foreground',
@@ -284,7 +284,7 @@ export function ApiKeyGate({
                   href={meta.signupUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="underline-offset-2 hover:underline"
+                  className="rounded-sm underline-offset-2 outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
                 >
                   {meta.signupLabel}
                 </a>
@@ -295,7 +295,7 @@ export function ApiKeyGate({
             )}
           </div>
 
-          <Button type="submit" className="w-full">
+          <Button type="submit" size="lg" className="w-full">
             Start chat
           </Button>
         </form>
