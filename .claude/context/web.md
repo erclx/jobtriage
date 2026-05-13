@@ -81,7 +81,7 @@ web/
 │   ├── audit.ts                        ← Playwright + tsx harness, drives 8 prompts through live Ollama
 │   ├── audit-static.ts                 ← Captures BYOK gate, empty state, profile drawer states
 │   ├── build-favicon.ts                ← Rasterizes icon.svg to favicon.ico via Playwright
-│   └── screenshots.ts                  ← Playwright harness, 16 canonical UI states × light/dark, seeded sessionStorage
+│   └── screenshots.ts                  ← Playwright harness, 30 canonical UI states × light/dark, seeded sessionStorage
 ├── components.json                     ← shadcn config
 ├── eslint.config.mjs
 ├── next.config.ts

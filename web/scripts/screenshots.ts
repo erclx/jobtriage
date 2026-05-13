@@ -36,11 +36,34 @@ interface CaptureCase {
   readonly name: string
   readonly seed: SeedPayload
   readonly viewport?: Viewport
+  readonly initScript?: string
   readonly act?: (page: Page) => Promise<void>
   readonly target?: (page: Page) => Promise<{
     readonly capture: () => Promise<Buffer>
   }>
 }
+
+const VOICE_INPUT_STUB = `
+  class StubSpeechRecognition {
+    start() {}
+    stop() {}
+    abort() {}
+    addEventListener() {}
+    removeEventListener() {}
+    dispatchEvent() { return true }
+  }
+  Object.defineProperty(window, 'SpeechRecognition', {
+    configurable: true,
+    value: StubSpeechRecognition,
+  })
+`
+
+const MOCK_CHIP_PROMPTS = [
+  'Show me Stockholm AI engineering roles',
+  'Find Stockholm nursing roles ranked against my profile',
+  'Compare two top machine learning roles side by side',
+  'Which AI roles are closing in the next two weeks',
+] as const
 
 const SAMPLE_KEY = 'sk-ant-api03-screenshot-harness-fixture'
 
@@ -244,8 +267,20 @@ function chatSeed(messages: readonly unknown[], canvas?: unknown): SeedPayload {
 const CASES: readonly CaptureCase[] = [
   {
     surface: 'byok',
-    name: 'empty',
+    name: 'with-demo-onramp',
     seed: { localStorage: { theme: 'placeholder' } },
+  },
+  {
+    surface: 'byok',
+    name: 'switch-overlay-no-onramp',
+    seed: {
+      localStorage: { theme: 'placeholder' },
+      sessionStorage: { 'jobtriage:provider': 'mock' },
+    },
+    act: async (page) => {
+      await page.getByRole('button', { name: /switch provider/i }).click()
+      await page.getByRole('button', { name: /^cancel/i }).waitFor()
+    },
   },
   {
     surface: 'byok',
@@ -384,6 +419,55 @@ const CASES: readonly CaptureCase[] = [
   },
   {
     surface: 'chat',
+    name: 'mock-mode-empty',
+    seed: {
+      localStorage: { theme: 'placeholder' },
+      sessionStorage: { 'jobtriage:provider': 'mock' },
+    },
+  },
+  {
+    surface: 'chat',
+    name: 'mock-mode-mid',
+    seed: {
+      localStorage: { theme: 'placeholder' },
+      sessionStorage: { 'jobtriage:provider': 'mock' },
+    },
+    act: async (page) => {
+      await fireMockChip(page, MOCK_CHIP_PROMPTS[0])
+      await fireMockChip(page, MOCK_CHIP_PROMPTS[1])
+    },
+  },
+  {
+    surface: 'chat',
+    name: 'mock-mode-terminal',
+    seed: {
+      localStorage: { theme: 'placeholder' },
+      sessionStorage: { 'jobtriage:provider': 'mock' },
+    },
+    act: async (page) => {
+      for (const prompt of MOCK_CHIP_PROMPTS) {
+        await fireMockChip(page, prompt)
+      }
+      await page
+        .getByRole('button', { name: /switch to byok/i })
+        .first()
+        .waitFor()
+    },
+  },
+  {
+    // voice-input listening state is manual-only: the SpeechRecognition stub
+    // required to drive onresult callbacks deterministically would run well
+    // past a "few lines" of harness code. Verify the listening tint manually.
+    surface: 'chat',
+    name: 'voice-input-idle',
+    seed: authedSeed(),
+    initScript: VOICE_INPUT_STUB,
+    act: async (page) => {
+      await page.getByRole('button', { name: /start voice input/i }).waitFor()
+    },
+  },
+  {
+    surface: 'chat',
     name: 'engagement-filled',
     seed: chatSeed([
       userMessage('Did I apply to ad 30966965?'),
@@ -412,6 +496,27 @@ const CASES: readonly CaptureCase[] = [
         ]),
       ],
       buildPlaceAdsCanvasState(),
+    ),
+  },
+  {
+    surface: 'canvas',
+    name: 'matched-workspace',
+    seed: chatSeed(
+      [
+        userMessage('Match my profile against these.'),
+        assistantMessage([
+          SEARCH_TOOL_PART_OUTPUT,
+          PLACE_ADS_PART,
+          {
+            type: 'tool-connectProfileToAds',
+            toolCallId: 'call-connect-1',
+            state: 'output-available',
+            input: { ad_ids: SAMPLE_AD_IDS },
+            output: { ok: true },
+          },
+        ]),
+      ],
+      buildMatchedCanvasState(),
     ),
   },
   {
@@ -531,6 +636,40 @@ const CASES: readonly CaptureCase[] = [
   },
 ] as const
 
+async function fireMockChip(page: Page, prompt: string): Promise<void> {
+  await page.getByRole('button', { name: prompt, exact: true }).first().click()
+  await page.waitForFunction(
+    (expected: string) => {
+      const raw = window.sessionStorage.getItem('jobtriage:chat-messages')
+      if (!raw) return false
+      try {
+        const messages = JSON.parse(raw) as ReadonlyArray<{
+          readonly role: string
+          readonly parts: ReadonlyArray<{
+            readonly type?: string
+            readonly text?: string
+          }>
+        }>
+        if (messages.length < 2) return false
+        const last = messages[messages.length - 1]
+        if (last.role !== 'assistant') return false
+        const hasUserPrompt = messages.some(
+          (message) =>
+            message.role === 'user' &&
+            message.parts.some(
+              (part) => part.type === 'text' && part.text === expected,
+            ),
+        )
+        return hasUserPrompt
+      } catch {
+        return false
+      }
+    },
+    prompt,
+    { timeout: 30_000 },
+  )
+}
+
 async function focusAdNode(page: Page, adId: string) {
   const node = page.locator(`[data-testid="ad-node-${adId}"]`).first()
   await node.waitFor({ state: 'visible', timeout: 15_000 })
@@ -579,6 +718,9 @@ async function captureOne(
     colorScheme: theme,
   })
   await applySeed(context, theme, testCase.seed)
+  if (testCase.initScript) {
+    await context.addInitScript(testCase.initScript)
+  }
   const page = await context.newPage()
 
   try {
