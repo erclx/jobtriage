@@ -398,7 +398,6 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
           <Button
             type="button"
             variant="ghost"
-            size="sm"
             onClick={handleEditProfile}
             aria-label="Edit profile"
           >
@@ -408,7 +407,6 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
           <Button
             type="button"
             variant="ghost"
-            size="sm"
             onClick={handleNewChatRequest}
             disabled={
               isStreaming ||
@@ -422,12 +420,7 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
             <span className="hidden sm:inline">New chat</span>
           </Button>
           <ThemeToggle />
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={handleSwitchProvider}
-          >
+          <Button type="button" variant="ghost" onClick={handleSwitchProvider}>
             <LogOutIcon className="size-4" aria-hidden />
             <span className="hidden sm:inline">Switch provider</span>
           </Button>

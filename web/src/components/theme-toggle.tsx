@@ -27,7 +27,7 @@ export function ThemeToggle() {
     <Button
       type="button"
       variant="ghost"
-      size="icon-sm"
+      size="icon"
       aria-label={`Theme: ${mode}. Switch to ${NEXT_THEME[mode]}.`}
       onClick={() => setTheme(NEXT_THEME[mode])}
     >
