@@ -49,21 +49,22 @@ Local dev workflow for this monorepo. Two stack folders sit beside a thin orches
 
 Run from `web/` after `cd web`.
 
-| Command                 | Purpose                                                          |
-| ----------------------- | ---------------------------------------------------------------- |
-| `bun run dev`           | Disabled. Prints a pointer to `bun run restart:web` and exits 1. |
-| `bun run build`         | Production build.                                                |
-| `bun run start`         | Serve the production build.                                      |
-| `bun run lint`          | ESLint, zero warnings allowed.                                   |
-| `bun run lint:fix`      | Auto-fix ESLint issues.                                          |
-| `bun run typecheck`     | `tsc --noEmit`.                                                  |
-| `bun run test`          | Vitest in watch mode.                                            |
-| `bun run test:run`      | Vitest once with verbose reporter.                               |
-| `bun run test:coverage` | Vitest with coverage.                                            |
-| `bun run test:e2e`      | Playwright end-to-end.                                           |
-| `bun run favicon`       | Regenerate `src/app/favicon.ico` from `src/app/icon.svg`.        |
-| `bun run screenshots`   | Capture canonical UI states to `.claude/review/screenshots/`.    |
-| `bun run check`         | Web verify (typecheck, lint, test).                              |
+| Command                 | Purpose                                                                                                                                                                                                  |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bun run dev`           | Disabled. Prints a pointer to `bun run restart:web` and exits 1.                                                                                                                                         |
+| `bun run build`         | Production build.                                                                                                                                                                                        |
+| `bun run start`         | Serve the production build.                                                                                                                                                                              |
+| `bun run lint`          | ESLint, zero warnings allowed.                                                                                                                                                                           |
+| `bun run lint:fix`      | Auto-fix ESLint issues.                                                                                                                                                                                  |
+| `bun run typecheck`     | `tsc --noEmit`.                                                                                                                                                                                          |
+| `bun run test`          | Vitest in watch mode.                                                                                                                                                                                    |
+| `bun run test:run`      | Vitest once with verbose reporter.                                                                                                                                                                       |
+| `bun run test:coverage` | Vitest with coverage.                                                                                                                                                                                    |
+| `bun run test:e2e`      | Playwright end-to-end.                                                                                                                                                                                   |
+| `bun run favicon`       | Regenerate `src/app/favicon.ico` from `src/app/icon.svg`.                                                                                                                                                |
+| `bun run screenshots`   | Capture canonical UI states to `.claude/review/screenshots/<host>/` (`localhost/` by default, derived from `SCREENSHOT_BASE_URL`). Pass `--check-console-clean` to fail on any captured `console.error`. |
+| `bun run smoke:prod`    | Run `screenshots` against `https://jobtriage.erclx.dev` with `--check-console-clean`. Output lands in `.claude/review/screenshots/jobtriage.erclx.dev/`.                                                 |
+| `bun run check`         | Web verify (typecheck, lint, test).                                                                                                                                                                      |
 
 ## Local smoke
 

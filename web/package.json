@@ -15,6 +15,7 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "screenshots": "bun scripts/screenshots.ts",
+    "smoke:prod": "SCREENSHOT_BASE_URL=https://jobtriage.erclx.dev bun scripts/screenshots.ts --check-console-clean",
     "favicon": "bun scripts/build-favicon.ts",
     "check": "./scripts/verify.sh"
   },

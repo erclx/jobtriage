@@ -11,8 +11,22 @@ import {
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = join(SCRIPT_DIR, '..', '..')
-const OUT_DIR = join(REPO_ROOT, '.claude', 'review', 'screenshots')
+const SCREENSHOTS_ROOT = join(REPO_ROOT, '.claude', 'review', 'screenshots')
 const BASE_URL = process.env.SCREENSHOT_BASE_URL ?? 'http://localhost:3000'
+const BASE_URL_HOSTNAME = new URL(BASE_URL).hostname
+const IS_LOCALHOST =
+  BASE_URL_HOSTNAME === 'localhost' || BASE_URL_HOSTNAME === '127.0.0.1'
+const OUT_DIR = join(SCREENSHOTS_ROOT, BASE_URL_HOSTNAME)
+const CHECK_CONSOLE_CLEAN =
+  process.argv.includes('--check-console-clean') ||
+  process.env.SMOKE_CONSOLE_CLEAN === '1'
+
+interface ConsoleErrorEntry {
+  readonly caseLabel: string
+  readonly message: string
+}
+
+const consoleErrors: ConsoleErrorEntry[] = []
 
 type Theme = 'light' | 'dark'
 type Surface = 'byok' | 'profile' | 'chat' | 'canvas'
@@ -722,6 +736,14 @@ async function captureOne(
     await context.addInitScript(testCase.initScript)
   }
   const page = await context.newPage()
+  const caseLabel = `${testCase.surface}/${testCase.name}--${theme}`
+  if (CHECK_CONSOLE_CLEAN) {
+    page.on('console', (message) => {
+      if (message.type() === 'error') {
+        consoleErrors.push({ caseLabel, message: message.text() })
+      }
+    })
+  }
 
   try {
     await page.goto(BASE_URL, {
@@ -770,17 +792,22 @@ async function ensureServer(): Promise<void> {
     }
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
-    console.error(
-      `Cannot reach ${BASE_URL}: ${message}\nStart the dev server with: bun run restart:web (from repo root)`,
-    )
+    const hint = IS_LOCALHOST
+      ? '\nStart the dev server with: bun run restart:web (from repo root)'
+      : ''
+    console.error(`Cannot reach ${BASE_URL}: ${message}${hint}`)
     process.exit(2)
   }
 }
 
-async function main(): Promise<void> {
-  await ensureServer()
+async function wipeOutDir(): Promise<void> {
   await rm(OUT_DIR, { recursive: true, force: true })
   await mkdir(OUT_DIR, { recursive: true })
+}
+
+async function main(): Promise<void> {
+  await ensureServer()
+  await wipeOutDir()
 
   const browser = await chromium.launch()
   const themes: readonly Theme[] = ['light', 'dark']
@@ -794,6 +821,14 @@ async function main(): Promise<void> {
     await browser.close()
   }
   console.log(`\nWrote screenshots to ${OUT_DIR}`)
+
+  if (CHECK_CONSOLE_CLEAN && consoleErrors.length > 0) {
+    console.error(`\n✘ ${consoleErrors.length} console error(s) detected:`)
+    for (const entry of consoleErrors) {
+      console.error(`  ${entry.caseLabel}: ${entry.message}`)
+    }
+    process.exit(1)
+  }
 }
 
 void main()

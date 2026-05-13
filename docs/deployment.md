@@ -121,6 +121,8 @@ curl -sS -X POST "$URL/api/chat" \
 
 For a visual smoke, open the URL in a cold browser tab, paste a key in the BYOK gate, send a tool-warranted prompt like `Show me nursing roles in Stockholm`, confirm the trace shows `lookupConcept` → `searchJobs` and the canvas populates with ad nodes.
 
+For an automated visual smoke, run `bun run smoke:prod` from `web/`. The Playwright harness drives every canonical state against the deployed URL, captures PNGs to `.claude/review/screenshots/jobtriage.erclx.dev/`, and exits non-zero on any `console.error`. Eyeball the PNG set against `.claude/wireframes/<surface>.md` for drift.
+
 Validate the OG card via the [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/) once the custom domain is live.
 
 > Platform gotchas (Cloud Run `/healthz` collision, Vercel framework preset, Cloudflare DNS-only mode, Hobby Deployment Protection) live in the [deploy context](../.claude/context/deploy.md).
