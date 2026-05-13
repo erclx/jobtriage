@@ -20,6 +20,7 @@ const OUT_DIR = join(SCREENSHOTS_ROOT, BASE_URL_HOSTNAME)
 const CHECK_CONSOLE_CLEAN =
   process.argv.includes('--check-console-clean') ||
   process.env.SMOKE_CONSOLE_CLEAN === '1'
+const SCREENSHOT_FILTER = process.env.SCREENSHOT_FILTER?.trim() || null
 
 interface ConsoleErrorEntry {
   readonly caseLabel: string
@@ -305,14 +306,20 @@ const CASES: readonly CaptureCase[] = [
       await page.getByLabel('Anthropic API key').blur()
     },
   },
-  {
-    surface: 'byok',
-    name: 'ollama',
-    seed: { localStorage: { theme: 'placeholder' } },
-    act: async (page) => {
-      await page.getByRole('button', { name: /use local ollama/i }).focus()
-    },
-  },
+  ...(IS_LOCALHOST
+    ? [
+        {
+          surface: 'byok' as const,
+          name: 'ollama',
+          seed: { localStorage: { theme: 'placeholder' } },
+          act: async (page: Page) => {
+            await page
+              .getByRole('button', { name: /use local ollama/i })
+              .focus()
+          },
+        },
+      ]
+    : []),
   {
     surface: 'byok',
     name: 'openai',
@@ -807,12 +814,32 @@ async function wipeOutDir(): Promise<void> {
 
 async function main(): Promise<void> {
   await ensureServer()
-  await wipeOutDir()
+
+  const cases = SCREENSHOT_FILTER
+    ? CASES.filter((testCase) =>
+        `${testCase.surface}/${testCase.name}`.includes(SCREENSHOT_FILTER),
+      )
+    : CASES
+
+  if (SCREENSHOT_FILTER && cases.length === 0) {
+    console.error(
+      `No cases matched SCREENSHOT_FILTER=${SCREENSHOT_FILTER}. Available labels:\n${CASES.map((c) => `  ${c.surface}/${c.name}`).join('\n')}`,
+    )
+    process.exit(1)
+  }
+
+  if (SCREENSHOT_FILTER) {
+    console.log(
+      `Filtered to ${cases.length} case(s) matching "${SCREENSHOT_FILTER}". Skipping output-dir wipe.`,
+    )
+  } else {
+    await wipeOutDir()
+  }
 
   const browser = await chromium.launch()
   const themes: readonly Theme[] = ['light', 'dark']
   try {
-    for (const testCase of CASES) {
+    for (const testCase of cases) {
       for (const theme of themes) {
         await captureOne(browser, testCase, theme)
       }
