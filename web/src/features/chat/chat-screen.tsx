@@ -221,6 +221,13 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
 
   const isStreaming = status === 'submitted' || status === 'streaming'
   const isEmpty = messages.length === 0
+  const userTurnCount = messages.filter(
+    (message) => message.role === 'user',
+  ).length
+  const isLowStakesReset =
+    userTurnCount <= 1 &&
+    canvasState.visibleAdIds.length === 0 &&
+    canvasState.pinnedAdIds.length === 0
 
   const chatHydratedRef = useRef(false)
   useEffect(() => {
@@ -590,8 +597,9 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
           <DialogHeader>
             <DialogTitle>Start a new chat?</DialogTitle>
             <DialogDescription>
-              The conversation, canvas, and pinned shortlist all clear. Your
-              profile, provider, and key stay.
+              {isLowStakesReset
+                ? 'The current prompt clears. Your profile, provider, and key stay.'
+                : 'The conversation, canvas, and pinned shortlist all clear. Your profile, provider, and key stay.'}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -604,7 +612,7 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
             </Button>
             <Button
               type="button"
-              variant="destructive"
+              variant={isLowStakesReset ? 'default' : 'destructive'}
               onClick={handleNewChatConfirm}
             >
               Start new chat
@@ -650,7 +658,7 @@ function voiceErrorMessage(error: SpeechRecognitionError): string {
   if (error === 'denied')
     return 'Allow microphone access in the browser to use voice input.'
   if (error === 'no-speech')
-    return 'No speech detected. Tap the mic and try again.'
+    return 'No speech detected. Try again or type instead.'
   return 'Voice input is unavailable. Try again or type instead.'
 }
 

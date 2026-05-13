@@ -7,7 +7,7 @@ import {
   PinIcon,
   PinOffIcon,
 } from 'lucide-react'
-import { memo } from 'react'
+import { memo, useRef } from 'react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -24,11 +24,14 @@ interface AdNodeRenderProps {
   readonly data: AdNodeData
 }
 
+const PIN_TOGGLE_DEBOUNCE_MS = 250
+
 function AdNodeComponent({ data }: AdNodeRenderProps) {
   const { state, dispatch } = useCanvas()
   const ad = state.adRegistry[data.adId] as AdCardData | undefined
   const isPinned = state.pinnedAdIds.includes(data.adId)
   const matchLink = state.profileMatches.find((link) => link.adId === data.adId)
+  const lastPinToggleAt = useRef(0)
 
   if (!ad) {
     return (
@@ -41,16 +44,21 @@ function AdNodeComponent({ data }: AdNodeRenderProps) {
   const employerLine = [ad.employer_name, ad.municipality]
     .filter((value): value is string => Boolean(value))
     .join(' · ')
+  const isDeadlineUrgent =
+    ad.days_until_deadline !== undefined && ad.days_until_deadline <= 1
 
   function handlePinToggle(event: React.MouseEvent) {
     event.stopPropagation()
+    const now = Date.now()
+    if (now - lastPinToggleAt.current < PIN_TOGGLE_DEBOUNCE_MS) return
+    lastPinToggleAt.current = now
     if (isPinned) {
       dispatch({ type: 'unpinFromShortlist', adId: data.adId })
     } else {
       dispatch({
         type: 'pinToShortlist',
         adId: data.adId,
-        toolCallId: `user-pin-${data.adId}-${Date.now()}`,
+        toolCallId: `user-pin-${data.adId}-${now}`,
       })
     }
   }
@@ -61,9 +69,7 @@ function AdNodeComponent({ data }: AdNodeRenderProps) {
       data-testid={`ad-node-${data.adId}`}
       className={cn(
         'flex w-72 flex-col gap-2 rounded-md border bg-card px-3 py-2.5 shadow-sm transition-shadow',
-        ad.days_until_deadline !== undefined &&
-          ad.days_until_deadline <= 1 &&
-          'ring-1 ring-amber-500/40 dark:ring-amber-400/30',
+        isDeadlineUrgent && 'ring-1 ring-amber-500/40 dark:ring-amber-400/30',
       )}
     >
       <Handle type="target" position={Position.Left} className="!bg-border" />
@@ -74,7 +80,15 @@ function AdNodeComponent({ data }: AdNodeRenderProps) {
           {ad.headline}
         </h3>
         {ad.days_until_deadline !== undefined ? (
-          <Badge variant="secondary" className="shrink-0 gap-1">
+          <Badge
+            variant={isDeadlineUrgent ? 'outline' : 'secondary'}
+            data-urgent={isDeadlineUrgent ? 'true' : undefined}
+            className={cn(
+              'shrink-0 gap-1',
+              isDeadlineUrgent &&
+                'border-amber-500/40 bg-amber-500/10 text-amber-700 dark:border-amber-400/30 dark:text-amber-300',
+            )}
+          >
             <CalendarIcon className="size-3" aria-hidden />
             {formatDeadlineCountdown(ad.days_until_deadline)}
           </Badge>

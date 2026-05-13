@@ -77,6 +77,23 @@ Shown when the user clicks the Shortlist chip or the agent calls `setView` with 
 +----------------------------------------------------+
 ```
 
+## Shortlist empty state
+
+When the Shortlist chip is active and `pinnedAdIds.length === 0`, a centered card overlays the canvas with onboarding copy and a one-click jump back to the triage view.
+
+```plaintext
++----------------------------------------------------+
+|                                                    |
+|              +--------------------------+          |
+|              | No pinned ads yet        |          |
+|              | Pin ads from the triage  |          |
+|              | view to build a shortlist|          |
+|              | [ Go to triage ]         |          |
+|              +--------------------------+          |
+|                                                    |
++----------------------------------------------------+
+```
+
 ## Ad node anatomy
 
 ```plaintext
@@ -96,10 +113,11 @@ Shown when the user clicks the Shortlist chip or the agent calls `setView` with 
 
 ## Behavior
 
-- Deadline pill on the top right reads `Today`, `1 day left`, ..., `N days left`. Pill is informational only.
+- Deadline pill on the top right reads `Today`, `1 day left`, ..., `N days left`. At `days_until_deadline <= 1` the pill switches to the amber warning tone to match the existing ring on the card.
 - Match rationale block renders only when the profile node is connected to this ad via `connectProfileToAds`. Score is shown as a percentage.
-- Pin button toggles between `Pin` and `Pinned`. Pinned ads also appear on the Shortlist view.
+- Pin button toggles between `Pin` and `Pinned`. A rapid double-click is ignored within 250 ms so the second click does not undo the first. Pinned ads also appear on the Shortlist view.
 - Open on Platsbanken opens the live ad in a new tab.
+- View switcher chips are a button group with `aria-pressed` per chip, not a `role="tab"` widget. Arrow-key navigation is intentionally not exposed.
 
 ## Canvas empty state
 

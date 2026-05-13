@@ -130,4 +130,36 @@ describe('ExportShortlistButton', () => {
     expect(blob.type).toBe('text/csv;charset=utf-8')
     expect(clickSpy).toHaveBeenCalledTimes(1)
   })
+
+  it('should render a transient confirmation after a successful download', () => {
+    renderWith({
+      pinnedAdIds: ['a1'],
+      adRegistry: { a1: ad('a1') },
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Export shortlist' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Markdown' }))
+
+    expect(
+      screen.getByTestId('export-shortlist-confirmation'),
+    ).toHaveTextContent(/Downloaded/)
+  })
+
+  it('should ignore a second download fired within the debounce window', async () => {
+    const user = userEvent.setup()
+    renderWith({
+      pinnedAdIds: ['a1'],
+      adRegistry: { a1: ad('a1') },
+    })
+
+    await user.click(
+      screen.getByRole('button', { name: 'Export format options' }),
+    )
+    const menu = await screen.findByRole('menu')
+    const csvItem = within(menu).getByText('CSV (.csv)')
+    await user.click(csvItem)
+    fireEvent.click(csvItem)
+
+    expect(clickSpy).toHaveBeenCalledTimes(1)
+  })
 })

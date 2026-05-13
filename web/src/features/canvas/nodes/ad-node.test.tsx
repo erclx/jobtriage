@@ -114,4 +114,43 @@ describe('AdNode', () => {
       adId: 'ad-1',
     })
   })
+
+  it('should ignore a rapid second click on the pin button within the debounce window', async () => {
+    const dispatch = renderAdNode({
+      ...INITIAL_CANVAS_STATE,
+      adRegistry: { 'ad-1': baseAd },
+      visibleAdIds: ['ad-1'],
+    })
+
+    const user = userEvent.setup()
+    const pin = screen.getByRole('button', { name: /Pin ad to shortlist/i })
+    await user.dblClick(pin)
+
+    expect(dispatch).toHaveBeenCalledTimes(1)
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'pinToShortlist', adId: 'ad-1' }),
+    )
+  })
+
+  it('should mark the deadline pill urgent when days_until_deadline is at or below 1', () => {
+    renderAdNode({
+      ...INITIAL_CANVAS_STATE,
+      adRegistry: { 'ad-1': { ...baseAd, days_until_deadline: 1 } },
+      visibleAdIds: ['ad-1'],
+    })
+
+    const pill = screen.getByText(/1 day left/).closest('[data-slot="badge"]')
+    expect(pill).toHaveAttribute('data-urgent', 'true')
+  })
+
+  it('should leave the deadline pill in the secondary tone when days_until_deadline is above 1', () => {
+    renderAdNode({
+      ...INITIAL_CANVAS_STATE,
+      adRegistry: { 'ad-1': { ...baseAd, days_until_deadline: 5 } },
+      visibleAdIds: ['ad-1'],
+    })
+
+    const pill = screen.getByText(/5 days left/).closest('[data-slot="badge"]')
+    expect(pill).not.toHaveAttribute('data-urgent')
+  })
 })

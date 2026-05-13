@@ -95,6 +95,14 @@ LangGraph, Mastra, Azure ML
 On-site five days a week
 `
 
+const LONG_SAMPLE_PROFILE = `- Senior AI engineer with experience shipping production agents on Anthropic and OpenAI stacks at scale
+- Based in Stockholm, open to hybrid roles in the Nordics within a forty-minute commute from the city centre
+- Must-haves include meaningful equity, a senior IC track, and an engineering-led culture without product-design politics
+- Deal-breakers are pure research roles, on-call rotations above one in six, and any role that demands relocation outside Sweden
+- Strong preference for early-stage teams between fifteen and fifty engineers building developer-facing tools
+- Open to staff-level positions when the scope is genuinely cross-team rather than nominal
+`
+
 const SAMPLE_ADS = [
   {
     ad_id: '30966965',
@@ -203,6 +211,28 @@ function buildPinnedCanvasState() {
   return {
     ...buildPlaceAdsCanvasState(),
     pinnedAdIds: [SAMPLE_AD_IDS[0]],
+  }
+}
+
+function buildUrgentDeadlineCanvasState() {
+  const base = buildPlaceAdsCanvasState()
+  const urgentAd = {
+    ...SAMPLE_ADS[0],
+    days_until_deadline: 1,
+    application_deadline: '2026-05-14',
+  }
+  return {
+    ...base,
+    adRegistry: { ...base.adRegistry, [SAMPLE_AD_IDS[0]]: urgentAd },
+  }
+}
+
+function buildEmptyShortlistCanvasState() {
+  return {
+    ...buildPlaceAdsCanvasState(),
+    view: 'shortlist',
+    visibleAdIds: [],
+    pinnedAdIds: [],
   }
 }
 
@@ -576,6 +606,71 @@ const CASES: readonly CaptureCase[] = [
   },
   {
     surface: 'canvas',
+    name: 'adnode-urgent',
+    seed: chatSeed(
+      [
+        userMessage('Show me ads closing soon.'),
+        assistantMessage([SEARCH_TOOL_PART_OUTPUT, PLACE_ADS_PART]),
+      ],
+      buildUrgentDeadlineCanvasState(),
+    ),
+    target: (page) => focusAdNode(page, SAMPLE_AD_IDS[0]),
+  },
+  {
+    surface: 'canvas',
+    name: 'shortlist-empty',
+    seed: chatSeed(
+      [
+        userMessage('Show my shortlist.'),
+        assistantMessage([
+          { type: 'text', text: 'Switched to the shortlist view.' },
+        ]),
+      ],
+      buildEmptyShortlistCanvasState(),
+    ),
+  },
+  {
+    surface: 'canvas',
+    name: 'profile-node-expanded',
+    seed: chatSeed([], {
+      ...buildPlaceAdsCanvasState(),
+      view: 'triage',
+      visibleAdIds: [],
+    }),
+    initScript: `
+      window.sessionStorage.setItem('jobtriage:profile-markdown', ${JSON.stringify(LONG_SAMPLE_PROFILE)});
+    `,
+    act: async (page) => {
+      await page.getByTestId('profile-node-toggle').click()
+      await page.getByText(/Show less/i).waitFor()
+    },
+    target: focusProfileNode,
+  },
+  {
+    surface: 'profile',
+    name: 'dialog-over-cap',
+    seed: authedSeed(),
+    act: async (page) => {
+      await page
+        .getByRole('button', { name: /edit profile/i })
+        .first()
+        .click()
+      const textarea = page.getByRole('textbox')
+      await textarea.waitFor()
+      await textarea.evaluate((node, value) => {
+        const input = node as HTMLTextAreaElement
+        const setter = Object.getOwnPropertyDescriptor(
+          HTMLTextAreaElement.prototype,
+          'value',
+        )?.set
+        setter?.call(input, value)
+        input.dispatchEvent(new Event('input', { bubbles: true }))
+      }, 'x'.repeat(20_001))
+      await page.getByText(/over soft cap/i).waitFor()
+    },
+  },
+  {
+    surface: 'canvas',
     name: 'adnode-pinned',
     seed: chatSeed(
       [
@@ -693,6 +788,14 @@ async function fireMockChip(page: Page, prompt: string): Promise<void> {
 
 async function focusAdNode(page: Page, adId: string) {
   const node = page.locator(`[data-testid="ad-node-${adId}"]`).first()
+  await node.waitFor({ state: 'visible', timeout: 15_000 })
+  return {
+    capture: () => node.screenshot(),
+  }
+}
+
+async function focusProfileNode(page: Page) {
+  const node = page.locator(`[data-testid="profile-node"]`).first()
   await node.waitFor({ state: 'visible', timeout: 15_000 })
   return {
     capture: () => node.screenshot(),

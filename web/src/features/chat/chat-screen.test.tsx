@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -282,5 +282,55 @@ describe('ChatScreen', () => {
     render(<ChatScreen />)
 
     expect(screen.getByRole('alert')).toHaveTextContent('Backend down')
+  })
+
+  it('should use the soft confirmation copy when only a single user message exists', async () => {
+    setupChat({
+      messages: [
+        { id: 'u1', role: 'user', parts: [{ type: 'text', text: 'hi' }] },
+      ],
+    })
+    const user = userEvent.setup()
+
+    render(<ChatScreen />)
+    await user.click(screen.getByRole('button', { name: /Start a new chat/i }))
+
+    const dialog = await screen.findByRole('dialog')
+    expect(dialog).toHaveTextContent(/The current prompt clears/)
+    const confirmButton = within(dialog).getByRole('button', {
+      name: /Start new chat/,
+    })
+    expect(confirmButton).toHaveAttribute('data-variant', 'default')
+  })
+
+  it('should use the destructive confirmation copy when the conversation has more than one user turn', async () => {
+    setupChat({
+      messages: [
+        { id: 'u1', role: 'user', parts: [{ type: 'text', text: 'hi' }] },
+        {
+          id: 'a1',
+          role: 'assistant',
+          parts: [{ type: 'text', text: 'hello' }],
+        },
+        {
+          id: 'u2',
+          role: 'user',
+          parts: [{ type: 'text', text: 'find Stockholm AI roles' }],
+        },
+      ],
+    })
+    const user = userEvent.setup()
+
+    render(<ChatScreen />)
+    await user.click(screen.getByRole('button', { name: /Start a new chat/i }))
+
+    const dialog = await screen.findByRole('dialog')
+    expect(dialog).toHaveTextContent(
+      /The conversation, canvas, and pinned shortlist all clear/,
+    )
+    const confirmButton = within(dialog).getByRole('button', {
+      name: /Start new chat/,
+    })
+    expect(confirmButton).toHaveAttribute('data-variant', 'destructive')
   })
 })
