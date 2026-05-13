@@ -11,7 +11,7 @@ Spans the top of the workspace. Does not appear on the BYOK gate.
 ```plaintext
 +----------------------------------------------------------------------+
 | jobtriage              [user] Profile · 412  [✨ New]  [moon] [Out]  |
-| Spatial agent workspace over Swedish JobTech ads                     |
+| Live agent triages Swedish job ads against any profile.              |
 +----------------------------------------------------------------------+
 ```
 

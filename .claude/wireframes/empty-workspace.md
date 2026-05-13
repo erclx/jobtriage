@@ -13,9 +13,9 @@ Shown after the gate is passed and before the first message.
 |                                  | [Triage][Timeline][Compare]... |
 | [sparkle]                        |                                |
 | Ask jobtriage                    |   +-------------+              |
-| Spatial agent workspace over     |   | PROFILE     |              |
-| Swedish Platsbanken ads.         |   | No profile  |              |
-| Try one of these:                |   | yet         |              |
+| Free-form chat over Swedish      |   | PROFILE     |              |
+| Platsbanken ads. Try one of      |   | No profile  |              |
+| these:                           |   | yet         |              |
 |                                  |   +-------------+              |
 | ( Stockholm AI roles ... )       |                                |
 | ( Active ads with Azure ML )     |   Ask a question on the left   |

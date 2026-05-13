@@ -9,20 +9,21 @@ type: wireframe
 Two columns above 1024px wide. Below 1024px the canvas hides and the chat rail fills the column.
 
 ```plaintext
-+------------------------+----------------------------------+
-| jobtriage      [✎]    | [Triage][Timeline][Compare][Pin] |
-| ...                    |                                  |
-+------------------------+----------------------------------+
-| user: which active     |                                  |
-| Stockholm AI roles     |   +------+ +------+ +------+    |
-|                        |   | ad   | | ad   | | ad   |    |
-| > Triaged batch (5)    |   +------+ +------+ +------+    |
-|                        |                                  |
-|                        |   [profile node]                 |
-|                        |                                  |
-|                        | [+] [-] [fit]                    |
-| [Ask about ads...] [↵] |                                  |
-+------------------------+----------------------------------+
++--------------------------+--------------------------------------+
+| jobtriage   [Add profile]| Canvas view: Triage Timeline         |
+| Live agent... [New] [☾] [Out] | Compare Shortlist     [Export]  |
++--------------------------+--------------------------------------+
+| user: which active       |                                      |
+| Stockholm AI roles       |   +------+ +------+ +------+        |
+|                          |   | ad   | | ad   | | ad   |        |
+| > Triaged batch (5)      |   +------+ +------+ +------+        |
+|                          |                                      |
+|                          |   [profile node]                     |
+|                          |                                      |
+|                          | [+] [-] [fit]                        |
+| [Ask about ads...]       |                                      |
+| [mic]               [↵]  |                                      |
++--------------------------+--------------------------------------+
 ```
 
 - Left rail starts at 380px and is resizable between 320 and 640 via the splitter. Below `lg` the canvas and splitter hide and the rail fills the viewport.
