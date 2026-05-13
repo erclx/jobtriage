@@ -27,12 +27,6 @@ import {
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Button } from '@/components/ui/button'
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -40,6 +34,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { CanvasBridge } from '@/features/canvas/canvas-bridge'
 import { CanvasProvider } from '@/features/canvas/canvas-provider'
 import { INITIAL_CANVAS_STATE, useCanvas } from '@/features/canvas/canvas-state'

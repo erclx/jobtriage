@@ -230,6 +230,20 @@
   fill: currentColor;
 }
 
+.react-flow__node {
+  border-radius: 0.5rem;
+}
+
+.react-flow__node:focus,
+.react-flow__node:focus-visible {
+  outline: none;
+}
+
+.react-flow__node:focus-visible,
+.react-flow__node.selected {
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 50%, transparent);
+}
+
 .react-flow__handle {
   width: 6px;
   height: 6px;
