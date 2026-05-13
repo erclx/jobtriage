@@ -145,7 +145,7 @@ export function ApiKeyGate({
   const showDemoOnramp = !(isSwitchOverlay && storedProvider === 'mock')
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
+    <div className="flex min-h-screen items-start justify-center bg-background px-4 pb-12 pt-[max(2rem,20vh)]">
       <div className="w-full max-w-md space-y-4">
         {showDemoOnramp ? (
           <>
