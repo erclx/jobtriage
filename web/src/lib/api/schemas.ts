@@ -107,6 +107,11 @@ export const LiveJobSearchRequestSchema = z
     top_k: z.number().int().min(1).max(10).default(5),
   })
   .strict()
+  .refine((value) => Boolean(value.query || value.occupation_concept_id), {
+    message:
+      'Provide query or occupation_concept_id. Resolve an occupation_concept_id via lookupConcept when the user names a profession.',
+    path: ['query'],
+  })
 
 export const LiveJobSearchResponseSchema = z
   .object({
