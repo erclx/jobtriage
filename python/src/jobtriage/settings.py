@@ -15,7 +15,10 @@ class Settings(BaseSettings):
     )
 
     jobtech_base_url: str = Field(default='https://jobsearch.api.jobtechdev.se')
-    jobtech_timeout_seconds: float = Field(default=30.0, gt=0)
+    # 20s leaves 10s of headroom under the web boundary
+    # (JOBTRIAGE_API_TIMEOUT_MS=30000) so FastAPI emits a structured 504 before
+    # the web client aborts.
+    jobtech_timeout_seconds: float = Field(default=20.0, gt=0)
     db_path: Path = Field(default=Path('jobtriage.db'))
     engagement_log_path: Path = Field(default=Path('engagements/log.md'))
     # `slim` skips the embedder warmup and returns 503 from corpus-backed
