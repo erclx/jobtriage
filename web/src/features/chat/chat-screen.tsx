@@ -172,6 +172,8 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
     null,
   )
   const voiceBaselineRef = useRef('')
+  const lastVoiceWriteRef = useRef('')
+  const abortVoiceRef = useRef<(() => void) | null>(null)
   const inputRef = useRef('')
   useEffect(() => {
     inputRef.current = input
@@ -179,10 +181,17 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
 
   const handleVoiceTranscript = useCallback(
     ({ final, interim }: { final: string; interim: string }) => {
+      const currentInput = inputRef.current
+      if (currentInput !== lastVoiceWriteRef.current) {
+        abortVoiceRef.current?.()
+        return
+      }
       const baseline = voiceBaselineRef.current
       const prefix = baseline ? `${baseline.replace(/\s+$/, '')} ` : ''
       const tail = `${final}${interim}`.replace(/^\s+/, '')
-      setInput(`${prefix}${tail}`)
+      const next = `${prefix}${tail}`
+      lastVoiceWriteRef.current = next
+      setInput(next)
     },
     [],
   )
@@ -198,6 +207,10 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
     onTranscript: handleVoiceTranscript,
   })
 
+  useEffect(() => {
+    abortVoiceRef.current = abortVoice
+  }, [abortVoice])
+
   const handleVoiceToggle = useCallback(() => {
     if (isVoiceListening) {
       stopVoice()
@@ -205,6 +218,7 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
     }
     setVoiceError(null)
     voiceBaselineRef.current = inputRef.current
+    lastVoiceWriteRef.current = inputRef.current
     startVoice()
   }, [isVoiceListening, startVoice, stopVoice])
 
@@ -265,9 +279,28 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
   }, [messages, status])
 
   const [, setStoredProfile] = useSessionValue(SESSION_KEYS.profile)
+  const [pendingMockOverwrite, setPendingMockOverwrite] = useState<{
+    text: string
+    chipProfile: string
+  } | null>(null)
+
   const handleSeed = useCallback(
     (text: string) => {
-      if (isMockMode) {
+      void sendMessage({ text })
+    },
+    [sendMessage],
+  )
+
+  const runMockChip = useCallback(
+    (text: string, options: { applyChipProfile: boolean }) => {
+      setMessages([])
+      dispatchCanvas({ type: 'hydrate', state: INITIAL_CANVAS_STATE })
+      if (typeof window !== 'undefined') {
+        window.sessionStorage.removeItem(SESSION_KEYS.chat)
+        window.sessionStorage.removeItem(SESSION_KEYS.canvas)
+      }
+      setTriedPrompts((prev) => (prev.includes(text) ? prev : [...prev, text]))
+      if (options.applyChipProfile) {
         const match = MOCK_PROMPTS.find((entry) => entry.prompt === text)
         if (match) {
           setStoredProfile(match.profile)
@@ -276,22 +309,36 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
       }
       void sendMessage({ text })
     },
-    [isMockMode, sendMessage, setStoredProfile],
+    [dispatchCanvas, sendMessage, setMessages, setStoredProfile],
   )
 
   const handleMockChipClick = useCallback(
     (text: string) => {
-      setMessages([])
-      dispatchCanvas({ type: 'hydrate', state: INITIAL_CANVAS_STATE })
-      if (typeof window !== 'undefined') {
-        window.sessionStorage.removeItem(SESSION_KEYS.chat)
-        window.sessionStorage.removeItem(SESSION_KEYS.canvas)
+      const match = MOCK_PROMPTS.find((entry) => entry.prompt === text)
+      const chipProfile = match?.profile ?? ''
+      const savedProfile = storedProfile.trim()
+      if (savedProfile && chipProfile && storedProfile !== chipProfile) {
+        setPendingMockOverwrite({ text, chipProfile })
+        return
       }
-      setTriedPrompts((prev) => (prev.includes(text) ? prev : [...prev, text]))
-      handleSeed(text)
+      runMockChip(text, { applyChipProfile: Boolean(chipProfile) })
     },
-    [dispatchCanvas, handleSeed, setMessages],
+    [runMockChip, storedProfile],
   )
+
+  const handleMockOverwriteKeep = useCallback(() => {
+    const pending = pendingMockOverwrite
+    if (!pending) return
+    setPendingMockOverwrite(null)
+    runMockChip(pending.text, { applyChipProfile: false })
+  }, [pendingMockOverwrite, runMockChip])
+
+  const handleMockOverwriteReplace = useCallback(() => {
+    const pending = pendingMockOverwrite
+    if (!pending) return
+    setPendingMockOverwrite(null)
+    runMockChip(pending.text, { applyChipProfile: true })
+  }, [pendingMockOverwrite, runMockChip])
 
   const handleResetDemo = useCallback(() => {
     setMessages([])
@@ -377,6 +424,8 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
             }
             onChange={(event) => {
               if (isMockMode) return
+              if (isVoiceListening) abortVoice()
+              inputRef.current = event.target.value
               setInput(event.target.value)
             }}
             readOnly={isMockMode}
@@ -406,7 +455,7 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
           <PromptInputSubmit
             status={status}
             disabled={isMockMode || (!isStreaming && input.trim() === '')}
-            onClick={isStreaming ? () => stop() : undefined}
+            onStop={stop}
           />
         </PromptInputFooter>
       </PromptInput>
@@ -646,6 +695,39 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
               onClick={handleSwitchProviderConfirm}
             >
               Switch provider
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={pendingMockOverwrite !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingMockOverwrite(null)
+        }}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Replace your profile?</DialogTitle>
+            <DialogDescription>
+              This demo chip ships its own profile. Keep yours to run the chip
+              against your saved profile, or replace it with the demo profile
+              the chip was scripted around.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleMockOverwriteKeep}
+            >
+              Keep my profile
+            </Button>
+            <Button
+              type="button"
+              variant="default"
+              onClick={handleMockOverwriteReplace}
+            >
+              Replace with demo profile
             </Button>
           </DialogFooter>
         </DialogContent>

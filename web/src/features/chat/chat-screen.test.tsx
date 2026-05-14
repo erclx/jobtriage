@@ -84,11 +84,34 @@ vi.mock('@/components/ai-elements/prompt-input', () => ({
   PromptInputTextarea: (
     props: React.TextareaHTMLAttributes<HTMLTextAreaElement>,
   ) => <textarea aria-label="message" name="message" {...props} />,
-  PromptInputSubmit: (props: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
-    <button type="submit" {...props}>
-      Send
-    </button>
-  ),
+  PromptInputSubmit: ({
+    status,
+    onStop,
+    onClick,
+    ...rest
+  }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
+    status?: string
+    onStop?: () => void
+  }) => {
+    const isStreaming = status === 'submitted' || status === 'streaming'
+    return (
+      <button
+        {...rest}
+        type={isStreaming && onStop ? 'button' : 'submit'}
+        data-streaming={isStreaming ? 'true' : undefined}
+        aria-label={isStreaming && onStop ? 'Stop' : 'Send'}
+        onClick={(event) => {
+          if (isStreaming && onStop) {
+            onStop()
+            return
+          }
+          onClick?.(event)
+        }}
+      >
+        {isStreaming && onStop ? 'Stop' : 'Send'}
+      </button>
+    )
+  },
 }))
 
 vi.mock('@/features/canvas/canvas-surface', () => ({
@@ -301,6 +324,114 @@ describe('ChatScreen', () => {
       name: /Start new chat/,
     })
     expect(confirmButton).toHaveAttribute('data-variant', 'default')
+  })
+
+  it('should call stop and avoid sendMessage when the Stop button fires mid-stream', async () => {
+    const stop = vi.fn()
+    const sendMessage = vi.fn()
+    useChatMock.mockReturnValue({
+      messages: [
+        { id: 'u1', role: 'user', parts: [{ type: 'text', text: 'hi' }] },
+      ],
+      sendMessage,
+      setMessages: vi.fn(),
+      stop,
+      error: undefined,
+      status: 'streaming',
+    })
+    const user = userEvent.setup()
+
+    render(<ChatScreen />)
+
+    const stopButton = screen.getByRole('button', { name: /^Stop$/ })
+    expect(stopButton).toHaveAttribute('type', 'button')
+    await user.click(stopButton)
+
+    expect(stop).toHaveBeenCalledTimes(1)
+    expect(sendMessage).not.toHaveBeenCalled()
+  })
+
+  it('should confirm before overwriting a saved BYOK profile when a mock chip is clicked', async () => {
+    const sendMessage = vi.fn()
+    useChatMock.mockReturnValue({
+      messages: [],
+      sendMessage,
+      setMessages: vi.fn(),
+      stop: vi.fn(),
+      error: undefined,
+      status: 'ready',
+    })
+    window.sessionStorage.removeItem(SESSION_KEYS.apiKey)
+    window.sessionStorage.setItem(SESSION_KEYS.provider, 'mock')
+    window.sessionStorage.setItem(
+      SESSION_KEYS.profile,
+      'My existing profile body',
+    )
+    const user = userEvent.setup()
+
+    render(<ChatScreen />)
+
+    await user.click(
+      screen.getByRole('button', {
+        name: /Show me Stockholm AI engineering roles/i,
+      }),
+    )
+
+    expect(sendMessage).not.toHaveBeenCalled()
+    const dialog = await screen.findByRole('dialog')
+    expect(dialog).toHaveTextContent(/Replace your profile/i)
+
+    await user.click(
+      within(dialog).getByRole('button', { name: /Keep my profile/i }),
+    )
+
+    expect(sendMessage).toHaveBeenCalledWith({
+      text: 'Show me Stockholm AI engineering roles',
+    })
+    expect(window.sessionStorage.getItem(SESSION_KEYS.profile)).toBe(
+      'My existing profile body',
+    )
+  })
+
+  it('should replace the saved profile when the mock-chip overwrite dialog confirms', async () => {
+    const sendMessage = vi.fn()
+    useChatMock.mockReturnValue({
+      messages: [],
+      sendMessage,
+      setMessages: vi.fn(),
+      stop: vi.fn(),
+      error: undefined,
+      status: 'ready',
+    })
+    window.sessionStorage.removeItem(SESSION_KEYS.apiKey)
+    window.sessionStorage.setItem(SESSION_KEYS.provider, 'mock')
+    window.sessionStorage.setItem(
+      SESSION_KEYS.profile,
+      'My existing profile body',
+    )
+    const user = userEvent.setup()
+
+    render(<ChatScreen />)
+
+    await user.click(
+      screen.getByRole('button', {
+        name: /Show me Stockholm AI engineering roles/i,
+      }),
+    )
+
+    const dialog = await screen.findByRole('dialog')
+    await user.click(
+      within(dialog).getByRole('button', {
+        name: /Replace with demo profile/i,
+      }),
+    )
+
+    expect(sendMessage).toHaveBeenCalledWith({
+      text: 'Show me Stockholm AI engineering roles',
+    })
+    expect(window.sessionStorage.getItem(SESSION_KEYS.profile)).not.toBe(
+      'My existing profile body',
+    )
   })
 
   it('should use the destructive confirmation copy when the conversation has more than one user turn', async () => {
