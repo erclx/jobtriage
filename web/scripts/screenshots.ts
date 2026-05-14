@@ -236,6 +236,67 @@ function buildEmptyShortlistCanvasState() {
   }
 }
 
+function buildComparePairCanvasState() {
+  const base = buildPlaceAdsCanvasState()
+  return {
+    ...base,
+    view: 'compare',
+    nodePositions: {},
+    visibleAdIds: [SAMPLE_AD_IDS[0], SAMPLE_AD_IDS[1]],
+    comparePair: {
+      adIdA: SAMPLE_AD_IDS[0],
+      adIdB: SAMPLE_AD_IDS[1],
+      diffs: [
+        {
+          field: 'Employer',
+          a: 'Acme AB',
+          b: 'Beta Labs',
+          verdict: 'neither',
+        },
+        {
+          field: 'Location',
+          a: 'Stockholm',
+          b: 'Göteborg',
+          verdict: 'a',
+        },
+        {
+          field: 'Stack',
+          a: 'Azure ML, Mastra',
+          b: 'Sagemaker, Triton',
+          verdict: 'neither',
+        },
+        {
+          field: 'Seniority',
+          a: 'Senior',
+          b: 'Senior',
+          verdict: 'same',
+        },
+      ],
+    },
+  }
+}
+
+function buildTimelineCanvasState() {
+  const base = buildPlaceAdsCanvasState()
+  const timelineAds = [
+    { ...SAMPLE_ADS[0], days_until_deadline: 0 },
+    { ...SAMPLE_ADS[1], days_until_deadline: 5 },
+    { ...SAMPLE_ADS[2], days_until_deadline: 12 },
+  ]
+  const adRegistry = { ...base.adRegistry }
+  for (const ad of timelineAds) adRegistry[ad.ad_id] = ad
+  return {
+    ...base,
+    view: 'timeline',
+    nodePositions: {},
+    adRegistry,
+    timeline: {
+      todayCursor: '2026-05-14',
+      adIds: SAMPLE_AD_IDS,
+    },
+  }
+}
+
 const SEARCH_TOOL_PART_OUTPUT = {
   type: 'tool-searchJobs',
   toolCallId: 'call-search-1',
@@ -547,6 +608,83 @@ const CASES: readonly CaptureCase[] = [
         ]),
       ],
       buildPlaceAdsCanvasState(),
+    ),
+  },
+  {
+    surface: 'canvas',
+    name: 'compare-pair-with-diffs',
+    seed: chatSeed(
+      [
+        userMessage('Compare the top two roles side by side.'),
+        assistantMessage([
+          SEARCH_TOOL_PART_OUTPUT,
+          {
+            type: 'tool-pairAdsForCompare',
+            toolCallId: 'call-pair-1',
+            state: 'output-available',
+            input: {
+              ad_id_a: SAMPLE_AD_IDS[0],
+              ad_id_b: SAMPLE_AD_IDS[1],
+              diffs: [
+                {
+                  field: 'Employer',
+                  a: 'Acme AB',
+                  b: 'Beta Labs',
+                  verdict: 'neither',
+                },
+                {
+                  field: 'Location',
+                  a: 'Stockholm',
+                  b: 'Göteborg',
+                  verdict: 'a',
+                },
+                {
+                  field: 'Stack',
+                  a: 'Azure ML, Mastra',
+                  b: 'Sagemaker, Triton',
+                  verdict: 'neither',
+                },
+                {
+                  field: 'Seniority',
+                  a: 'Senior',
+                  b: 'Senior',
+                  verdict: 'same',
+                },
+              ],
+            },
+            output: { ok: true },
+          },
+          {
+            type: 'text',
+            text: 'Compare view is on the canvas with the diff table below.',
+          },
+        ]),
+      ],
+      buildComparePairCanvasState(),
+    ),
+  },
+  {
+    surface: 'canvas',
+    name: 'timeline-with-axis',
+    seed: chatSeed(
+      [
+        userMessage('Which AI roles close in the next two weeks?'),
+        assistantMessage([
+          SEARCH_TOOL_PART_OUTPUT,
+          {
+            type: 'tool-placeAdsOnTimeline',
+            toolCallId: 'call-timeline-1',
+            state: 'output-available',
+            input: { ad_ids: SAMPLE_AD_IDS, today_cursor: '2026-05-14' },
+            output: { ok: true },
+          },
+          {
+            type: 'text',
+            text: 'Three roles laid on the date axis with the closest deadline today.',
+          },
+        ]),
+      ],
+      buildTimelineCanvasState(),
     ),
   },
   {
