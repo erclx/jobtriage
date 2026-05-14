@@ -1,6 +1,7 @@
 import { ImageResponse } from 'next/og'
 
-// Mirrors the README hook. Keep the two strings aligned when copy changes.
+// Mirrors the README hook. Keep aligned with hero copy on copy changes.
+// The subhead below is a verbatim mock-mode chip, kept in sync with web/src/features/mock/prompts.ts.
 export const ogCardAlt =
   'jobtriage: triage Swedish job ads against any profile in a live agent workspace'
 export const ogCardSize = { width: 1200, height: 630 }
@@ -52,7 +53,7 @@ export function renderOgCard() {
             maxWidth: 1000,
           }}
         >
-          "Show me agentic AI roles in Sweden ranked by my profile fit"
+          "Find Stockholm nursing roles ranked against my profile"
         </div>
       </div>
       <div

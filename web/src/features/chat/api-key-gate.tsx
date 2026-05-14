@@ -177,8 +177,8 @@ export function ApiKeyGate({
             </div>
             <h1 className="text-xl font-semibold">Bring your own API key</h1>
             <p className="text-sm text-muted-foreground">
-              Held in this browser tab and sent only to the jobtriage server.
-              Never written to disk.
+              Held only in this browser tab. Forwarded with each request to
+              drive the agent, never persisted anywhere else.
             </p>
           </header>
 
