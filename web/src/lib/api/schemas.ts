@@ -120,9 +120,17 @@ export const LiveJobDetailsRequestSchema = z
   })
   .strict()
 
+export const LiveAdDetailsErrorSchema = z
+  .object({
+    ad_id: z.string().min(1),
+    error: z.string().min(1),
+  })
+  .strict()
+
 export const LiveJobDetailsResponseSchema = z
   .object({
     results: z.array(LiveAdSummarySchema),
+    errors: z.array(LiveAdDetailsErrorSchema).default([]),
   })
   .strict()
 
@@ -191,6 +199,7 @@ export type LiveAdSummary = z.infer<typeof LiveAdSummarySchema>
 export type LiveJobSearchRequest = z.input<typeof LiveJobSearchRequestSchema>
 export type LiveJobSearchResponse = z.infer<typeof LiveJobSearchResponseSchema>
 export type LiveJobDetailsRequest = z.input<typeof LiveJobDetailsRequestSchema>
+export type LiveAdDetailsError = z.infer<typeof LiveAdDetailsErrorSchema>
 export type LiveJobDetailsResponse = z.infer<
   typeof LiveJobDetailsResponseSchema
 >

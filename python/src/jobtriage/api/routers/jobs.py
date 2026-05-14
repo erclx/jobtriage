@@ -19,6 +19,7 @@ from jobtriage.api.schemas import (
     JobDetailsResponse,
     JobSearchRequest,
     JobSearchResponse,
+    LiveAdDetailsError,
     LiveAdSummary,
     LiveJobDetailsRequest,
     LiveJobDetailsResponse,
@@ -324,15 +325,26 @@ async def live_job_details(
         base_url=settings.jobtech_base_url,
         timeout_seconds=settings.jobtech_timeout_seconds,
     ) as client:
-        ads = await asyncio.gather(
-            *(client.fetch_ad(ad_id) for ad_id in payload.ad_ids)
+        fetched = await asyncio.gather(
+            *(client.fetch_ad(ad_id) for ad_id in payload.ad_ids),
+            return_exceptions=True,
         )
-    results = [_ad_to_live_summary(ad) for ad in ads if ad is not None]
+    results: list[LiveAdSummary] = []
+    errors: list[LiveAdDetailsError] = []
+    for ad_id, outcome in zip(payload.ad_ids, fetched, strict=True):
+        if isinstance(outcome, BaseException):
+            errors.append(
+                LiveAdDetailsError(ad_id=ad_id, error='Upstream JobTech API error.')
+            )
+        elif outcome is None:
+            errors.append(LiveAdDetailsError(ad_id=ad_id, error='Ad not found.'))
+        else:
+            results.append(_ad_to_live_summary(outcome))
     if not results:
         raise HTTPException(
             status_code=404, detail=f'No live ads matched: {payload.ad_ids}'
         )
-    return LiveJobDetailsResponse(results=results)
+    return LiveJobDetailsResponse(results=results, errors=errors)
 
 
 def _ad_to_live_summary(ad: Ad) -> LiveAdSummary:
