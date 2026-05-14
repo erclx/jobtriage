@@ -4,165 +4,154 @@
 import type { MockScript } from '@/features/mock/scripts/types'
 
 export const compareThreeRolesScript: MockScript = {
-  prompt: 'Compare two top machine learning roles side by side',
-  chipLabel: 'Compare two top machine learning roles side by side',
-  messageId: 'mock-message-compare',
-  profile:
-    '# Profile\n\n- Senior AI engineer, 8 years experience\n- Strong in Python, PyTorch, Hugging Face, retrieval-augmented generation\n- Comfortable with production MLOps on AWS or GCP\n- Based in Stockholm, open to hybrid\n',
-  steps: [
+  "prompt": "Compare two top machine learning roles side by side",
+  "chipLabel": "Compare two top machine learning roles side by side",
+  "messageId": "mock-message-compare",
+  "profile": "# Profile\n\n- Senior AI engineer, 8 years experience\n- Strong in Python, PyTorch, Hugging Face, retrieval-augmented generation\n- Comfortable with production MLOps on AWS or GCP\n- Based in Stockholm, open to hybrid\n",
+  "steps": [
     {
-      kind: 'text',
-      content:
-        'Pulling a fresh batch of machine learning engineer roles so the comparison has live candidates.',
+      "kind": "text",
+      "content": "Pulling a fresh batch of machine learning engineer roles so the comparison has live candidates."
     },
     {
-      kind: 'tool',
-      toolName: 'searchJobs',
-      toolCallId: 'mock-compare-roles-call-1',
-      input: {
-        query: 'machine learning engineer',
-        top_k: 5,
+      "kind": "tool",
+      "toolName": "searchJobs",
+      "toolCallId": "mock-compare-roles-call-1",
+      "input": {
+        "query": "machine learning engineer",
+        "top_k": 5
       },
-      output: {
-        results: [
+      "output": {
+        "results": [
           {
-            ad_id: '31027393',
-            headline: 'Machine Learning Engineer',
-            employer_name: 'Leapit Nordics AB',
-            municipality: 'Malmö',
-            application_deadline: '2026-08-31T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31027393',
-            description_excerpt:
-              'Machine Learning Engineer Leapit Consulting - Malmö, Sweden About the role Leapit is looking for experienced Machine Learning Engineers to join our growing engineering team in Sweden. We work with leading international companies across technology, finance, telecom, automotive, retail, and digital products. As a Machine Learning Engineer, you will design, build, and deploy machine learning solutions that solve real business problems at scale. You will work end-to-end, from dat…',
-            occupation_label: 'Dataingenjör',
+            "ad_id": "31027393",
+            "headline": "Machine Learning Engineer",
+            "employer_name": "Leapit Nordics AB",
+            "municipality": "Malmö",
+            "application_deadline": "2026-08-31T23:59:59",
+            "webpage_url": "https://arbetsformedlingen.se/platsbanken/annonser/31027393",
+            "description_excerpt": "Machine Learning Engineer Leapit Consulting - Malmö, Sweden About the role Leapit is looking for experienced Machine Learning Engineers to join our growing engineering team in Sweden. We work with leading international companies across technology, finance, telecom, automotive, retail, and digital products. As a Machine Learning Engineer, you will design, build, and deploy machine learning solutions that solve real business problems at scale. You will work end-to-end, from dat…",
+            "occupation_label": "Dataingenjör"
           },
           {
-            ad_id: '30991390',
-            headline: 'Machine Learning Engineer',
-            employer_name: 'Einride AB (publ)',
-            municipality: 'Göteborg',
-            application_deadline: '2026-05-14T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30991390',
-            description_excerpt:
-              'We are growing our team and looking for a skilled and passionate Machine Learning Engineer within in multi-modal perception systems for autonomous driving applications. The ideal candidate has strong software engineering skills and experience in designing, developing and transitioning R&D solutions into final products. You will: Research and develop state-of-the-art machine learning/deep learning models and architectures to advance our perception stack Develop machine learnin…',
-            occupation_label: 'Mjukvaruutvecklare',
+            "ad_id": "30991390",
+            "headline": "Machine Learning Engineer",
+            "employer_name": "Einride AB (publ)",
+            "municipality": "Göteborg",
+            "application_deadline": "2026-05-14T23:59:59",
+            "webpage_url": "https://arbetsformedlingen.se/platsbanken/annonser/30991390",
+            "description_excerpt": "We are growing our team and looking for a skilled and passionate Machine Learning Engineer within in multi-modal perception systems for autonomous driving applications. The ideal candidate has strong software engineering skills and experience in designing, developing and transitioning R&D solutions into final products. You will: Research and develop state-of-the-art machine learning/deep learning models and architectures to advance our perception stack Develop machine learnin…",
+            "occupation_label": "Mjukvaruutvecklare"
           },
           {
-            ad_id: '30916616',
-            headline: 'Machine Learning Engineer',
-            employer_name: 'Sellhelp AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-06-30T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30916616',
-            description_excerpt:
-              'Leverage the power of AI to revolutionize sustainable shopping for millions of customers. 💙 Sellpy’s vision is to empower everyone to live circularly. We believe that every item deserves a second life, and we see huge financial, social and environmental value in making sure this happens. Join us in building technology that drives real change. Machine Learning at Sellpy We look for you who want to be part of our journey to make sustainable shopping the first-hand choice by bu…',
-            occupation_label: 'Systemutvecklare/Programmerare',
-          },
-        ],
-      },
+            "ad_id": "30916616",
+            "headline": "Machine Learning Engineer",
+            "employer_name": "Sellhelp AB",
+            "municipality": "Stockholm",
+            "application_deadline": "2026-06-30T23:59:59",
+            "webpage_url": "https://arbetsformedlingen.se/platsbanken/annonser/30916616",
+            "description_excerpt": "Leverage the power of AI to revolutionize sustainable shopping for millions of customers. 💙 Sellpy’s vision is to empower everyone to live circularly. We believe that every item deserves a second life, and we see huge financial, social and environmental value in making sure this happens. Join us in building technology that drives real change. Machine Learning at Sellpy We look for you who want to be part of our journey to make sustainable shopping the first-hand choice by bu…",
+            "occupation_label": "Systemutvecklare/Programmerare"
+          }
+        ]
+      }
     },
     {
-      kind: 'text',
-      content:
-        ' Comparing the two strongest candidates. The first is Machine Learning Engineer and the second is Machine Learning Engineer.',
+      "kind": "text",
+      "content": " Comparing the two strongest candidates. The first is Machine Learning Engineer and the second is Machine Learning Engineer."
     },
     {
-      kind: 'tool',
-      toolName: 'compareRoles',
-      toolCallId: 'mock-compare-roles-call-2',
-      input: {
-        ad_ids: ['31027393', '30991390'],
+      "kind": "tool",
+      "toolName": "compareRoles",
+      "toolCallId": "mock-compare-roles-call-2",
+      "input": {
+        "ad_ids": [
+          "31027393",
+          "30991390"
+        ]
       },
-      output: {
-        results: [
+      "output": {
+        "results": [
           {
-            ad_id: '31027393',
-            headline: 'Machine Learning Engineer',
-            employer_name: 'Leapit Nordics AB',
-            municipality: 'Malmö',
-            application_deadline: '2026-08-31T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31027393',
-            description_excerpt:
-              'Machine Learning Engineer Leapit Consulting - Malmö, Sweden About the role Leapit is looking for experienced Machine Learning Engineers to join our growing engineering team in Sweden. We work with leading international companies across technology, finance, telecom, automotive, retail, and digital products. As a Machine Learning Engineer, you will design, build, and deploy machine learning solutions that solve real business problems at scale. You will work end-to-end, from dat…',
-            occupation_label: 'Dataingenjör',
+            "ad_id": "31027393",
+            "headline": "Machine Learning Engineer",
+            "employer_name": "Leapit Nordics AB",
+            "municipality": "Malmö",
+            "application_deadline": "2026-08-31T23:59:59",
+            "webpage_url": "https://arbetsformedlingen.se/platsbanken/annonser/31027393",
+            "description_excerpt": "Machine Learning Engineer Leapit Consulting - Malmö, Sweden About the role Leapit is looking for experienced Machine Learning Engineers to join our growing engineering team in Sweden. We work with leading international companies across technology, finance, telecom, automotive, retail, and digital products. As a Machine Learning Engineer, you will design, build, and deploy machine learning solutions that solve real business problems at scale. You will work end-to-end, from dat…",
+            "occupation_label": "Dataingenjör"
           },
           {
-            ad_id: '30991390',
-            headline: 'Machine Learning Engineer',
-            employer_name: 'Einride AB (publ)',
-            municipality: 'Göteborg',
-            application_deadline: '2026-05-14T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30991390',
-            description_excerpt:
-              'We are growing our team and looking for a skilled and passionate Machine Learning Engineer within in multi-modal perception systems for autonomous driving applications. The ideal candidate has strong software engineering skills and experience in designing, developing and transitioning R&D solutions into final products. You will: Research and develop state-of-the-art machine learning/deep learning models and architectures to advance our perception stack Develop machine learnin…',
-            occupation_label: 'Mjukvaruutvecklare',
-          },
-        ],
-      },
+            "ad_id": "30991390",
+            "headline": "Machine Learning Engineer",
+            "employer_name": "Einride AB (publ)",
+            "municipality": "Göteborg",
+            "application_deadline": "2026-05-14T23:59:59",
+            "webpage_url": "https://arbetsformedlingen.se/platsbanken/annonser/30991390",
+            "description_excerpt": "We are growing our team and looking for a skilled and passionate Machine Learning Engineer within in multi-modal perception systems for autonomous driving applications. The ideal candidate has strong software engineering skills and experience in designing, developing and transitioning R&D solutions into final products. You will: Research and develop state-of-the-art machine learning/deep learning models and architectures to advance our perception stack Develop machine learnin…",
+            "occupation_label": "Mjukvaruutvecklare"
+          }
+        ]
+      }
     },
     {
-      kind: 'tool',
-      toolName: 'pairAdsForCompare',
-      toolCallId: 'mock-compare-roles-call-3',
-      input: {
-        ad_id_a: '31027393',
-        ad_id_b: '30991390',
-        diffs: [
+      "kind": "tool",
+      "toolName": "pairAdsForCompare",
+      "toolCallId": "mock-compare-roles-call-3",
+      "input": {
+        "ad_id_a": "31027393",
+        "ad_id_b": "30991390",
+        "diffs": [
           {
-            field: 'Employer',
-            a: 'Leapit Nordics AB',
-            b: 'Einride AB (publ)',
-            verdict: 'neither',
+            "field": "Employer",
+            "a": "Leapit Nordics AB",
+            "b": "Einride AB (publ)",
+            "verdict": "neither"
           },
           {
-            field: 'Location',
-            a: 'Malmö',
-            b: 'Göteborg',
-            verdict: 'neither',
+            "field": "Location",
+            "a": "Malmö",
+            "b": "Göteborg",
+            "verdict": "neither"
           },
           {
-            field: 'Deadline',
-            a: '2026-08-31',
-            b: '2026-05-14',
-            verdict: 'a',
-          },
-        ],
+            "field": "Deadline",
+            "a": "2026-08-31",
+            "b": "2026-05-14",
+            "verdict": "a"
+          }
+        ]
       },
-      output: {
-        accepted: true,
-        ad_id_a: '31027393',
-        ad_id_b: '30991390',
-        diffs: [
+      "output": {
+        "accepted": true,
+        "ad_id_a": "31027393",
+        "ad_id_b": "30991390",
+        "diffs": [
           {
-            field: 'Employer',
-            a: 'Leapit Nordics AB',
-            b: 'Einride AB (publ)',
-            verdict: 'neither',
+            "field": "Employer",
+            "a": "Leapit Nordics AB",
+            "b": "Einride AB (publ)",
+            "verdict": "neither"
           },
           {
-            field: 'Location',
-            a: 'Malmö',
-            b: 'Göteborg',
-            verdict: 'neither',
+            "field": "Location",
+            "a": "Malmö",
+            "b": "Göteborg",
+            "verdict": "neither"
           },
           {
-            field: 'Deadline',
-            a: '2026-08-31',
-            b: '2026-05-14',
-            verdict: 'a',
-          },
-        ],
-      },
+            "field": "Deadline",
+            "a": "2026-08-31",
+            "b": "2026-05-14",
+            "verdict": "a"
+          }
+        ]
+      }
     },
     {
-      kind: 'text',
-      content:
-        ' Compare view is up on the canvas. A third candidate from Sellhelp AB is also in the result set. Ask for a pair against it for a deeper bake-off.',
-    },
-  ],
+      "kind": "text",
+      "content": " Compare view is up on the canvas. A third candidate from Sellhelp AB is also in the result set. Ask for a pair against it for a deeper bake-off."
+    }
+  ]
 } as const

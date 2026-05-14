@@ -4,98 +4,102 @@
 import type { MockScript } from '@/features/mock/scripts/types'
 
 export const deadlineTimelineScript: MockScript = {
-  prompt: 'Which AI roles are closing in the next two weeks',
-  chipLabel: 'Which AI roles are closing in the next two weeks',
-  messageId: 'mock-message-deadline',
-  profile:
-    '# Profile\n\n- Senior AI engineer, 8 years experience\n- Strong in Python, PyTorch, Hugging Face, retrieval-augmented generation\n- Comfortable with production MLOps on AWS or GCP\n- Based in Stockholm, open to hybrid\n',
-  steps: [
+  "prompt": "Which AI roles are closing in the next two weeks",
+  "chipLabel": "Which AI roles are closing in the next two weeks",
+  "messageId": "mock-message-deadline",
+  "profile": "# Profile\n\n- Senior AI engineer, 8 years experience\n- Strong in Python, PyTorch, Hugging Face, retrieval-augmented generation\n- Comfortable with production MLOps on AWS or GCP\n- Based in Stockholm, open to hybrid\n",
+  "steps": [
     {
-      kind: 'text',
-      content:
-        'Pulling AI engineering ads whose application deadline lands inside the next two weeks.',
+      "kind": "text",
+      "content": "Pulling AI engineering ads whose application deadline lands inside the next two weeks."
     },
     {
-      kind: 'tool',
-      toolName: 'deadlineWatch',
-      toolCallId: 'mock-deadline-ai-call-1',
-      input: {
-        window_days: 14,
-        top_k: 5,
+      "kind": "tool",
+      "toolName": "deadlineWatch",
+      "toolCallId": "mock-deadline-ai-call-1",
+      "input": {
+        "window_days": 14,
+        "top_k": 5
       },
-      output: {
-        results: [
+      "output": {
+        "results": [
           {
-            ad_id: '30970532',
-            headline: 'Junior AI Engineer / Data Scientist',
-            employer_name: 'Effektify AB',
-            municipality: 'Lund',
-            application_deadline: '2026-05-21T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30970532',
-            days_until_deadline: 7,
+            "ad_id": "30970532",
+            "headline": "Junior AI Engineer / Data Scientist",
+            "employer_name": "Effektify AB",
+            "municipality": "Lund",
+            "application_deadline": "2026-05-21T23:59:59",
+            "webpage_url": "https://arbetsformedlingen.se/platsbanken/annonser/30970532",
+            "days_until_deadline": 7
           },
           {
-            ad_id: '30340646',
-            headline: 'Gameplay AI / ML Engineer',
-            employer_name: 'Embark Studios AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-05-23T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30340646',
-            days_until_deadline: 9,
+            "ad_id": "30340646",
+            "headline": "Gameplay AI / ML Engineer",
+            "employer_name": "Embark Studios AB",
+            "municipality": "Stockholm",
+            "application_deadline": "2026-05-23T23:59:59",
+            "webpage_url": "https://arbetsformedlingen.se/platsbanken/annonser/30340646",
+            "days_until_deadline": 9
           },
           {
-            ad_id: '30306504',
-            headline: 'Junior AI Systems Engineer',
-            employer_name: 'Mindark Pe AB (Publ)',
-            municipality: 'Göteborg',
-            application_deadline: '2026-05-24T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30306504',
-            days_until_deadline: 10,
+            "ad_id": "30306504",
+            "headline": "Junior AI Systems Engineer",
+            "employer_name": "Mindark Pe AB (Publ)",
+            "municipality": "Göteborg",
+            "application_deadline": "2026-05-24T23:59:59",
+            "webpage_url": "https://arbetsformedlingen.se/platsbanken/annonser/30306504",
+            "days_until_deadline": 10
           },
           {
-            ad_id: '30975894',
-            headline: 'Principal AI Solution Engineer ',
-            employer_name: 'Midasplayer AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-05-29T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30975894',
-            days_until_deadline: 15,
+            "ad_id": "30975894",
+            "headline": "Principal AI Solution Engineer ",
+            "employer_name": "Midasplayer AB",
+            "municipality": "Stockholm",
+            "application_deadline": "2026-05-29T23:59:59",
+            "webpage_url": "https://arbetsformedlingen.se/platsbanken/annonser/30975894",
+            "days_until_deadline": 15
           },
           {
-            ad_id: '30365029',
-            headline: 'AI Engineer',
-            employer_name: 'Tendium AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-05-30T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30365029',
-            days_until_deadline: 16,
-          },
+            "ad_id": "30365029",
+            "headline": "AI Engineer",
+            "employer_name": "Tendium AB",
+            "municipality": "Stockholm",
+            "application_deadline": "2026-05-30T23:59:59",
+            "webpage_url": "https://arbetsformedlingen.se/platsbanken/annonser/30365029",
+            "days_until_deadline": 16
+          }
+        ]
+      }
+    },
+    {
+      "kind": "tool",
+      "toolName": "placeAdsOnTimeline",
+      "toolCallId": "mock-deadline-ai-call-2",
+      "input": {
+        "ad_ids": [
+          "30970532",
+          "30340646",
+          "30306504",
+          "30975894",
+          "30365029"
         ],
+        "today_cursor": "2026-05-14"
       },
+      "output": {
+        "accepted": true,
+        "ad_ids": [
+          "30970532",
+          "30340646",
+          "30306504",
+          "30975894",
+          "30365029"
+        ],
+        "today_cursor": "2026-05-14"
+      }
     },
     {
-      kind: 'tool',
-      toolName: 'placeAdsOnTimeline',
-      toolCallId: 'mock-deadline-ai-call-2',
-      input: {
-        ad_ids: ['30970532', '30340646', '30306504', '30975894', '30365029'],
-        today_cursor: '2026-05-14',
-      },
-      output: {
-        accepted: true,
-        ad_ids: ['30970532', '30340646', '30306504', '30975894', '30365029'],
-        today_cursor: '2026-05-14',
-      },
-    },
-    {
-      kind: 'text',
-      content:
-        ' 5 roles laid on the date axis. The soonest is Junior AI Engineer / Data Scientist at Effektify AB, 7 days out.',
-    },
-  ],
+      "kind": "text",
+      "content": " 5 roles laid on the date axis. The soonest is Junior AI Engineer / Data Scientist at Effektify AB, 7 days out."
+    }
+  ]
 } as const

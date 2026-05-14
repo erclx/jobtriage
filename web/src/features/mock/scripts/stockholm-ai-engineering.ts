@@ -4,127 +4,125 @@
 import type { MockScript } from '@/features/mock/scripts/types'
 
 export const stockholmAiEngineeringScript: MockScript = {
-  prompt: 'Show me Stockholm AI engineering roles',
-  chipLabel: 'Show me Stockholm AI engineering roles',
-  messageId: 'mock-message-sthlm-ai',
-  profile:
-    '# Profile\n\n- Senior AI engineer, 8 years experience\n- Strong in Python, PyTorch, Hugging Face, retrieval-augmented generation\n- Comfortable with production MLOps on AWS or GCP\n- Based in Stockholm, open to hybrid\n',
-  steps: [
+  "prompt": "Show me Stockholm AI engineering roles",
+  "chipLabel": "Show me Stockholm AI engineering roles",
+  "messageId": "mock-message-sthlm-ai",
+  "profile": "# Profile\n\n- Senior AI engineer, 8 years experience\n- Strong in Python, PyTorch, Hugging Face, retrieval-augmented generation\n- Comfortable with production MLOps on AWS or GCP\n- Based in Stockholm, open to hybrid\n",
+  "steps": [
     {
-      kind: 'text',
-      content:
-        'Looking up the JobTech taxonomy for AI engineering and Stockholm so the search query uses real concept ids.',
+      "kind": "text",
+      "content": "Looking up the JobTech taxonomy for AI engineering and Stockholm so the search query uses real concept ids."
     },
     {
-      kind: 'tool',
-      toolName: 'lookupConcept',
-      toolCallId: 'mock-sthlm-ai-call-1',
-      input: {
-        query: 'AI engineer Stockholm',
-        top_k: 6,
+      "kind": "tool",
+      "toolName": "lookupConcept",
+      "toolCallId": "mock-sthlm-ai-call-1",
+      "input": {
+        "query": "AI engineer Stockholm",
+        "top_k": 6
       },
-      output: {
-        results: [],
-      },
+      "output": {
+        "results": []
+      }
     },
     {
-      kind: 'text',
-      content:
-        ' Now searching live JobTech ads for AI engineering roles based in Stockholm.',
+      "kind": "text",
+      "content": " Now searching live JobTech ads for AI engineering roles based in Stockholm."
     },
     {
-      kind: 'tool',
-      toolName: 'searchJobs',
-      toolCallId: 'mock-sthlm-ai-call-2',
-      input: {
-        query: 'AI engineer',
-        top_k: 5,
+      "kind": "tool",
+      "toolName": "searchJobs",
+      "toolCallId": "mock-sthlm-ai-call-2",
+      "input": {
+        "query": "AI engineer",
+        "top_k": 5
       },
-      output: {
-        results: [
+      "output": {
+        "results": [
           {
-            ad_id: '31002285',
-            headline: 'AI Engineer ',
-            employer_name: 'ASSA ABLOY AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-06-05T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31002285',
-            description_excerpt:
-              'Help AI move from experimentation to production impact. What if your work didn’t stop at prototypes — but became part of how a global business operates, makes decisions, and ensures trust in its systems? At ASSA ABLOY Entrance Systems in Stockholm, you’ll help build AI systems such as AI assistants, knowledge retrieval tools, and automation services integrated into business workflows. Why this role matters AI adoption is moving beyond experimentation into production-grade sys…',
-            occupation_label: 'Servicedesigner/Tjänstedesigner',
+            "ad_id": "31002285",
+            "headline": "AI Engineer ",
+            "employer_name": "ASSA ABLOY AB",
+            "municipality": "Stockholm",
+            "application_deadline": "2026-06-05T23:59:59",
+            "webpage_url": "https://arbetsformedlingen.se/platsbanken/annonser/31002285",
+            "description_excerpt": "Help AI move from experimentation to production impact. What if your work didn’t stop at prototypes — but became part of how a global business operates, makes decisions, and ensures trust in its systems? At ASSA ABLOY Entrance Systems in Stockholm, you’ll help build AI systems such as AI assistants, knowledge retrieval tools, and automation services integrated into business workflows. Why this role matters AI adoption is moving beyond experimentation into production-grade sys…",
+            "occupation_label": "Servicedesigner/Tjänstedesigner"
           },
           {
-            ad_id: '30991050',
-            headline: 'AI Engineer',
-            employer_name: 'Umain AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-10-31T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30991050',
-            description_excerpt:
-              "At Umain, we're not just creating software; we're crafting the future, one innovative project at a time. With our motto \"Shape, Ship, Scale,\" we empower our team to not only envision the future but also play a pivotal role in building it. We're a dynamic team where you can shape the future, ship groundbreaking solutions, and scale your abilities in many different ways. We're on the lookout for developers ready to join us in this journey, bringing passion, creativity, and dedi…",
-            occupation_label: 'Mjukvaruutvecklare',
+            "ad_id": "30991050",
+            "headline": "AI Engineer",
+            "employer_name": "Umain AB",
+            "municipality": "Stockholm",
+            "application_deadline": "2026-10-31T23:59:59",
+            "webpage_url": "https://arbetsformedlingen.se/platsbanken/annonser/30991050",
+            "description_excerpt": "At Umain, we're not just creating software; we're crafting the future, one innovative project at a time. With our motto \"Shape, Ship, Scale,\" we empower our team to not only envision the future but also play a pivotal role in building it. We're a dynamic team where you can shape the future, ship groundbreaking solutions, and scale your abilities in many different ways. We're on the lookout for developers ready to join us in this journey, bringing passion, creativity, and dedi…",
+            "occupation_label": "Mjukvaruutvecklare"
           },
           {
-            ad_id: '30801194',
-            headline: 'AI Engineer',
-            employer_name: 'Epiminds AB',
-            municipality: 'Sundbyberg',
-            application_deadline: '2026-06-30T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30801194',
-            description_excerpt:
-              'If you have experience building and scaling multi-agentic systems, we would love to speak with you. We just raised from Lightspeed and are currently building out a world-class team. At Epiminds, we’re building a self-learning marketing team of 20+ autonomous agents working across data, creative, strategy, and execution — all led by Lucy, a super-agent who collaborates with human marketers like a real teammate: reaching out, listening, emailing, and even calling. Today, 17 age…',
-            occupation_label: 'Systemutvecklare/Programmerare',
+            "ad_id": "30801194",
+            "headline": "AI Engineer",
+            "employer_name": "Epiminds AB",
+            "municipality": "Sundbyberg",
+            "application_deadline": "2026-06-30T23:59:59",
+            "webpage_url": "https://arbetsformedlingen.se/platsbanken/annonser/30801194",
+            "description_excerpt": "If you have experience building and scaling multi-agentic systems, we would love to speak with you. We just raised from Lightspeed and are currently building out a world-class team. At Epiminds, we’re building a self-learning marketing team of 20+ autonomous agents working across data, creative, strategy, and execution — all led by Lucy, a super-agent who collaborates with human marketers like a real teammate: reaching out, listening, emailing, and even calling. Today, 17 age…",
+            "occupation_label": "Systemutvecklare/Programmerare"
           },
           {
-            ad_id: '30554390',
-            headline: 'AI Engineer',
-            employer_name: 'Lovable Labs Sweden AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-07-02T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30554390',
-            description_excerpt:
-              'TL;DR - We’re looking for Founding AI Engineers who will shape how we fine-tune, serve, and evaluate LLMs and frontier models in production - and help define what it means to build a truly lovable AI product. Why Lovable? Lovable lets anyone and everyone build software with plain English. From solopreneurs to Fortune 100 teams, millions of people use Lovable to transform raw ideas into real products - fast. We are at the forefront of a foundational shift in software creation,…',
-            occupation_label: 'Mjukvaruutvecklare',
+            "ad_id": "30554390",
+            "headline": "AI Engineer",
+            "employer_name": "Lovable Labs Sweden AB",
+            "municipality": "Stockholm",
+            "application_deadline": "2026-07-02T23:59:59",
+            "webpage_url": "https://arbetsformedlingen.se/platsbanken/annonser/30554390",
+            "description_excerpt": "TL;DR - We’re looking for Founding AI Engineers who will shape how we fine-tune, serve, and evaluate LLMs and frontier models in production - and help define what it means to build a truly lovable AI product. Why Lovable? Lovable lets anyone and everyone build software with plain English. From solopreneurs to Fortune 100 teams, millions of people use Lovable to transform raw ideas into real products - fast. We are at the forefront of a foundational shift in software creation,…",
+            "occupation_label": "Mjukvaruutvecklare"
           },
           {
-            ad_id: '30365029',
-            headline: 'AI Engineer',
-            employer_name: 'Tendium AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-05-30T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30365029',
-            description_excerpt:
-              "Do you want to join the technological revolution? Tendium is looking for a AI Engineer to join the team. About TendiumPublic procurement is broken. Thousands of opportunities are buried in fragmented systems, complex documents, and outdated workflows. Organisations miss contracts they should have won simply because they couldn't find them in time or make sense of the data. At Tendium, we're fixing that. Our AI-powered platform transforms how organizations discover, analyze, a…",
-            occupation_label: 'Systemutvecklare/Programmerare',
-          },
+            "ad_id": "30365029",
+            "headline": "AI Engineer",
+            "employer_name": "Tendium AB",
+            "municipality": "Stockholm",
+            "application_deadline": "2026-05-30T23:59:59",
+            "webpage_url": "https://arbetsformedlingen.se/platsbanken/annonser/30365029",
+            "description_excerpt": "Do you want to join the technological revolution? Tendium is looking for a AI Engineer to join the team. About TendiumPublic procurement is broken. Thousands of opportunities are buried in fragmented systems, complex documents, and outdated workflows. Organisations miss contracts they should have won simply because they couldn't find them in time or make sense of the data. At Tendium, we're fixing that. Our AI-powered platform transforms how organizations discover, analyze, a…",
+            "occupation_label": "Systemutvecklare/Programmerare"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "tool",
+      "toolName": "placeAds",
+      "toolCallId": "mock-sthlm-ai-call-3",
+      "input": {
+        "ad_ids": [
+          "31002285",
+          "30991050",
+          "30801194",
+          "30554390",
+          "30365029"
         ],
+        "layout": "grid",
+        "emphasis": "none"
       },
+      "output": {
+        "accepted": true,
+        "ad_ids": [
+          "31002285",
+          "30991050",
+          "30801194",
+          "30554390",
+          "30365029"
+        ],
+        "layout": "grid",
+        "emphasis": "none"
+      }
     },
     {
-      kind: 'tool',
-      toolName: 'placeAds',
-      toolCallId: 'mock-sthlm-ai-call-3',
-      input: {
-        ad_ids: ['31002285', '30991050', '30801194', '30554390', '30365029'],
-        layout: 'grid',
-        emphasis: 'none',
-      },
-      output: {
-        accepted: true,
-        ad_ids: ['31002285', '30991050', '30801194', '30554390', '30365029'],
-        layout: 'grid',
-        emphasis: 'none',
-      },
-    },
-    {
-      kind: 'text',
-      content:
-        ' Found 5 active roles. The strongest signal comes from AI Engineer at ASSA ABLOY AB, AI Engineer at Umain AB, AI Engineer at Epiminds AB. Cards are on the canvas to the right. Click any card to expand the description.',
-    },
-  ],
+      "kind": "text",
+      "content": " Found 5 active roles. The strongest signal comes from AI Engineer at ASSA ABLOY AB, AI Engineer at Umain AB, AI Engineer at Epiminds AB. Cards are on the canvas to the right. Click any card to expand the description."
+    }
+  ]
 } as const
