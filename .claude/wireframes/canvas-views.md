@@ -29,10 +29,13 @@ Shown after `placeAds` or `groupAds`. Plain grid when the agent passes flat ad i
 
 Shown after `placeAdsOnTimeline`. Ads laid out on a date axis ordered by `application_deadline`. Lane stacking prevents overlap when two ads share a date.
 
+A fixed tape-measure axis sits at the top of the canvas region. A thin gradient bar (40px tall) carries a continuous horizontal rule with three tick labels above it. Today wears a calendar icon in the amber tone borrowed from the urgent-deadline pill on ad cards. `+5d` and `+14d` are muted reference markers at the same typography weight as the `Canvas view` header. The labels are positioned in screen coordinates via React Flow's `useViewport` so they pan and zoom with the cards while staying at native font size. The bar clips its children, so labels never bleed past the canvas region into the chat rail.
+
 ```plaintext
 +----------------------------------------------------+
-| Today                +5d              +14d         |
-|   |                   |                  |         |
+| 📅 Today              +5d              +14d         |
+|----------------------------------------------------|  ← horizontal rule
+|   ╷                   ╷                  ╷         |  ← ticks descend from rule
 |  +--------+         +--------+        +--------+   |
 |  | ad     |         | ad     |        | ad     |   |
 |  +--------+         +--------+        +--------+   |
@@ -44,7 +47,9 @@ Shown after `placeAdsOnTimeline`. Ads laid out on a date axis ordered by `applic
 
 ## Compare view
 
-Shown after `pairAdsForCompare`. Two ads side by side with a structured diff overlay.
+Shown after `pairAdsForCompare`. Two ads side by side with a structured diff table below them.
+
+The diff table spans the full width of the pair as a non-draggable overlay node. Three columns: Field, the A-side value (employer or headline as the column header), and the B-side value. Each row reads from `comparePair.diffs`. When a row's `verdict` is `'a'` or `'b'`, the winning side gets a small `Picks` badge. `'same'` renders both sides muted. `'neither'` renders both sides at default weight.
 
 ```plaintext
 +----------------------------------------------------+
@@ -54,10 +59,13 @@ Shown after `pairAdsForCompare`. Two ads side by side with a structured diff ove
 |  | Stockholm       |      | Göteborg        |      |
 |  | Excerpt...      |      | Excerpt...      |      |
 |  +-----------------+      +-----------------+      |
-|                                                    |
-|  Stack:    Azure ML (a)                            |
-|  Location: Stockholm (a) vs Göteborg (b)           |
-|  Seniority: same                                   |
+|  +----------------------------------------------+  |
+|  | Field      Acme AB           Beta AB         |  |
+|  | Employer   Acme AB           Beta AB         |  |
+|  | Location   Stockholm [Picks] Göteborg        |  |
+|  | Stack      Azure ML, Mastra  Sagemaker       |  |
+|  | Seniority  Senior            Senior          |  |
+|  +----------------------------------------------+  |
 +----------------------------------------------------+
 ```
 
@@ -118,6 +126,7 @@ When the Shortlist chip is active and `pinnedAdIds.length === 0`, a centered car
 - Pin button toggles between `Pin` and `Pinned`. A rapid double-click is ignored within 250 ms so the second click does not undo the first. Pinned ads also appear on the Shortlist view.
 - Open on Platsbanken opens the live ad in a new tab.
 - View switcher chips are a button group with `aria-pressed` per chip, not a `role="tab"` widget. Arrow-key navigation is intentionally not exposed.
+- Cards are non-draggable on Timeline and Compare because position encodes meaning (days from today, paired sides). Triage and Shortlist remain draggable for free-form rearrangement.
 
 ## Canvas empty state
 

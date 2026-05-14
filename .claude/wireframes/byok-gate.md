@@ -19,9 +19,10 @@ First surface every visitor sees. Only renders when no provider has been chosen 
 |    |  [key icon]                       |    |
 |    |                                   |    |
 |    |  Bring your own API key           |    |
-|    |  Held in this browser tab and     |    |
-|    |  sent only to the jobtriage       |    |
-|    |  server. Never written to disk.   |    |
+|    |  Held only in this browser tab.   |    |
+|    |  Forwarded with each request to   |    |
+|    |  drive the agent, never persisted |    |
+|    |  anywhere else.                   |    |
 |    |                                   |    |
 |    |  Provider                         |    |
 |    |  ( Anthropic )( OpenAI )( Gemini )|    |
