@@ -135,22 +135,37 @@ async function lookupConcept(
     limit: String(limit),
     type: taxonomyType,
   })
-  const response = await fetch(`${JOBTECH_TAXONOMY_URL}?${params.toString()}`, {
-    headers: { accept: 'application/json' },
-  })
-  if (!response.ok) {
-    throw new Error(`JobTech taxonomy failed: ${response.status}`)
+  const url = `${JOBTECH_TAXONOMY_URL}?${params.toString()}`
+  const backoffMs = [0, 5_000, 15_000]
+  let lastError: unknown = null
+  for (const wait of backoffMs) {
+    if (wait > 0) await new Promise((resolve) => setTimeout(resolve, wait))
+    try {
+      const response = await fetch(url, {
+        headers: { accept: 'application/json' },
+      })
+      if (!response.ok) {
+        lastError = new Error(`JobTech taxonomy failed: ${response.status}`)
+        continue
+      }
+      const payload = (await response.json()) as readonly JobtechConcept[]
+      return payload
+        .map((item) => ({
+          concept_id: item['taxonomy/id'] ?? '',
+          preferred_label: item['taxonomy/preferred-label'] ?? '',
+          type: kind,
+        }))
+        .filter(
+          (entry) => entry.concept_id && entry.preferred_label,
+        ) as ConceptResult[]
+    } catch (error) {
+      lastError = error
+    }
   }
-  const payload = (await response.json()) as readonly JobtechConcept[]
-  return payload
-    .map((item) => ({
-      concept_id: item['taxonomy/id'] ?? '',
-      preferred_label: item['taxonomy/preferred-label'] ?? '',
-      type: kind,
-    }))
-    .filter(
-      (entry) => entry.concept_id && entry.preferred_label,
-    ) as ConceptResult[]
+  console.warn(
+    `lookupConcept(${kind}, "${query}") falling back to empty concepts: ${String(lastError)}`,
+  )
+  return []
 }
 
 function callId(slug: string, index: number): string {

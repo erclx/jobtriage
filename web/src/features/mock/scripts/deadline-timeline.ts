@@ -26,14 +26,14 @@ export const deadlineTimelineScript: MockScript = {
       output: {
         results: [
           {
-            ad_id: '30894910',
-            headline: 'Embedded AI Engineer, Lund',
-            employer_name: 'Axis Communications AB',
+            ad_id: '30970532',
+            headline: 'Junior AI Engineer / Data Scientist',
+            employer_name: 'Effektify AB',
             municipality: 'Lund',
-            application_deadline: '2026-05-11T23:59:59',
+            application_deadline: '2026-05-21T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30894910',
-            days_until_deadline: 0,
+              'https://arbetsformedlingen.se/platsbanken/annonser/30970532',
+            days_until_deadline: 8,
           },
           {
             ad_id: '30340646',
@@ -43,7 +43,7 @@ export const deadlineTimelineScript: MockScript = {
             application_deadline: '2026-05-23T23:59:59',
             webpage_url:
               'https://arbetsformedlingen.se/platsbanken/annonser/30340646',
-            days_until_deadline: 12,
+            days_until_deadline: 10,
           },
           {
             ad_id: '30306504',
@@ -53,7 +53,7 @@ export const deadlineTimelineScript: MockScript = {
             application_deadline: '2026-05-24T23:59:59',
             webpage_url:
               'https://arbetsformedlingen.se/platsbanken/annonser/30306504',
-            days_until_deadline: 13,
+            days_until_deadline: 11,
           },
           {
             ad_id: '30975894',
@@ -63,7 +63,7 @@ export const deadlineTimelineScript: MockScript = {
             application_deadline: '2026-05-29T23:59:59',
             webpage_url:
               'https://arbetsformedlingen.se/platsbanken/annonser/30975894',
-            days_until_deadline: 18,
+            days_until_deadline: 16,
           },
           {
             ad_id: '30365029',
@@ -73,7 +73,7 @@ export const deadlineTimelineScript: MockScript = {
             application_deadline: '2026-05-30T23:59:59',
             webpage_url:
               'https://arbetsformedlingen.se/platsbanken/annonser/30365029',
-            days_until_deadline: 19,
+            days_until_deadline: 17,
           },
         ],
       },
@@ -83,19 +83,19 @@ export const deadlineTimelineScript: MockScript = {
       toolName: 'placeAdsOnTimeline',
       toolCallId: 'mock-deadline-ai-call-2',
       input: {
-        ad_ids: ['30894910', '30340646', '30306504', '30975894', '30365029'],
-        today_cursor: '2026-05-11',
+        ad_ids: ['30970532', '30340646', '30306504', '30975894', '30365029'],
+        today_cursor: '2026-05-14',
       },
       output: {
         accepted: true,
-        ad_ids: ['30894910', '30340646', '30306504', '30975894', '30365029'],
-        today_cursor: '2026-05-11',
+        ad_ids: ['30970532', '30340646', '30306504', '30975894', '30365029'],
+        today_cursor: '2026-05-14',
       },
     },
     {
       kind: 'text',
       content:
-        ' 5 roles laid on the date axis. The soonest is Embedded AI Engineer, Lund at Axis Communications AB, 0 days out.',
+        ' 5 roles laid on the date axis. The soonest is Junior AI Engineer / Data Scientist at Effektify AB, 8 days out.',
     },
   ],
 } as const

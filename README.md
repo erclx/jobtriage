@@ -1,14 +1,14 @@
 # jobtriage
 
-Triage Swedish job ads against any profile in a live agent workspace, with retrieval and a spatial canvas in one tab. Paste a profile, ask in plain language, watch the agent fan retrieved ads onto a canvas alongside its tool-call trace.
+Job board search ranks for the platform, not for you. jobtriage triages Swedish job ads against a profile you paste, lays the results onto a spatial canvas you can compare and shortlist on, and shows the agent's tool calls inline so the ranking stays auditable.
 
-Live demo: [jobtriage.erclx.dev](https://jobtriage.erclx.dev). The scripted demo path needs no key. Bring an Anthropic, OpenAI, or Gemini key to drive the agent yourself.
+Live demo: [jobtriage.erclx.dev](https://jobtriage.erclx.dev). The demo path replays a scripted session captured against live JobTech ads, so it walks through real cards without needing a provider key. Bring an Anthropic, OpenAI, or Gemini key to drive the agent yourself.
 
 ## Features
 
 - Works for any profession. The deployed demo resolves "nursing in Stockholm" or "chef in Malmö" to JobTech taxonomy concepts on the fly, then runs the agent against live Platsbanken results.
 - Spatial workspace. Retrieved ads land as draggable nodes on a React Flow canvas with four canonical views: triage clusters, deadline timeline, side-by-side compare, and a pinned shortlist that exports to markdown or CSV.
-- No-key demo path. The gate exposes a "Try the demo" button that replays a scripted session against live JobTech ads. Tool traces, cards, and the spatial canvas render identically to a real agent run.
+- Scripted demo replay. The gate exposes a "Try the demo" button that replays a recorded session of real JobTech ads. Tool traces, cards, and the spatial canvas render identically to a live agent run, no key required.
 - Bring-your-own-key. The deployed demo holds nothing server-side. The gate accepts an Anthropic, OpenAI, or Gemini key, held in browser sessionStorage only. Local dev adds an Ollama path for a fully offline run.
 
 ## Quickstart
