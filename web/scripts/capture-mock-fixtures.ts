@@ -24,6 +24,7 @@ import {
 import type { MockScript, MockStep } from '../src/features/mock/scripts/types'
 
 const JOBTECH_SEARCH_URL = 'https://jobsearch.api.jobtechdev.se/search'
+const JOBTECH_AD_URL = 'https://jobsearch.api.jobtechdev.se/ad'
 const JOBTECH_TAXONOMY_URL =
   'https://taxonomy.api.jobtechdev.se/v1/taxonomy/suggesters/autocomplete'
 const EXCERPT_MAX_CHARS = 480
@@ -70,6 +71,39 @@ interface ConceptResult {
   readonly concept_id: string
   readonly preferred_label: string
   readonly type: 'occupation' | 'region'
+}
+
+const ALIVE_CHECK_TIMEOUT_MS = 8_000
+
+async function isAdAlive(adId: string): Promise<boolean> {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), ALIVE_CHECK_TIMEOUT_MS)
+  try {
+    const response = await fetch(`${JOBTECH_AD_URL}/${adId}`, {
+      headers: { accept: 'application/json' },
+      signal: controller.signal,
+    })
+    if (response.status === 200) return true
+    if (response.status === 404) return false
+    throw new Error(
+      `JobTech ad-details returned unexpected status ${response.status} for ad ${adId}`,
+    )
+  } finally {
+    clearTimeout(timeout)
+  }
+}
+
+async function dropDeadAds<T extends { readonly ad_id: string }>(
+  fixtureSlug: string,
+  ads: readonly T[],
+): Promise<readonly T[]> {
+  const verdicts = await Promise.all(ads.map((ad) => isAdAlive(ad.ad_id)))
+  const alive = ads.filter((_, index) => verdicts[index])
+  const dropped = ads.length - alive.length
+  if (dropped > 0) {
+    console.log(`Fixture ${fixtureSlug}: dropped ${dropped} dead ad(s)`)
+  }
+  return alive
 }
 
 function clipExcerpt(text: string | null | undefined): string {
@@ -188,10 +222,10 @@ async function buildStockholmAiEngineering(): Promise<MockScript> {
     ...(await lookupConcept('AI engineer', 'occupation', 3)),
     ...(await lookupConcept('Stockholm', 'region', 3)),
   ]
-  const ads = (await liveSearch('AI engineer', undefined, undefined, 5)).slice(
-    0,
-    5,
-  )
+  const rawAds = (
+    await liveSearch('AI engineer', undefined, undefined, 5)
+  ).slice(0, 5)
+  const ads = await dropDeadAds(slug, rawAds)
   if (ads.length < 3)
     throw new Error('Expected at least 3 ads for Stockholm AI engineering')
 
@@ -259,9 +293,10 @@ async function buildStockholmNursing(): Promise<MockScript> {
   )
   const regionConcepts = await lookupConcept('Stockholm', 'region', 3)
   const concepts = [...occupationConcepts, ...regionConcepts]
-  const ads = (
+  const rawAds = (
     await liveSearch('sjuksköterska Stockholm', undefined, undefined, 5)
   ).slice(0, 5)
+  const ads = await dropDeadAds(slug, rawAds)
   if (ads.length < 3)
     throw new Error('Expected at least 3 ads for Stockholm nursing')
 
@@ -342,9 +377,10 @@ async function buildStockholmNursing(): Promise<MockScript> {
 
 async function buildCompareThreeRoles(): Promise<MockScript> {
   const slug = 'compare-roles'
-  const ads = (
+  const rawAds = (
     await liveSearch('machine learning engineer', undefined, undefined, 5)
   ).slice(0, 3)
+  const ads = await dropDeadAds(slug, rawAds)
   if (ads.length < 2) throw new Error('Expected at least 2 ads for compare')
   const [a, b, c] = ads
   const compareIds = [a.ad_id, b.ad_id]
@@ -425,7 +461,7 @@ async function buildCompareThreeRoles(): Promise<MockScript> {
 
 async function buildDeadlineTimeline(): Promise<MockScript> {
   const slug = 'deadline-ai'
-  const rawAds = (await liveSearch('AI engineer', undefined, undefined, 15))
+  const candidates = (await liveSearch('AI engineer', undefined, undefined, 15))
     .filter((ad) => ad.application_deadline)
     .map((ad) => ({
       ad,
@@ -434,18 +470,28 @@ async function buildDeadlineTimeline(): Promise<MockScript> {
     .filter((entry) => entry.days <= 21)
     .sort((a, b) => a.days - b.days)
     .slice(0, 5)
-  if (rawAds.length < 3)
+  const aliveAds = await dropDeadAds(
+    slug,
+    candidates.map((entry) => entry.ad),
+  )
+  const aliveAdIds = new Set(aliveAds.map((ad) => ad.ad_id))
+  const liveCandidates = candidates.filter((entry) =>
+    aliveAdIds.has(entry.ad.ad_id),
+  )
+  if (liveCandidates.length < 3)
     throw new Error('Expected at least 3 deadline ads for timeline chip')
 
-  const deadlineAds: DeadlineAdSummary[] = rawAds.map(({ ad, days }) => ({
-    ad_id: ad.ad_id,
-    headline: ad.headline,
-    employer_name: ad.employer_name,
-    municipality: ad.municipality,
-    application_deadline: ad.application_deadline,
-    webpage_url: ad.webpage_url,
-    days_until_deadline: days,
-  }))
+  const deadlineAds: DeadlineAdSummary[] = liveCandidates.map(
+    ({ ad, days }) => ({
+      ad_id: ad.ad_id,
+      headline: ad.headline,
+      employer_name: ad.employer_name,
+      municipality: ad.municipality,
+      application_deadline: ad.application_deadline,
+      webpage_url: ad.webpage_url,
+      days_until_deadline: days,
+    }),
+  )
   const adIds = deadlineAds.map((ad) => ad.ad_id)
   const today = new Date().toISOString().slice(0, 10)
   const soonest = deadlineAds[0]

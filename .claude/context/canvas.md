@@ -57,7 +57,7 @@ Header `New chat` action behind a confirmation dialog resets `CanvasState` to `I
 
 ### View-switch position persistence
 
-When a user drags a node, `setNodePosition` writes to `state.nodePositions[nodeId]`. On layout rebuild (view change, new `placeAds`, etc.), `buildLayout` produces fresh default positions. `toFlowNode` looks up `state.nodePositions[node.id]` first and overrides when present. Profile node at `PROFILE_NODE_ID` persists across all views and is never pruned.
+When a user drags a node, `setNodePosition` writes to `state.nodePositions[nodeId]`. On layout rebuild (view change, new `placeAds`, etc.), `buildLayout` produces fresh default positions. `toFlowNode` looks up `state.nodePositions[node.id]` first and overrides when present. Profile node at `PROFILE_NODE_ID` persists across views except the empty Shortlist case (Shortlist view with `pinnedAdIds.length === 0`), where `shouldShowProfileNode` excludes it so it does not peek behind the centered empty-state overlay. The node returns the moment an ad is pinned or the view changes.
 
 ### Match edges read `profileMatches`, not `groups`
 

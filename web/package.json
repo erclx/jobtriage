@@ -17,6 +17,7 @@
     "screenshots": "bun scripts/screenshots.ts",
     "smoke:prod": "SCREENSHOT_BASE_URL=https://jobtriage.erclx.dev bun scripts/screenshots.ts --check-console-clean",
     "favicon": "bun scripts/build-favicon.ts",
+    "capture-mock": "bun scripts/capture-mock-fixtures.ts",
     "check": "./scripts/verify.sh"
   },
   "dependencies": {
