@@ -38,3 +38,7 @@ The Cloud Run image omits `sentence-transformers`, `torch`, and the SQLite corpu
 ### Per-provider model id env vars
 
 `ANTHROPIC_MODEL_ID`, `OPENAI_MODEL_ID`, `GEMINI_MODEL_ID` override the defaults pinned in `web/src/app/api/chat/route.ts`. Production Vercel can A/B without a code edit. See `agent.md` for current defaults.
+
+### Cloud Run memory pinned at 1Gi
+
+`python/scripts/deploy.sh` ships `--memory 1Gi`. The prior `512Mi` cliffed under live-search plus live-details parallel load and SIGKILLed without a log. 1Gi stays inside the Always-Free tier because the binding limits are CPU-seconds and request count, not memory.

@@ -74,6 +74,18 @@ The `storage/` schema reserves a nullable `embedding` BLOB column on `ad_chunks`
 
 `JOBTRIAGE_RRF_FLOOR` (default `0.025`) drops below-floor results at `/v1/jobs/triage` and `/v1/jobs/semantic` only. `/v1/jobs/search` and `/v1/jobs/live-search` are left untouched since they filter recent ads regardless of relevance score. Full rationale in `.claude/context/retrieval.md`.
 
+### `/v1/jobs/live-details` returns partial results on per-ad failure
+
+`live_job_details` uses `asyncio.gather(..., return_exceptions=True)` and partitions outcomes into a parallel `errors` array on `LiveJobDetailsResponse`. A single transient JobTech 5xx no longer aborts the whole batch. A per-ad `LiveAdDetailsError{ad_id, error}` lands in `errors` and the route only emits 404 when every ad failed. Web zod schema mirrors the optional field with `.default([])` so the canvas bridge keeps iterating `results` unchanged.
+
+### Exception handlers route through `JobtriageError`
+
+`@app.exception_handler(JobtriageError)` returns 400 with the project-rooted message. A generic `@app.exception_handler(Exception)` logs the traceback and returns a sanitized 500 (`{'detail': 'Internal server error.'}`). The prior bare `ValueError` handler leaked pydantic and numpy internals through the 400 body. FastAPI's built-in `RequestValidationError` and `HTTPException` paths still resolve before the generic handler, so 422 boundary validation stays clean.
+
+### JobTech client timeout under the web boundary
+
+`Settings.jobtech_timeout_seconds` defaults to `20.0` so FastAPI emits the structured 504 ahead of the web client's `JOBTRIAGE_API_TIMEOUT_MS=30000` abort. Tune via env when JobTech latency drifts.
+
 ## Conventions
 
 - Strict mypy. Annotate every function. `uv init --app` ships an unannotated `main()` that fails on first run.
