@@ -4,205 +4,211 @@
 import type { MockScript } from '@/features/mock/scripts/types'
 
 export const stockholmNursingScript: MockScript = {
-  "prompt": "Find Stockholm nursing roles ranked against my profile",
-  "chipLabel": "Find Stockholm nursing roles ranked against my profile",
-  "messageId": "mock-message-sthlm-nursing",
-  "profile": "# Profile\n\n- Registered nurse, 6 years on acute wards\n- Specialist training in cardiology\n- Swedish and English fluent\n- Based in Stockholm, weekday shifts preferred\n",
-  "steps": [
+  prompt: 'Find Stockholm nursing roles ranked against my profile',
+  chipLabel: 'Find Stockholm nursing roles ranked against my profile',
+  messageId: 'mock-message-sthlm-nursing',
+  profile:
+    '# Profile\n\n- Registered nurse, 6 years on acute wards\n- Specialist training in cardiology\n- Swedish and English fluent\n- Based in Stockholm, weekday shifts preferred\n',
+  steps: [
     {
-      "kind": "text",
-      "content": "Resolving \"nurse\" and \"Stockholm\" against the JobTech taxonomy so the search hits the right occupation family."
+      kind: 'text',
+      content:
+        'Resolving "nurse" and "Stockholm" against the JobTech taxonomy so the search hits the right occupation family.',
     },
     {
-      "kind": "tool",
-      "toolName": "lookupConcept",
-      "toolCallId": "mock-sthlm-nursing-call-1",
-      "input": {
-        "query": "sjuksköterska Stockholm",
-        "top_k": 8
+      kind: 'tool',
+      toolName: 'lookupConcept',
+      toolCallId: 'mock-sthlm-nursing-call-1',
+      input: {
+        query: 'sjuksköterska Stockholm',
+        top_k: 8,
       },
-      "output": {
-        "results": []
-      }
-    },
-    {
-      "kind": "text",
-      "content": " Searching live nursing roles in the Stockholm region."
-    },
-    {
-      "kind": "tool",
-      "toolName": "searchJobs",
-      "toolCallId": "mock-sthlm-nursing-call-2",
-      "input": {
-        "query": "sjuksköterska Stockholm",
-        "top_k": 5
+      output: {
+        results: [],
       },
-      "output": {
-        "results": [
-          {
-            "ad_id": "30879803",
-            "headline": "Legitimerad Sjuksköterska Sökes till Stockholm",
-            "employer_name": "Omsorg & Behandling 1 AB",
-            "municipality": "Stockholm",
-            "application_deadline": "2026-05-20T23:59:59",
-            "webpage_url": "https://arbetsformedlingen.se/platsbanken/annonser/30879803",
-            "description_excerpt": "Välkommen till Omsorg & Behandling! Just nu söker vi leg.sjuksköterskor men även ni som är specialistutbildade till vårat team. Omsorg & Behandling är ett auktoriserat bemanningsföretag för Sveriges regioner, kommuner och privata vårdgivare. Vi är ett bemanningsföretag som är aktiva i hela Sverige . Våra konsultchefer i företaget är Sjuksköterskor med lång erfarenhet från vården och arbetar aktivt ute hos våra kunder.Kollektivavtal: Vi är medlem i Tjänsteföretagens Arbetsgiva…",
-            "occupation_label": "Sjuksköterska, grundutbildad"
-          },
-          {
-            "ad_id": "30543967",
-            "headline": "Sjuksköterska till Stockholm sommar 2026",
-            "employer_name": "Tribonum Vårdbemanning AB",
-            "municipality": "Stockholm",
-            "application_deadline": "2026-05-31T23:59:59",
-            "webpage_url": "https://arbetsformedlingen.se/platsbanken/annonser/30543967",
-            "description_excerpt": "Sjuksköterska till privat vårdgivare – Sommar 2026 (Stockholm) Vill du arbeta som sjuksköterska i sommar hos en privat vårdgivare i Stockholm, med god arbetsmiljö, flexibla arbetstider och möjlighet att verkligen göra skillnad? Då kan detta vara uppdraget för dig! Om uppdraget Vi söker legitimerade sjuksköterskor för sommaruppdrag under juni–augusti 2026. Uppdraget är hos en privat vårdgivare i Stockholmsområdet och passar dig som vill kombinera professionell utveckling med e…",
-            "occupation_label": "Sjuksköterska, grundutbildad"
-          },
-          {
-            "ad_id": "31016470",
-            "headline": "Sjuksköterska för vaccination - Stockholm med omnejd",
-            "employer_name": "Vaccinova AB",
-            "municipality": "Stockholm",
-            "application_deadline": "2026-11-04T23:59:59",
-            "webpage_url": "https://arbetsformedlingen.se/platsbanken/annonser/31016470",
-            "description_excerpt": "Vi på Vaccinova söker nu engagerade och utåtriktade sjuksköterskor för arbete med vaccination på timmar till våra mottagning i Stockholmsregionen. Tjänsten omfattar deltid på ett kontinuerligt schema. Vaccinova är en vaccinatör med stort fokus på trygghet och hälsa. Vi är specialister på vaccination och finns idag på över 180 platser i Sverige – både på våra egna vaccinationsmottagningar samt hos våra samarbetspartners. Vi söker nu efter nästa medlem i vårt team! Arbetet hos…",
-            "occupation_label": "Sjuksköterska, grundutbildad"
-          },
-          {
-            "ad_id": "30969235",
-            "headline": "Leg. Sjuksköterska - Stockholm - Sommar 2026",
-            "employer_name": "Palmelind Konsult AB",
-            "municipality": "Stockholm",
-            "application_deadline": "2026-05-28T23:59:59",
-            "webpage_url": "https://arbetsformedlingen.se/platsbanken/annonser/30969235",
-            "description_excerpt": "Vi söker dig som är legitimerad sjuksköterska och har några års erfarenhet av yrket. Uppdraget pågår mellan v.26-36 enligt överenskommelse. Skicka in din ansökan redan idag – vi ser fram emot att höra från dig! Om Magnifiq Kompetens Vi är ett bemanningsföretag inom vård och omsorg som sätter kvalitet, trygghet och omtanke först. Vi värdesätter våra konsulter högt och arbetar för att du ska känna dig sedd, stöttad och uppskattad under hela din resa hos oss. Magnifiq Kompetens…",
-            "occupation_label": "Sjuksköterska, grundutbildad"
-          },
-          {
-            "ad_id": "30912892",
-            "headline": "Sjuksköterska sökes till avdelning 20, Psykosvård Stockholm",
-            "employer_name": "REGION STOCKHOLM",
-            "municipality": "Stockholm",
-            "application_deadline": "2026-05-15T23:59:59",
-            "webpage_url": "https://arbetsformedlingen.se/platsbanken/annonser/30912892",
-            "description_excerpt": "Psykosvård Stockholm (PVS) är en ny verksamhet inom Stockholms läns sjukvårdsområde, där vi samlat alla våra befintliga öppenvårdsmottagningar och heldygnsvårdsavdelningar för patienter med psykossjukdom i en organisatorisk enhet. Nu söker vi en driven och entusiastisk sjuksköterska till oss på avdelning 20, S:t Görans sjukhusområde, som tillsammans med oss vill vara med och bidra till avdelningens utveckling. Här har vi högt i tak och nära till skratt! Om enheten S:t Görans…",
-            "occupation_label": "Sjuksköterska, grundutbildad"
-          }
-        ]
-      }
     },
     {
-      "kind": "tool",
-      "toolName": "groupAds",
-      "toolCallId": "mock-sthlm-nursing-call-3",
-      "input": {
-        "groups": [
-          {
-            "label": "Strong fit",
-            "ad_ids": [
-              "30879803",
-              "30543967"
-            ]
-          },
-          {
-            "label": "Consider",
-            "ad_ids": [
-              "31016470",
-              "30969235"
-            ]
-          },
-          {
-            "label": "Worth a look",
-            "ad_ids": [
-              "30912892"
-            ]
-          }
-        ]
+      kind: 'text',
+      content: ' Searching live nursing roles in the Stockholm region.',
+    },
+    {
+      kind: 'tool',
+      toolName: 'searchJobs',
+      toolCallId: 'mock-sthlm-nursing-call-2',
+      input: {
+        query: 'sjuksköterska Stockholm',
+        top_k: 5,
       },
-      "output": {
-        "accepted": true,
-        "groups": [
+      output: {
+        results: [
           {
-            "label": "Strong fit",
-            "ad_ids": [
-              "30879803",
-              "30543967"
-            ]
+            ad_id: '30879803',
+            headline: 'Legitimerad Sjuksköterska Sökes till Stockholm',
+            employer_name: 'Omsorg & Behandling 1 AB',
+            municipality: 'Stockholm',
+            application_deadline: '2026-05-20T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/30879803',
+            description_excerpt:
+              'Välkommen till Omsorg & Behandling! Just nu söker vi leg.sjuksköterskor men även ni som är specialistutbildade till vårat team. Omsorg & Behandling är ett auktoriserat bemanningsföretag för Sveriges regioner, kommuner och privata vårdgivare. Vi är ett bemanningsföretag som är aktiva i hela Sverige . Våra konsultchefer i företaget är Sjuksköterskor med lång erfarenhet från vården och arbetar aktivt ute hos våra kunder.Kollektivavtal: Vi är medlem i Tjänsteföretagens Arbetsgiva…',
+            occupation_label: 'Sjuksköterska, grundutbildad',
           },
           {
-            "label": "Consider",
-            "ad_ids": [
-              "31016470",
-              "30969235"
-            ]
+            ad_id: '30543967',
+            headline: 'Sjuksköterska till Stockholm sommar 2026',
+            employer_name: 'Tribonum Vårdbemanning AB',
+            municipality: 'Stockholm',
+            application_deadline: '2026-05-31T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/30543967',
+            description_excerpt:
+              'Sjuksköterska till privat vårdgivare – Sommar 2026 (Stockholm) Vill du arbeta som sjuksköterska i sommar hos en privat vårdgivare i Stockholm, med god arbetsmiljö, flexibla arbetstider och möjlighet att verkligen göra skillnad? Då kan detta vara uppdraget för dig! Om uppdraget Vi söker legitimerade sjuksköterskor för sommaruppdrag under juni–augusti 2026. Uppdraget är hos en privat vårdgivare i Stockholmsområdet och passar dig som vill kombinera professionell utveckling med e…',
+            occupation_label: 'Sjuksköterska, grundutbildad',
           },
           {
-            "label": "Worth a look",
-            "ad_ids": [
-              "30912892"
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "kind": "tool",
-      "toolName": "connectProfileToAds",
-      "toolCallId": "mock-sthlm-nursing-call-4",
-      "input": {
-        "links": [
-          {
-            "ad_id": "30879803",
-            "score": 0.92,
-            "rationale": "Cardiology specialist scope aligns with the profile training."
+            ad_id: '31016470',
+            headline: 'Sjuksköterska för vaccination - Stockholm med omnejd',
+            employer_name: 'Vaccinova AB',
+            municipality: 'Stockholm',
+            application_deadline: '2026-11-04T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31016470',
+            description_excerpt:
+              'Vi på Vaccinova söker nu engagerade och utåtriktade sjuksköterskor för arbete med vaccination på timmar till våra mottagning i Stockholmsregionen. Tjänsten omfattar deltid på ett kontinuerligt schema. Vaccinova är en vaccinatör med stort fokus på trygghet och hälsa. Vi är specialister på vaccination och finns idag på över 180 platser i Sverige – både på våra egna vaccinationsmottagningar samt hos våra samarbetspartners. Vi söker nu efter nästa medlem i vårt team! Arbetet hos…',
+            occupation_label: 'Sjuksköterska, grundutbildad',
           },
           {
-            "ad_id": "30543967",
-            "score": 0.8,
-            "rationale": "Acute-ward responsibility matches the experience in the profile."
+            ad_id: '30969235',
+            headline: 'Leg. Sjuksköterska - Stockholm - Sommar 2026',
+            employer_name: 'Palmelind Konsult AB',
+            municipality: 'Stockholm',
+            application_deadline: '2026-05-28T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/30969235',
+            description_excerpt:
+              'Vi söker dig som är legitimerad sjuksköterska och har några års erfarenhet av yrket. Uppdraget pågår mellan v.26-36 enligt överenskommelse. Skicka in din ansökan redan idag – vi ser fram emot att höra från dig! Om Magnifiq Kompetens Vi är ett bemanningsföretag inom vård och omsorg som sätter kvalitet, trygghet och omtanke först. Vi värdesätter våra konsulter högt och arbetar för att du ska känna dig sedd, stöttad och uppskattad under hela din resa hos oss. Magnifiq Kompetens…',
+            occupation_label: 'Sjuksköterska, grundutbildad',
           },
           {
-            "ad_id": "31016470",
-            "score": 0.68,
-            "rationale": "Generalist nursing role that the profile experience covers."
+            ad_id: '30912892',
+            headline:
+              'Sjuksköterska sökes till avdelning 20, Psykosvård Stockholm',
+            employer_name: 'REGION STOCKHOLM',
+            municipality: 'Stockholm',
+            application_deadline: '2026-05-15T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/30912892',
+            description_excerpt:
+              'Psykosvård Stockholm (PVS) är en ny verksamhet inom Stockholms läns sjukvårdsområde, där vi samlat alla våra befintliga öppenvårdsmottagningar och heldygnsvårdsavdelningar för patienter med psykossjukdom i en organisatorisk enhet. Nu söker vi en driven och entusiastisk sjuksköterska till oss på avdelning 20, S:t Görans sjukhusområde, som tillsammans med oss vill vara med och bidra till avdelningens utveckling. Här har vi högt i tak och nära till skratt! Om enheten S:t Görans…',
+            occupation_label: 'Sjuksköterska, grundutbildad',
           },
-          {
-            "ad_id": "30969235",
-            "score": 0.56,
-            "rationale": "Generalist nursing role that the profile experience covers."
-          }
-        ]
+        ],
       },
-      "output": {
-        "accepted": true,
-        "links": [
-          {
-            "ad_id": "30879803",
-            "score": 0.92,
-            "rationale": "Cardiology specialist scope aligns with the profile training."
-          },
-          {
-            "ad_id": "30543967",
-            "score": 0.8,
-            "rationale": "Acute-ward responsibility matches the experience in the profile."
-          },
-          {
-            "ad_id": "31016470",
-            "score": 0.68,
-            "rationale": "Generalist nursing role that the profile experience covers."
-          },
-          {
-            "ad_id": "30969235",
-            "score": 0.56,
-            "rationale": "Generalist nursing role that the profile experience covers."
-          }
-        ]
-      }
     },
     {
-      "kind": "text",
-      "content": " Grouped 5 roles by fit and drew weighted edges from the saved profile. The strong-fit tier carries the highest match scores. Each edge from the profile node carries a one-line rationale."
-    }
-  ]
+      kind: 'tool',
+      toolName: 'groupAds',
+      toolCallId: 'mock-sthlm-nursing-call-3',
+      input: {
+        groups: [
+          {
+            label: 'Strong fit',
+            ad_ids: ['30879803', '30543967'],
+          },
+          {
+            label: 'Consider',
+            ad_ids: ['31016470', '30969235'],
+          },
+          {
+            label: 'Worth a look',
+            ad_ids: ['30912892'],
+          },
+        ],
+      },
+      output: {
+        accepted: true,
+        groups: [
+          {
+            label: 'Strong fit',
+            ad_ids: ['30879803', '30543967'],
+          },
+          {
+            label: 'Consider',
+            ad_ids: ['31016470', '30969235'],
+          },
+          {
+            label: 'Worth a look',
+            ad_ids: ['30912892'],
+          },
+        ],
+      },
+    },
+    {
+      kind: 'tool',
+      toolName: 'connectProfileToAds',
+      toolCallId: 'mock-sthlm-nursing-call-4',
+      input: {
+        links: [
+          {
+            ad_id: '30879803',
+            score: 0.92,
+            rationale:
+              'Cardiology specialist scope aligns with the profile training.',
+          },
+          {
+            ad_id: '30543967',
+            score: 0.8,
+            rationale:
+              'Acute-ward responsibility matches the experience in the profile.',
+          },
+          {
+            ad_id: '31016470',
+            score: 0.68,
+            rationale:
+              'Generalist nursing role that the profile experience covers.',
+          },
+          {
+            ad_id: '30969235',
+            score: 0.56,
+            rationale:
+              'Generalist nursing role that the profile experience covers.',
+          },
+        ],
+      },
+      output: {
+        accepted: true,
+        links: [
+          {
+            ad_id: '30879803',
+            score: 0.92,
+            rationale:
+              'Cardiology specialist scope aligns with the profile training.',
+          },
+          {
+            ad_id: '30543967',
+            score: 0.8,
+            rationale:
+              'Acute-ward responsibility matches the experience in the profile.',
+          },
+          {
+            ad_id: '31016470',
+            score: 0.68,
+            rationale:
+              'Generalist nursing role that the profile experience covers.',
+          },
+          {
+            ad_id: '30969235',
+            score: 0.56,
+            rationale:
+              'Generalist nursing role that the profile experience covers.',
+          },
+        ],
+      },
+    },
+    {
+      kind: 'text',
+      content:
+        ' Grouped 5 roles by fit and drew weighted edges from the saved profile. The strong-fit tier carries the highest match scores. Each edge from the profile node carries a one-line rationale.',
+    },
+  ],
 } as const

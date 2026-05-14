@@ -11,11 +11,7 @@ export const NODE_GAP = 48
 export const PROFILE_X = -440
 export const PROFILE_Y = 0
 
-export type LayoutNodeType =
-  | 'ad'
-  | 'group'
-  | 'profile'
-  | 'compareDiff'
+export type LayoutNodeType = 'ad' | 'group' | 'profile' | 'compareDiff'
 
 export interface LayoutNode {
   readonly id: string
