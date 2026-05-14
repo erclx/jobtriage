@@ -12,14 +12,16 @@ GitHub Actions workflow for this monorepo. Three parallel jobs mirror the local 
 - Pull requests targeting `main`
 - `workflow_dispatch` (manual run from the Actions tab)
 - Nightly cron at 03:00 UTC for the eval workflow
+- Weekly cron at 06:00 UTC on Mondays for the mock-fixture refresh workflow
 
 ## Workflows
 
-| File                               | Trigger                          | Purpose                                                       |
-| ---------------------------------- | -------------------------------- | ------------------------------------------------------------- |
-| `.github/workflows/verify.yml`     | PR + workflow_dispatch           | Format, lint, types, tests, build                             |
-| `.github/workflows/eval.yml`       | Nightly cron + workflow_dispatch | Retrieval ablation against the golden set                     |
-| `.github/workflows/agent-eval.yml` | workflow_dispatch only           | Per-provider agent fixtures against Anthropic, OpenAI, Gemini |
+| File                                          | Trigger                          | Purpose                                                       |
+| --------------------------------------------- | -------------------------------- | ------------------------------------------------------------- |
+| `.github/workflows/verify.yml`                | PR + workflow_dispatch           | Format, lint, types, tests, build                             |
+| `.github/workflows/eval.yml`                  | Nightly cron + workflow_dispatch | Retrieval ablation against the golden set                     |
+| `.github/workflows/agent-eval.yml`            | workflow_dispatch only           | Per-provider agent fixtures against Anthropic, OpenAI, Gemini |
+| `.github/workflows/refresh-mock-fixtures.yml` | Weekly cron + workflow_dispatch  | Re-capture mock-mode fixtures and commit as bot when changed  |
 
 ## Verify jobs
 
@@ -62,6 +64,10 @@ Defined in `.github/workflows/eval.yml`. Runs nightly at 03:00 UTC and on `workf
 ## Agent eval job
 
 Defined in `.github/workflows/agent-eval.yml`. Triggers on `workflow_dispatch` only so maintainer-funded providers stay capped. The `providers` input defaults to `gemini` (free tier). Maintainers must explicitly type `anthropic` or `openai` into the input to opt into paid runs. The `fixture` input picks the dispatch-supplied JSON fixture under `.claude/evals/`. The `only_input_fixture` boolean (default false) skips the hardcoded general-profile and conversation steps so a dispatch targets only the dispatch-supplied fixture. The job builds the web server then drives `web/scripts/model-probe.ts` three times per provider: against the dispatch-supplied fixture, then `agent-general-profile.json`, then `agent-conversation.json` (the v6 conversation kind covering tool-call accuracy, ad-id recall, keyword recall, concept-id discipline, and tool-error recovery). `PROBE_PROVIDER` and `PROBE_API_KEY` come from `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, and `GEMINI_API_KEY` secrets. Each run uploads both the Markdown table and the peer JSON artifact. Providers without a configured secret emit a warning and skip. The harness paces probes via `PROBE_INTER_PROBE_MS` with per-provider defaults (`gemini=6500`, others `0`) so free-tier rate limits do not return empty SSE on later probes. An explicit env override always wins.
+
+## Refresh mock fixtures job
+
+Defined in `.github/workflows/refresh-mock-fixtures.yml`. Runs Monday at 06:00 UTC and on `workflow_dispatch`. The job runs `bun run capture-mock` in `web/`, which re-captures the four mock-mode fixtures from live JobTech and validates every ad id against the ad-details endpoint (200 alive, 404 dead, anything else throws). When the regenerated fixture files diff against the working tree, the job commits as `github-actions[bot]` with the message `chore(mock): refresh fixtures` and pushes to `main`. When fixtures are unchanged, the job exits cleanly without a commit. When upstream JobTech returns a status other than 200 or 404 for any ad, the capture script throws and the workflow surfaces a red badge so the maintainer sees the outage. Concurrency group `refresh-mock-fixtures` with `cancel-in-progress` keeps overlapping runs from fighting over the working tree. The built-in `GITHUB_TOKEN` covers the push. No PAT or extra secret is required.
 
 ## Running CI locally
 
