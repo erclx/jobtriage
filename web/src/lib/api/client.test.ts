@@ -12,6 +12,7 @@ vi.mock('@/lib/env', () => ({
 }))
 
 import { JobtriageApiError, searchJobs, semanticSearch } from './client'
+import { LiveJobSearchRequestSchema } from './schemas'
 
 const buildJsonResponse = (status: number, body: unknown): Response =>
   new Response(JSON.stringify(body), {
@@ -92,5 +93,42 @@ describe('semanticSearch', () => {
     const fetchMock = vi.mocked(global.fetch)
     await expect(semanticSearch({ query: 'x'.repeat(513) })).rejects.toThrow()
     expect(fetchMock).not.toHaveBeenCalled()
+  })
+})
+
+describe('LiveJobSearchRequestSchema', () => {
+  it('should accept a query alone', () => {
+    const result = LiveJobSearchRequestSchema.safeParse({ query: 'kock' })
+    expect(result.success).toBe(true)
+  })
+
+  it('should accept an occupation_concept_id alone', () => {
+    const result = LiveJobSearchRequestSchema.safeParse({
+      occupation_concept_id: 'X9jv_K2b_m48',
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('should accept both query and occupation_concept_id together', () => {
+    const result = LiveJobSearchRequestSchema.safeParse({
+      query: 'kock',
+      occupation_concept_id: 'X9jv_K2b_m48',
+      region: 'reg-vastra',
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('should reject empty input', () => {
+    const result = LiveJobSearchRequestSchema.safeParse({})
+    expect(result.success).toBe(false)
+    expect(result.error?.issues[0]?.message).toMatch(/lookupConcept/)
+  })
+
+  it('should reject region-only input', () => {
+    const result = LiveJobSearchRequestSchema.safeParse({
+      region: 'reg-vastra',
+    })
+    expect(result.success).toBe(false)
+    expect(result.error?.issues[0]?.message).toMatch(/lookupConcept/)
   })
 })

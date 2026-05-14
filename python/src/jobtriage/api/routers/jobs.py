@@ -298,11 +298,6 @@ async def live_search_jobs(
     payload: LiveJobSearchRequest,
     settings: Annotated[Settings, Depends(get_settings)],
 ) -> LiveJobSearchResponse:
-    if not (payload.query or payload.occupation_concept_id or payload.region):
-        raise HTTPException(
-            status_code=422,
-            detail='Provide at least one of query, occupation_concept_id, region.',
-        )
     async with JobTechClient(
         base_url=settings.jobtech_base_url,
         timeout_seconds=settings.jobtech_timeout_seconds,

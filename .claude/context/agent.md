@@ -30,6 +30,8 @@ Specifically, deploy swaps `searchJobs`, `semanticSearch`, `triageBatch`, and `d
 
 When tightening a model-behavior rule in `buildSystemPrompt`, write the principle alone. Do not list specific tokens or example phrases. Models treat example lists as literal whitelists, not instances of a rule, and the rule has to be rewritten on the next near-miss. Draft principle-only first. Add examples only if the principle alone fails the smoke probe set, and even then state them as criteria, not tokens.
 
+Anti-fabrication is the one principle that lives in two places: the deploy planning-rules block in `DEPLOY_BASE` and the opening sentence of the deploy `searchJobs` description. Mid-tier models truncate the tail of long tool descriptions, so the rule needs a foothold in both surfaces. Keep them in sync: any rewrite to one must mirror in the other to avoid drift.
+
 ### Mode resolution with a VERCEL gate
 
 `resolveAgentMode` order:
@@ -68,3 +70,4 @@ JobTech `/search` filters occupation concept ids via `occupation-name`, not `occ
 - Profile content flows from the chat request body (`profile` field), not from a header or cookie. The browser pulls profile from `SESSION_KEYS.profile` and posts it inline. No persistence server-side.
 - When `profile` is null or whitespace-only, `buildSystemPrompt` omits the `PROFILE_HEADER`/`PROFILE_FOOTER` sandwich entirely and the agent skips `connectProfileToAds` per the base prompts.
 - Endpoint mapping for the seven local data tools: `searchJobs` and `semanticSearch` hit `/v1/jobs/search` and `/v1/jobs/semantic`. `matchProfile` and `compareRoles` share `/v1/jobs/details`. `triageBatch` calls `/v1/jobs/triage`. `deadlineWatch` calls `/v1/jobs/deadline`. `trackStatus` reads `GET /v1/engagements/status`. The deploy posture remaps `searchJobs` to `/v1/jobs/live-search`, `matchProfile` and `compareRoles` to `/v1/jobs/live-details`, and adds `lookupConcept` against `/v1/taxonomy/lookup`. See `python.md` for backend route ownership.
+- Deploy `searchJobs` requires at least one of `query` or `occupation_concept_id`. Both the Zod `LiveJobSearchRequestSchema` and the pydantic `LiveJobSearchRequest` refuse region-only or empty payloads with a 422 whose message names `lookupConcept` as the recovery path. The system-prompt rule about concept-id error recovery covers the 422 contract. Do not duplicate the recovery wording in the tool description.

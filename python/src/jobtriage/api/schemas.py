@@ -3,7 +3,7 @@
 import re
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 MAX_TOP_K = 50
 MAX_TRIAGE_TOP_K = 10
@@ -183,6 +183,16 @@ class LiveJobSearchRequest(BaseModel):
                 'inventing one.'
             )
         return value
+
+    @model_validator(mode='after')
+    def _require_query_or_occupation(self) -> 'LiveJobSearchRequest':
+        if not self.query and not self.occupation_concept_id:
+            raise ValueError(
+                'Provide query or occupation_concept_id. Resolve an '
+                'occupation_concept_id via lookupConcept when the user names a '
+                'profession.'
+            )
+        return self
 
 
 class LiveJobSearchResponse(BaseModel):
