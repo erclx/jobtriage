@@ -41,4 +41,4 @@ The Cloud Run image omits `sentence-transformers`, `torch`, and the SQLite corpu
 
 ### Cloud Run memory pinned at 1Gi
 
-`python/scripts/deploy.sh` ships `--memory 1Gi`. The prior `512Mi` cliffed under live-search plus live-details parallel load and SIGKILLed without a log. 1Gi stays inside the Always-Free tier because the binding limits are CPU-seconds and request count, not memory.
+`python/scripts/deploy.sh` ships `--memory 1Gi`. The prior `512Mi` ran out of memory under live-search plus live-details parallel load and SIGKILLed without a log. 1Gi stays inside the Always-Free tier because the binding limits are CPU-seconds and request count, not memory.
