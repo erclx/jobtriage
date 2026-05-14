@@ -31,6 +31,7 @@ import { AdNode } from '@/features/canvas/nodes/ad-node'
 import { CompareDiffNode } from '@/features/canvas/nodes/compare-diff-node'
 import { GroupNode } from '@/features/canvas/nodes/group-node'
 import { ProfileNode } from '@/features/canvas/nodes/profile-node'
+import { shouldShowProfileNode } from '@/features/canvas/profile-node-visibility'
 import {
   compareLayout,
   gridLayout,
@@ -89,12 +90,13 @@ function CanvasInner({ onEditProfile }: CanvasSurfaceProps) {
   const layout = useMemo(() => buildLayout(state), [state])
 
   const layoutNodes = useMemo<Node[]>(() => {
+    const ads: Node[] = layout.nodes.map((node) => toFlowNode(node, state))
+    if (!shouldShowProfileNode(state.view, state.pinnedAdIds.length)) return ads
     const profileNode: Node = {
       ...profileNodeLayout(),
       data: { onEdit: onEditProfile },
       draggable: false,
     }
-    const ads: Node[] = layout.nodes.map((node) => toFlowNode(node, state))
     return [profileNode, ...ads]
   }, [layout.nodes, state, onEditProfile])
 
