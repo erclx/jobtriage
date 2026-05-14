@@ -16,7 +16,7 @@ exec gcloud run deploy "$SERVICE_NAME" \
   --region "$REGION" \
   --allow-unauthenticated \
   --set-env-vars JOBTRIAGE_DEPLOY_MODE=slim \
-  --memory 512Mi \
+  --memory 1Gi \
   --cpu 1 \
   --min-instances 0 \
   --max-instances 3 \
