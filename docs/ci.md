@@ -16,12 +16,12 @@ GitHub Actions workflow for this monorepo. Three parallel jobs mirror the local 
 
 ## Workflows
 
-| File                                          | Trigger                          | Purpose                                                       |
-| --------------------------------------------- | -------------------------------- | ------------------------------------------------------------- |
-| `.github/workflows/verify.yml`                | PR + workflow_dispatch           | Format, lint, types, tests, build                             |
-| `.github/workflows/eval.yml`                  | Nightly cron + workflow_dispatch | Retrieval ablation against the golden set                     |
-| `.github/workflows/agent-eval.yml`            | workflow_dispatch only           | Per-provider agent fixtures against Anthropic, OpenAI, Gemini |
-| `.github/workflows/refresh-mock-fixtures.yml` | Weekly cron + workflow_dispatch  | Re-capture mock-mode fixtures and commit as bot when changed  |
+| File                                          | Trigger                          | Purpose                                                          |
+| --------------------------------------------- | -------------------------------- | ---------------------------------------------------------------- |
+| `.github/workflows/verify.yml`                | PR + workflow_dispatch           | Format, lint, types, tests, build                                |
+| `.github/workflows/eval.yml`                  | Nightly cron + workflow_dispatch | Retrieval ablation against the golden set                        |
+| `.github/workflows/agent-eval.yml`            | workflow_dispatch only           | Per-provider agent fixtures against Anthropic, OpenAI, Gemini    |
+| `.github/workflows/refresh-mock-fixtures.yml` | Weekly cron + workflow_dispatch  | Re-capture mock-mode fixtures and open a refresh PR when changed |
 
 ## Verify jobs
 
@@ -67,7 +67,9 @@ Defined in `.github/workflows/agent-eval.yml`. Triggers on `workflow_dispatch` o
 
 ## Refresh mock fixtures job
 
-Defined in `.github/workflows/refresh-mock-fixtures.yml`. Runs Monday at 06:00 UTC and on `workflow_dispatch`. The job runs `bun run capture-mock` in `web/`, which re-captures the four mock-mode fixtures from live JobTech and validates every ad id against the ad-details endpoint (200 alive, 404 dead, anything else throws). When the regenerated fixture files diff against the working tree, the job commits as `github-actions[bot]` with the message `chore(mock): refresh fixtures` and pushes to `main`. When fixtures are unchanged, the job exits cleanly without a commit. When upstream JobTech returns a status other than 200 or 404 for any ad, the capture script throws and the workflow surfaces a red badge so the maintainer sees the outage. Concurrency group `refresh-mock-fixtures` with `cancel-in-progress` keeps overlapping runs from fighting over the working tree. The built-in `GITHUB_TOKEN` covers the push. No PAT or extra secret is required.
+Defined in `.github/workflows/refresh-mock-fixtures.yml`. Runs Monday at 06:00 UTC and on `workflow_dispatch`. The job runs `bun run capture-mock` in `web/`, which re-captures the four mock-mode fixtures from live JobTech and validates every ad id against the ad-details endpoint (200 alive, 404 dead, anything else throws). When the regenerated fixture files diff against the working tree, `peter-evans/create-pull-request` opens or updates a PR on the `bot/refresh-mock-fixtures` branch titled `chore(mock): refresh fixtures`. When fixtures are unchanged, no PR is opened. When upstream JobTech returns a status other than 200 or 404 for any ad, the capture script throws and the workflow surfaces a red badge so the maintainer sees the outage. Concurrency group `refresh-mock-fixtures` with `cancel-in-progress` keeps overlapping runs from fighting over the working tree. The built-in `GITHUB_TOKEN` covers the push and PR write. No PAT or extra secret is required.
+
+The cadence is a weekly bot-opened PR with a human merge after eyeballing the fixture diff. Auto-merge stays off so a visitor-visible fixture rotation always gets a glance before it ships.
 
 ## Running CI locally
 
