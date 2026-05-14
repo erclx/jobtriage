@@ -11,15 +11,36 @@ export const NODE_GAP = 48
 export const PROFILE_X = -440
 export const PROFILE_Y = 0
 
+export type LayoutNodeType =
+  | 'ad'
+  | 'group'
+  | 'profile'
+  | 'compareDiff'
+
 export interface LayoutNode {
   readonly id: string
-  readonly type: 'ad' | 'group' | 'profile'
+  readonly type: LayoutNodeType
   readonly position: { x: number; y: number }
   readonly data: Record<string, unknown>
   readonly draggable?: boolean
   readonly selectable?: boolean
   readonly zIndex?: number
 }
+
+export const COMPARE_GAP_X = NODE_GAP * 4
+export const COMPARE_PAIR_WIDTH = AD_NODE_WIDTH * 2 + COMPARE_GAP_X
+export const COMPARE_DIFF_OFFSET_Y = AD_NODE_HEIGHT + NODE_GAP
+
+export const TIMELINE_DAY_WIDTH = 80
+export const TIMELINE_TICK_DAYS: ReadonlyArray<{
+  days: number
+  label: string
+  variant: 'today' | 'standard'
+}> = [
+  { days: 0, label: 'Today', variant: 'today' },
+  { days: 5, label: '+5d', variant: 'standard' },
+  { days: 14, label: '+14d', variant: 'standard' },
+]
 
 export interface LayoutEdge {
   readonly id: string
@@ -162,12 +183,11 @@ export function timelineLayout(state: CanvasState): ViewLayout {
     .map((adId) => state.adRegistry[adId])
     .filter((ad): ad is NonNullable<typeof ad> => Boolean(ad))
 
-  const dayWidth = 80
   const lanes: number[] = []
 
-  const nodes: LayoutNode[] = ads.map((ad) => {
+  const adNodes: LayoutNode[] = ads.map((ad) => {
     const days = resolveDeadlineDays(ad, cursor)
-    const x = days * dayWidth
+    const x = days * TIMELINE_DAY_WIDTH
     let lane = 0
     while (lanes[lane] !== undefined && lanes[lane] >= x - AD_NODE_WIDTH) {
       lane += 1
@@ -178,11 +198,24 @@ export function timelineLayout(state: CanvasState): ViewLayout {
       type: 'ad',
       position: { x, y: lane * (AD_NODE_HEIGHT + NODE_GAP) },
       data: { adId: ad.ad_id },
+      draggable: false,
       zIndex: 1,
     }
   })
 
-  return { nodes, edges: [] }
+  return { nodes: adNodes, edges: [] }
+}
+
+export function timelineAxisTicks(): ReadonlyArray<{
+  label: string
+  x: number
+  variant: 'today' | 'standard'
+}> {
+  return TIMELINE_TICK_DAYS.map((tick) => ({
+    label: tick.label,
+    x: tick.days * TIMELINE_DAY_WIDTH,
+    variant: tick.variant,
+  }))
 }
 
 interface NormalizedAd {
@@ -229,7 +262,9 @@ export function profileNodeLayout(): LayoutNode {
 
 export function compareLayout(state: CanvasState): ViewLayout {
   if (!state.comparePair) return { nodes: [], edges: [] }
-  const { adIdA, adIdB } = state.comparePair
+  const { adIdA, adIdB, diffs } = state.comparePair
+  const adA = state.adRegistry[adIdA]
+  const adB = state.adRegistry[adIdB]
   return {
     nodes: [
       {
@@ -237,18 +272,44 @@ export function compareLayout(state: CanvasState): ViewLayout {
         type: 'ad',
         position: { x: 0, y: 0 },
         data: { adId: adIdA },
+        draggable: false,
         zIndex: 1,
       },
       {
         id: adIdB,
         type: 'ad',
-        position: { x: AD_NODE_WIDTH + NODE_GAP * 4, y: 0 },
+        position: { x: AD_NODE_WIDTH + COMPARE_GAP_X, y: 0 },
         data: { adId: adIdB },
+        draggable: false,
         zIndex: 1,
+      },
+      {
+        id: 'compare-diff',
+        type: 'compareDiff',
+        position: { x: 0, y: COMPARE_DIFF_OFFSET_Y },
+        data: {
+          diffs,
+          width: COMPARE_PAIR_WIDTH,
+          labelA: compareSideLabel(adA?.headline, adA?.employer_name, 'A'),
+          labelB: compareSideLabel(adB?.headline, adB?.employer_name, 'B'),
+        },
+        draggable: false,
+        selectable: false,
+        zIndex: 0,
       },
     ],
     edges: [],
   }
+}
+
+function compareSideLabel(
+  headline: string | undefined,
+  employer: string | null | undefined,
+  fallback: string,
+): string {
+  if (employer && employer.trim()) return employer.trim()
+  if (headline && headline.trim()) return headline.trim()
+  return `Role ${fallback}`
 }
 
 export function shortlistLayout(state: CanvasState): ViewLayout {

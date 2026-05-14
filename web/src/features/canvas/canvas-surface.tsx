@@ -28,6 +28,7 @@ import {
 import { MatchEdge } from '@/features/canvas/edges/match-edge'
 import { ExportShortlistButton } from '@/features/canvas/export/export-shortlist-button'
 import { AdNode } from '@/features/canvas/nodes/ad-node'
+import { CompareDiffNode } from '@/features/canvas/nodes/compare-diff-node'
 import { GroupNode } from '@/features/canvas/nodes/group-node'
 import { ProfileNode } from '@/features/canvas/nodes/profile-node'
 import {
@@ -38,14 +39,17 @@ import {
   type LayoutNode,
   profileNodeLayout,
   shortlistLayout,
+  timelineAxisTicks,
   timelineLayout,
 } from '@/features/canvas/views/layout'
+import { TimelineAxisOverlay } from '@/features/canvas/views/timeline-axis-overlay'
 import { cn } from '@/lib/utils'
 
 const NODE_TYPES = {
   ad: AdNode,
   profile: ProfileNode,
   group: GroupNode,
+  compareDiff: CompareDiffNode,
 } as const
 
 const EDGE_TYPES = {
@@ -172,6 +176,9 @@ function CanvasInner({ onEditProfile }: CanvasSurfaceProps) {
           <Background gap={24} size={1} />
           <Controls showInteractive={false} />
         </ReactFlow>
+        {state.view === 'timeline' && state.timeline ? (
+          <TimelineAxisOverlay ticks={timelineAxisTicks()} />
+        ) : null}
         {state.view === 'shortlist' && state.pinnedAdIds.length === 0 ? (
           <ShortlistEmptyState
             onSwitchToTriage={() =>
