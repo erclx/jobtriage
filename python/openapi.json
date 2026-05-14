@@ -462,6 +462,25 @@
         "title": "JobSearchResponse",
         "type": "object"
       },
+      "LiveAdDetailsError": {
+        "additionalProperties": false,
+        "properties": {
+          "ad_id": {
+            "title": "Ad Id",
+            "type": "string"
+          },
+          "error": {
+            "title": "Error",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ad_id",
+          "error"
+        ],
+        "title": "LiveAdDetailsError",
+        "type": "object"
+      },
       "LiveAdSummary": {
         "additionalProperties": false,
         "properties": {
@@ -563,6 +582,13 @@
       "LiveJobDetailsResponse": {
         "additionalProperties": false,
         "properties": {
+          "errors": {
+            "items": {
+              "$ref": "#/components/schemas/LiveAdDetailsError"
+            },
+            "title": "Errors",
+            "type": "array"
+          },
           "results": {
             "items": {
               "$ref": "#/components/schemas/LiveAdSummary"

@@ -11,7 +11,7 @@ from fastapi.responses import JSONResponse
 from jobtriage.api.dependencies import build_embedder, get_settings
 from jobtriage.api.routers import engagements, health, jobs, taxonomy
 from jobtriage.embeddings import DEFAULT_MODEL_NAME, Embedder
-from jobtriage.errors import JobTechAPIError
+from jobtriage.errors import JobTechAPIError, JobtriageError
 
 logger = logging.getLogger(__name__)
 
@@ -73,8 +73,15 @@ def app_factory(*, embedder: Embedder | None = None) -> FastAPI:
             content={'detail': 'Upstream JobTech API error.'},
         )
 
-    @app.exception_handler(ValueError)
-    async def _value_error_handler(_: Request, exc: ValueError) -> JSONResponse:
+    @app.exception_handler(JobtriageError)
+    async def _jobtriage_error_handler(_: Request, exc: JobtriageError) -> JSONResponse:
         return JSONResponse(status_code=400, content={'detail': str(exc)})
+
+    @app.exception_handler(Exception)
+    async def _unhandled_exception_handler(_: Request, exc: Exception) -> JSONResponse:
+        logger.exception('unhandled_exception')
+        return JSONResponse(
+            status_code=500, content={'detail': 'Internal server error.'}
+        )
 
     return app

@@ -197,10 +197,18 @@ class LiveJobDetailsRequest(BaseModel):
     ad_ids: list[str] = Field(min_length=1, max_length=MAX_DETAILS)
 
 
+class LiveAdDetailsError(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    ad_id: str
+    error: str
+
+
 class LiveJobDetailsResponse(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
     results: list[LiveAdSummary]
+    errors: list[LiveAdDetailsError] = Field(default_factory=list)
 
 
 class Concept(BaseModel):

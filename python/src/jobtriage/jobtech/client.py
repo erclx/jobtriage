@@ -193,7 +193,10 @@ class JobTechClient:
 
         The taxonomy autocomplete endpoint accepts only one ``type`` per
         request, so this fans out to one call per kind in parallel and merges
-        the results, capped at ``limit`` total entries (occupations first).
+        the results via round-robin (capped at ``limit`` total). Round-robin
+        guarantees each kind is represented when both buckets have hits, so a
+        Swedish city term that also matches an occupation never clips every
+        region or municipality match.
         """
         if not query.strip() or limit < 1:
             return []
@@ -239,7 +242,25 @@ class JobTechClient:
             fetch_kind('occupation'),
             fetch_kind('region'),
         )
-        return [*occupations, *regions][:limit]
+        return _round_robin_concepts([occupations, regions], limit)
+
+
+def _round_robin_concepts(buckets: list[list[Concept]], limit: int) -> list[Concept]:
+    merged: list[Concept] = []
+    cursors = [0] * len(buckets)
+    while len(merged) < limit:
+        advanced = False
+        for index, bucket in enumerate(buckets):
+            if cursors[index] >= len(bucket):
+                continue
+            merged.append(bucket[cursors[index]])
+            cursors[index] += 1
+            advanced = True
+            if len(merged) >= limit:
+                break
+        if not advanced:
+            break
+    return merged
 
 
 def _merge_hits(buckets: list[list[Ad]]) -> list[Ad]:

@@ -109,6 +109,68 @@ async def test_search_concepts_returns_municipalities_as_region_kind(
     ]
 
 
+async def test_search_concepts_interleaves_occupation_and_region_buckets(
+    httpx_mock: HTTPXMock,
+) -> None:
+    occupation_hits = [
+        {
+            'taxonomy/id': f'OCC{idx}_AAA_BBB',
+            'taxonomy/preferred-label': f'Occ {idx}',
+            'taxonomy/type': 'occupation-name',
+        }
+        for idx in range(5)
+    ]
+    region_hits = [
+        {
+            'taxonomy/id': f'REG{idx}_AAA_BBB',
+            'taxonomy/preferred-label': f'Region {idx}',
+            'taxonomy/type': 'region',
+        }
+        for idx in range(2)
+    ]
+    municipality_hits = [
+        {
+            'taxonomy/id': f'MUN{idx}_AAA_BBB',
+            'taxonomy/preferred-label': f'Kommun {idx}',
+            'taxonomy/type': 'municipality',
+        }
+        for idx in range(3)
+    ]
+    httpx_mock.add_response(
+        url=(
+            f'{DEFAULT_TAXONOMY_BASE_URL}/v1/taxonomy/suggesters/autocomplete'
+            '?query-string=stockholm&offset=0&limit=6&type=occupation-name'
+        ),
+        json=occupation_hits,
+    )
+    httpx_mock.add_response(
+        url=(
+            f'{DEFAULT_TAXONOMY_BASE_URL}/v1/taxonomy/suggesters/autocomplete'
+            '?query-string=stockholm&offset=0&limit=6&type=region'
+        ),
+        json=region_hits,
+    )
+    httpx_mock.add_response(
+        url=(
+            f'{DEFAULT_TAXONOMY_BASE_URL}/v1/taxonomy/suggesters/autocomplete'
+            '?query-string=stockholm&offset=0&limit=6&type=municipality'
+        ),
+        json=municipality_hits,
+    )
+
+    async with JobTechClient(SEARCH_BASE_URL) as client:
+        concepts = await client.search_concepts('stockholm', limit=6)
+
+    types = [concept.type for concept in concepts]
+    assert types.count('occupation') >= 1
+    assert types.count('region') >= 1
+    assert len(concepts) == 6
+    # First two entries alternate between the occupation and region buckets,
+    # so neither kind is fully clipped even when occupations saturate `limit`.
+    assert types[0] == 'occupation'
+    assert types[1] == 'region'
+
+
 async def test_search_concepts_returns_empty_for_blank_query() -> None:
     async with JobTechClient(SEARCH_BASE_URL) as client:
         concepts = await client.search_concepts('   ', limit=5)
