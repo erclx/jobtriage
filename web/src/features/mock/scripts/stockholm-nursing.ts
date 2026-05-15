@@ -24,7 +24,38 @@ export const stockholmNursingScript: MockScript = {
         top_k: 8,
       },
       output: {
-        results: [],
+        results: [
+          {
+            concept_id: 'HdXc_PNB_pcU',
+            preferred_label: 'Sjuksköterska, barnavårdscentral',
+            type: 'occupation',
+          },
+          {
+            concept_id: 'uaJs_9YA_Cnp',
+            preferred_label: 'Sjuksköterska, äldreomsorg och -vård/geriatrik',
+            type: 'occupation',
+          },
+          {
+            concept_id: '4KeX_GcW_9jY',
+            preferred_label: 'Sjuksköterska, medicin och kirurgi',
+            type: 'occupation',
+          },
+          {
+            concept_id: 'LVyV_dGP_pee',
+            preferred_label: 'Sjuksköterska, diagnostisk radiologi',
+            type: 'occupation',
+          },
+          {
+            concept_id: 'hbyN_1pA_VxX',
+            preferred_label: 'Medicinskt ansvarig sjuksköterska',
+            type: 'occupation',
+          },
+          {
+            concept_id: 'CifL_Rzy_Mku',
+            preferred_label: 'Stockholms län',
+            type: 'region',
+          },
+        ],
       },
     },
     {

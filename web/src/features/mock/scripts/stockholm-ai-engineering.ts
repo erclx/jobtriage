@@ -24,7 +24,18 @@ export const stockholmAiEngineeringScript: MockScript = {
         top_k: 6,
       },
       output: {
-        results: [],
+        results: [
+          {
+            concept_id: 'hCMr_L4F_8hq',
+            preferred_label: 'SQE Supplier Quality Engineer',
+            type: 'occupation',
+          },
+          {
+            concept_id: 'CifL_Rzy_Mku',
+            preferred_label: 'Stockholms län',
+            type: 'region',
+          },
+        ],
       },
     },
     {

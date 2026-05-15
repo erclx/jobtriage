@@ -84,12 +84,12 @@ export const deadlineTimelineScript: MockScript = {
       toolCallId: 'mock-deadline-ai-call-2',
       input: {
         ad_ids: ['30970532', '30340646', '30306504', '30975894', '30365029'],
-        today_cursor: '2026-05-14',
+        today_cursor: '2026-05-15',
       },
       output: {
         accepted: true,
         ad_ids: ['30970532', '30340646', '30306504', '30975894', '30365029'],
-        today_cursor: '2026-05-14',
+        today_cursor: '2026-05-15',
       },
     },
     {
