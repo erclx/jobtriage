@@ -15,7 +15,10 @@ import {
   OLLAMA_MARKER,
   SESSION_KEYS,
 } from '@/features/chat/storage-keys'
-import { useSessionValue } from '@/features/chat/use-session-value'
+import {
+  useSessionHydrated,
+  useSessionValue,
+} from '@/features/chat/use-session-value'
 import { cn } from '@/lib/utils'
 
 interface ApiKeyGateProps {
@@ -36,6 +39,7 @@ export function ApiKeyGate({
   onResolveSwitch,
 }: ApiKeyGateProps) {
   const isDeployed = Boolean(process.env.NEXT_PUBLIC_VERCEL_ENV)
+  const hydrated = useSessionHydrated()
   const [storedKey, setStoredKey] = useSessionValue(SESSION_KEYS.apiKey)
   const [storedProvider, setStoredProvider] = useSessionValue(
     SESSION_KEYS.provider,
@@ -85,6 +89,10 @@ export function ApiKeyGate({
       previouslyFocusedRef.current?.focus?.()
     }
   }, [isSwitchOverlay, onResolveSwitch])
+
+  if (!hydrated) {
+    return null
+  }
 
   if (!showGate) {
     return <>{children}</>
