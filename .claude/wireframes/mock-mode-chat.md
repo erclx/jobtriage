@@ -74,7 +74,7 @@ Shown when the visitor picks `Try the demo, no key` from the BYOK gate. Replays 
 
 ## Behavior
 
-- Chip stack only renders the prompts the visitor has not yet tried. Tried-prompt state lives in session-only React state, not sessionStorage, so reloading the tab resets it.
+- Chip stack only renders the prompts the visitor has not yet tried. Tried-prompt state persists to sessionStorage under `jobtriage:tried-prompts`, so reloading the tab keeps used chips hidden alongside the restored chat history.
 - Clicking a chip submits the prompt and auto-populates the saved profile with the chip's bundled profile markdown. The profile node updates on the canvas as part of the same turn.
 - When a saved profile from a prior BYOK session differs from the chip's bundled profile, the chip stages a confirm Dialog with `Keep my profile` and `Replace with demo profile` before firing. `Keep` runs the chip against the existing profile. `Replace` swaps in the demo profile and runs.
 - The textarea is read-only with `aria-disabled="true"`, `tabIndex="-1"`, and a fixed placeholder telling the visitor to paste a key. Submit cancels into the switch-provider flow.
