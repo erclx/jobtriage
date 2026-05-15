@@ -131,12 +131,38 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
   const [storedRailWidth, setStoredRailWidth] = useSessionValue(
     SESSION_KEYS.railWidth,
   )
+  const [storedTriedPrompts, setStoredTriedPrompts] = useSessionValue(
+    SESSION_KEYS.triedPrompts,
+  )
   const { state: canvasState, dispatch: dispatchCanvas } = useCanvas()
   const [profileOpen, setProfileOpen] = useState(false)
   const [confirmNewChatOpen, setConfirmNewChatOpen] = useState(false)
   const [confirmSwitchProviderOpen, setConfirmSwitchProviderOpen] =
     useState(false)
-  const [triedPrompts, setTriedPrompts] = useState<readonly string[]>([])
+
+  const triedPrompts = useMemo<readonly string[]>(() => {
+    if (!storedTriedPrompts) return []
+    try {
+      const parsed = JSON.parse(storedTriedPrompts) as unknown
+      return Array.isArray(parsed)
+        ? parsed.filter((entry): entry is string => typeof entry === 'string')
+        : []
+    } catch {
+      return []
+    }
+  }, [storedTriedPrompts])
+
+  const addTriedPrompt = useCallback(
+    (text: string) => {
+      if (triedPrompts.includes(text)) return
+      setStoredTriedPrompts(JSON.stringify([...triedPrompts, text]))
+    },
+    [setStoredTriedPrompts, triedPrompts],
+  )
+
+  const resetTriedPrompts = useCallback(() => {
+    setStoredTriedPrompts('')
+  }, [setStoredTriedPrompts])
 
   const railWidth = useMemo(() => {
     const parsed = Number(storedRailWidth)
@@ -300,7 +326,7 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
         window.sessionStorage.removeItem(SESSION_KEYS.chat)
         window.sessionStorage.removeItem(SESSION_KEYS.canvas)
       }
-      setTriedPrompts((prev) => (prev.includes(text) ? prev : [...prev, text]))
+      addTriedPrompt(text)
       if (options.applyChipProfile) {
         const match = MOCK_PROMPTS.find((entry) => entry.prompt === text)
         if (match) {
@@ -310,7 +336,13 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
       }
       void sendMessage({ text })
     },
-    [dispatchCanvas, sendMessage, setMessages, setStoredProfile],
+    [
+      addTriedPrompt,
+      dispatchCanvas,
+      sendMessage,
+      setMessages,
+      setStoredProfile,
+    ],
   )
 
   const handleMockChipClick = useCallback(
@@ -348,8 +380,8 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
       window.sessionStorage.removeItem(SESSION_KEYS.chat)
       window.sessionStorage.removeItem(SESSION_KEYS.canvas)
     }
-    setTriedPrompts([])
-  }, [dispatchCanvas, setMessages])
+    resetTriedPrompts()
+  }, [dispatchCanvas, resetTriedPrompts, setMessages])
 
   const handleProfileChange = useCallback((next: string) => {
     latestProfile = next
@@ -390,9 +422,9 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
       window.sessionStorage.removeItem(SESSION_KEYS.chat)
       window.sessionStorage.removeItem(SESSION_KEYS.canvas)
     }
-    setTriedPrompts([])
+    resetTriedPrompts()
     setConfirmNewChatOpen(false)
-  }, [setMessages, dispatchCanvas])
+  }, [dispatchCanvas, resetTriedPrompts, setMessages])
 
   const promptInput = (
     <div className="flex flex-col gap-1">
@@ -487,6 +519,7 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
                 <Button
                   type="button"
                   variant="ghost"
+                  size="sm"
                   onClick={handleEditProfile}
                   aria-label="Edit profile"
                 >
@@ -501,6 +534,7 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
                 <Button
                   type="button"
                   variant="ghost"
+                  size="sm"
                   onClick={handleNewChatRequest}
                   disabled={
                     isStreaming ||
@@ -522,6 +556,7 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
                 <Button
                   type="button"
                   variant="ghost"
+                  size="sm"
                   onClick={handleSwitchProviderRequest}
                   disabled={isStreaming}
                   aria-label="Switch provider"
