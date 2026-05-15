@@ -14,6 +14,36 @@ function getServerSnapshot(): string {
   return ''
 }
 
+let isHydrated = false
+const hydrationListeners = new Set<() => void>()
+
+function subscribeHydration(callback: () => void) {
+  hydrationListeners.add(callback)
+  if (!isHydrated) {
+    isHydrated = true
+    queueMicrotask(() => hydrationListeners.forEach((listener) => listener()))
+  }
+  return () => {
+    hydrationListeners.delete(callback)
+  }
+}
+
+function getHydrationSnapshot(): boolean {
+  return isHydrated
+}
+
+function getHydrationServerSnapshot(): boolean {
+  return false
+}
+
+export function useSessionHydrated(): boolean {
+  return useSyncExternalStore(
+    subscribeHydration,
+    getHydrationSnapshot,
+    getHydrationServerSnapshot,
+  )
+}
+
 export function useSessionValue(
   key: string,
 ): [string, (next: string) => void, () => void] {
