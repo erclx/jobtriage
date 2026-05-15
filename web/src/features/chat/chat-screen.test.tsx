@@ -177,6 +177,13 @@ describe('ChatScreen', () => {
     ).toBeInTheDocument()
   })
 
+  it('should render the brand mark lockup in the header', () => {
+    setupChat()
+    render(<ChatScreen />)
+
+    expect(screen.getByRole('img', { name: 'jobtriage' })).toBeInTheDocument()
+  })
+
   it('should render text parts and the collapsed tool trace, leaving cards to the canvas', () => {
     setupChat({
       messages: [

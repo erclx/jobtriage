@@ -24,6 +24,7 @@ import {
   PromptInputTextarea,
   PromptInputTools,
 } from '@/components/ai-elements/prompt-input'
+import { BrandMark } from '@/components/brand-mark'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Button } from '@/components/ui/button'
 import {
@@ -419,7 +420,7 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
             value={isMockMode ? '' : input}
             placeholder={
               isMockMode
-                ? 'Paste a key to ask your own question.'
+                ? 'Paste a key to ask your own question'
                 : 'Ask about Swedish job ads...'
             }
             onChange={(event) => {
@@ -470,11 +471,14 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background">
       <header className="flex shrink-0 items-center justify-between gap-4 border-b px-4 py-3">
-        <div>
-          <h1 className="text-lg font-semibold">jobtriage</h1>
-          <p className="text-xs text-muted-foreground">
-            Live agent triages Swedish job ads against any profile.
-          </p>
+        <div className="flex items-center gap-3">
+          <BrandMark className="size-7" title="jobtriage" />
+          <div>
+            <h1 className="text-lg font-semibold leading-none">jobtriage</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Live agent triages Swedish job ads against any profile
+            </p>
+          </div>
         </div>
         <TooltipProvider delayDuration={200}>
           <div className="flex items-center gap-1">
@@ -738,7 +742,7 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
 
 function voiceErrorMessage(error: SpeechRecognitionError): string {
   if (error === 'denied')
-    return 'Allow microphone access in the browser to use voice input.'
+    return 'Allow microphone access in the browser to use voice input'
   if (error === 'no-speech')
     return 'No speech detected. Try again or type instead.'
   return 'Voice input is unavailable. Try again or type instead.'

@@ -4,6 +4,7 @@ import { CpuIcon, KeyRoundIcon, SparklesIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+import { BrandMark } from '@/components/brand-mark'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -112,7 +113,7 @@ export function ApiKeyGate({
     event.preventDefault()
     const trimmed = draft.trim()
     if (!trimmed) {
-      setError(`Paste your ${meta.label} API key.`)
+      setError(`Paste your ${meta.label} API key`)
       return
     }
     setError(null)
@@ -147,6 +148,15 @@ export function ApiKeyGate({
   return (
     <div className="flex min-h-screen items-start justify-center bg-background px-4 pb-12 pt-[max(2rem,20vh)]">
       <div className="w-full max-w-md space-y-4">
+        <div className="flex items-center gap-3">
+          <BrandMark className="size-7" title="jobtriage" />
+          <div>
+            <h1 className="text-lg font-semibold leading-none">jobtriage</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Live agent triages Swedish job ads against any profile
+            </p>
+          </div>
+        </div>
         {showDemoOnramp ? (
           <>
             <Button
@@ -175,7 +185,7 @@ export function ApiKeyGate({
             <div className="inline-flex size-10 items-center justify-center rounded-md bg-secondary text-secondary-foreground">
               <KeyRoundIcon className="size-5" aria-hidden />
             </div>
-            <h1 className="text-xl font-semibold">Bring your own API key</h1>
+            <h2 className="text-xl font-semibold">Bring your own API key</h2>
             <p className="text-sm text-muted-foreground">
               Held only in this browser tab. Forwarded with each request to
               drive the agent, never persisted anywhere else.
@@ -247,7 +257,7 @@ export function ApiKeyGate({
                   !trimmed.startsWith(meta.prefixHint)
                 ) {
                   setPrefixWarning(
-                    `Most ${meta.label} keys start with ${meta.prefixHint}.`,
+                    `Most ${meta.label} keys start with ${meta.prefixHint}`,
                   )
                 } else {
                   setPrefixWarning(null)
@@ -319,7 +329,7 @@ export function ApiKeyGate({
                 Use local Ollama
               </Button>
               <p className="text-center text-xs text-muted-foreground">
-                Requires Ollama with gemma4:26b on localhost:11434.
+                Requires Ollama with gemma4:26b on localhost:11434
               </p>
             </div>
           </>
