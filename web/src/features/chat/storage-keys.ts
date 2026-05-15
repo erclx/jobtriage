@@ -5,6 +5,7 @@ export const SESSION_KEYS = {
   canvas: 'jobtriage:canvas-state',
   railWidth: 'jobtriage:rail-width',
   chat: 'jobtriage:chat-messages',
+  triedPrompts: 'jobtriage:tried-prompts',
 } as const
 
 export const RAIL_WIDTH_DEFAULT = 440
