@@ -193,7 +193,7 @@ export function ApiKeyGate({
             <div className="inline-flex size-10 items-center justify-center rounded-md bg-secondary text-secondary-foreground">
               <KeyRoundIcon className="size-5" aria-hidden />
             </div>
-            <h2 className="text-xl font-semibold">Bring your own API key</h2>
+            <h2 className="text-lg font-semibold">Bring your own API key</h2>
             <p className="text-sm text-muted-foreground">
               Held only in this browser tab. Forwarded with each request to
               drive the agent, never persisted anywhere else.
