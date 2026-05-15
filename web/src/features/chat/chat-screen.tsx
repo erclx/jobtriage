@@ -550,7 +550,12 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
               </TooltipTrigger>
               <TooltipContent>Start a new chat</TooltipContent>
             </Tooltip>
-            <ThemeToggle />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <ThemeToggle />
+              </TooltipTrigger>
+              <TooltipContent>Toggle theme</TooltipContent>
+            </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
