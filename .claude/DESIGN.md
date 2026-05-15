@@ -63,12 +63,14 @@ One row per role. Size and line height in pixels or rem. Family names use their 
 | heading | Geist            | 500    | 16px | 1.4         |
 | body    | Geist            | 400    | 14px | 1.5         |
 | label   | Geist            | 500    | 14px | 1.4         |
+| control | Geist            | 500    | 12px | 1.4         |
 | code    | system monospace | 400    | 12px | 1.5         |
 
 Notes:
 
 - One sans family across the surface. The profile drawer textarea uses monospace so pasted markdown looks like a file, not prose.
 - No display-size text. The largest rendered string is the page title at 18px. Nothing should outweigh the cards.
+- `control` is reserved for dense affordances: canvas view tabs, status badges, chip captions, card metadata, and helper text under inputs. Do not use for prose paragraphs or primary action labels.
 
 ## Spacing
 
