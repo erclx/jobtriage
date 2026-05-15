@@ -149,10 +149,10 @@ export function ApiKeyGate({
     <div className="flex min-h-screen items-start justify-center bg-background px-4 pb-12 pt-[max(2rem,20vh)]">
       <div className="w-full max-w-md space-y-4">
         <div className="flex items-center gap-3">
-          <BrandMark className="size-7" title="jobtriage" />
+          <BrandMark className="size-8" title="jobtriage" />
           <div>
-            <h1 className="text-lg font-semibold leading-none">jobtriage</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <h1 className="text-base font-semibold leading-none">jobtriage</h1>
+            <p className="mt-1 text-xs text-muted-foreground">
               Live agent triages Swedish job ads against any profile
             </p>
           </div>
@@ -300,7 +300,7 @@ export function ApiKeyGate({
                 </a>
                 {selectedProvider === 'gemini'
                   ? '. Free tier covers casual use.'
-                  : '.'}
+                  : ''}
               </p>
             )}
           </div>

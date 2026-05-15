@@ -11,6 +11,9 @@ First surface every visitor sees. Only renders when no provider has been chosen 
 ```plaintext
 +---------------------------------------------+
 |                                             |
+|    [▣j] jobtriage                           |
+|         Live agent triages Swedish job ads  |
+|                                             |
 |    [ ✨  Try the demo, no key            ]  |
 |                                             |
 |    ----------- or bring your own ---------  |
@@ -29,8 +32,7 @@ First surface every visitor sees. Only renders when no provider has been chosen 
 |    |                                   |    |
 |    |  Anthropic API key                |    |
 |    |  [ sk-ant-...                  ]  |    |
-|    |  Get a key at console.anthropic.  |    |
-|    |  com.                             |    |
+|    |  Get an Anthropic key             |    |
 |    |                                   |    |
 |    |  [          Start chat         ]  |    |
 |    +-----------------------------------+    |
@@ -39,10 +41,12 @@ First surface every visitor sees. Only renders when no provider has been chosen 
 |                                             |
 |    [ [cpu icon]  Use local Ollama        ]  |
 |    Requires Ollama with gemma4:26b on       |
-|    localhost:11434.                         |
+|    localhost:11434                          |
 |                                             |
 +---------------------------------------------+
 ```
+
+The brand mark `[▣j]` + wordmark + subtitle leads the gate so the screencast first frame anchors the brand. The same lockup repeats on the chat header after submit so the gate-to-chat handoff reads continuously.
 
 ## Behavior
 

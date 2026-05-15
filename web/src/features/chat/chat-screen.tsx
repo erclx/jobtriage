@@ -2,7 +2,7 @@
 
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport, type UIMessage } from 'ai'
-import { LogOutIcon, SparklesIcon, UserRoundIcon } from 'lucide-react'
+import { LogOutIcon, SquarePenIcon, UserRoundIcon } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useStickToBottomContext } from 'use-stick-to-bottom'
 
@@ -472,10 +472,10 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
     <div className="flex h-screen flex-col overflow-hidden bg-background">
       <header className="flex shrink-0 items-center justify-between gap-4 border-b px-4 py-3">
         <div className="flex items-center gap-3">
-          <BrandMark className="size-7" title="jobtriage" />
+          <BrandMark className="size-8" title="jobtriage" />
           <div>
-            <h1 className="text-lg font-semibold leading-none">jobtriage</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <h1 className="text-base font-semibold leading-none">jobtriage</h1>
+            <p className="mt-1 text-xs text-muted-foreground">
               Live agent triages Swedish job ads against any profile
             </p>
           </div>
@@ -510,7 +510,7 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
                   }
                   aria-label="Start a new chat"
                 >
-                  <SparklesIcon className="size-4" aria-hidden />
+                  <SquarePenIcon className="size-4" aria-hidden />
                   <span className="hidden sm:inline">New chat</span>
                 </Button>
               </TooltipTrigger>
