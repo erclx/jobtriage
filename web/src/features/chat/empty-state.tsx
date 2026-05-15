@@ -41,7 +41,7 @@ export function EmptyState({
         </h2>
         <p className="text-sm text-muted-foreground">
           {isMock
-            ? 'Pick a scripted query to replay against live JobTech ads.'
+            ? 'Pick a scripted query to replay against live JobTech ads'
             : 'Free-form chat over Swedish Platsbanken ads. Try one of these:'}
         </p>
       </div>

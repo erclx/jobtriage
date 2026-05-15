@@ -10,10 +10,12 @@ Spans the top of the workspace. Does not appear on the BYOK gate.
 
 ```plaintext
 +----------------------------------------------------------------------+
-| jobtriage              [user] Profile · 412  [✨ New]  [moon] [Out]  |
-| Live agent triages Swedish job ads against any profile.              |
+| [▣j] jobtriage           [user] Profile · 412  [✨ New]  [moon] [Out] |
+|      Live agent triages Swedish job ads against any profile          |
 +----------------------------------------------------------------------+
 ```
+
+The brand mark `[▣j]` is the favicon glyph rendered inline at 28px, left of the stacked wordmark and subtitle. The same lockup leads the BYOK gate so the gate-to-chat handoff reads continuously.
 
 ## Behavior
 

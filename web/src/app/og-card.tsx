@@ -38,12 +38,37 @@ export function renderOgCard() {
       >
         <div
           style={{
-            fontSize: 168,
-            lineHeight: 1,
-            letterSpacing: '-0.04em',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '32px',
           }}
         >
-          jobtriage
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 32 32"
+            width="160"
+            height="160"
+          >
+            <rect width="32" height="32" rx="6" fill="#0a0a0a" />
+            <circle cx="19" cy="9" r="2.5" fill="#fafafa" />
+            <path
+              d="M19 14 V21 a5 5 0 0 1 -5 5 H10"
+              fill="none"
+              stroke="#fafafa"
+              strokeWidth="4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <div
+            style={{
+              fontSize: 168,
+              lineHeight: 1,
+              letterSpacing: '-0.04em',
+            }}
+          >
+            jobtriage
+          </div>
         </div>
         <div
           style={{
