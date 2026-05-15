@@ -7,7 +7,7 @@ export const SESSION_KEYS = {
   chat: 'jobtriage:chat-messages',
 } as const
 
-export const RAIL_WIDTH_DEFAULT = 380
+export const RAIL_WIDTH_DEFAULT = 440
 export const RAIL_WIDTH_MIN = 320
 export const RAIL_WIDTH_MAX = 640
 
