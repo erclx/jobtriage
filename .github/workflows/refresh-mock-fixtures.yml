@@ -26,13 +26,19 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Install dependencies
+      - name: Install web dependencies
         working-directory: web
+        run: bun install --frozen-lockfile
+
+      - name: Install root dependencies
         run: bun install --frozen-lockfile
 
       - name: Capture mock fixtures
         working-directory: web
         run: bun run capture-mock
+
+      - name: Format captured fixtures
+        run: bunx prettier --write --ignore-path .gitignore --ignore-path .prettierignore web/src/features/mock/scripts
 
       - name: Open or update refresh PR
         uses: peter-evans/create-pull-request@v7
