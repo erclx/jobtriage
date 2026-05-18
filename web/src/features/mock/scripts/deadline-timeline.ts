@@ -33,7 +33,7 @@ export const deadlineTimelineScript: MockScript = {
             application_deadline: '2026-05-21T23:59:59',
             webpage_url:
               'https://arbetsformedlingen.se/platsbanken/annonser/30970532',
-            days_until_deadline: 7,
+            days_until_deadline: 4,
           },
           {
             ad_id: '30340646',
@@ -43,7 +43,7 @@ export const deadlineTimelineScript: MockScript = {
             application_deadline: '2026-05-23T23:59:59',
             webpage_url:
               'https://arbetsformedlingen.se/platsbanken/annonser/30340646',
-            days_until_deadline: 9,
+            days_until_deadline: 6,
           },
           {
             ad_id: '30306504',
@@ -53,7 +53,7 @@ export const deadlineTimelineScript: MockScript = {
             application_deadline: '2026-05-24T23:59:59',
             webpage_url:
               'https://arbetsformedlingen.se/platsbanken/annonser/30306504',
-            days_until_deadline: 10,
+            days_until_deadline: 7,
           },
           {
             ad_id: '30975894',
@@ -63,7 +63,7 @@ export const deadlineTimelineScript: MockScript = {
             application_deadline: '2026-05-29T23:59:59',
             webpage_url:
               'https://arbetsformedlingen.se/platsbanken/annonser/30975894',
-            days_until_deadline: 15,
+            days_until_deadline: 12,
           },
           {
             ad_id: '30365029',
@@ -73,7 +73,7 @@ export const deadlineTimelineScript: MockScript = {
             application_deadline: '2026-05-30T23:59:59',
             webpage_url:
               'https://arbetsformedlingen.se/platsbanken/annonser/30365029',
-            days_until_deadline: 16,
+            days_until_deadline: 13,
           },
         ],
       },
@@ -84,18 +84,18 @@ export const deadlineTimelineScript: MockScript = {
       toolCallId: 'mock-deadline-ai-call-2',
       input: {
         ad_ids: ['30970532', '30340646', '30306504', '30975894', '30365029'],
-        today_cursor: '2026-05-15',
+        today_cursor: '2026-05-18',
       },
       output: {
         accepted: true,
         ad_ids: ['30970532', '30340646', '30306504', '30975894', '30365029'],
-        today_cursor: '2026-05-15',
+        today_cursor: '2026-05-18',
       },
     },
     {
       kind: 'text',
       content:
-        ' 5 roles laid on the date axis. The soonest is Junior AI Engineer / Data Scientist at Effektify AB, 7 days out.',
+        ' 5 roles laid on the date axis. The soonest is Junior AI Engineer / Data Scientist at Effektify AB, 4 days out.',
     },
   ],
 } as const
