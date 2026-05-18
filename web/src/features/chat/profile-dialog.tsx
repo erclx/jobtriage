@@ -13,7 +13,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
-import { SESSION_KEYS } from '@/features/chat/storage-keys'
+import {
+  clearProfileSource,
+  SESSION_KEYS,
+  writeProfileSource,
+} from '@/features/chat/storage-keys'
 import { useSessionValue } from '@/features/chat/use-session-value'
 import { EXAMPLE_PROFILE } from '@/lib/agent/example-profile'
 import { cn } from '@/lib/utils'
@@ -62,6 +66,11 @@ export function ProfileDialog({
   const persist = useCallback(
     (value: string) => {
       setStored(value)
+      if (value.trim().length === 0) {
+        clearProfileSource()
+      } else {
+        writeProfileSource('user')
+      }
       onProfileChange(value)
     },
     [setStored, onProfileChange],
@@ -87,6 +96,7 @@ export function ProfileDialog({
   function handleClear() {
     setDraft('')
     clearStored()
+    clearProfileSource()
     onProfileChange('')
   }
 

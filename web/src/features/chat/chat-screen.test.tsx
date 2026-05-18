@@ -374,6 +374,7 @@ describe('ChatScreen', () => {
       SESSION_KEYS.profile,
       'My existing profile body',
     )
+    window.sessionStorage.setItem(SESSION_KEYS.profileSource, 'user')
     const user = userEvent.setup()
 
     render(<ChatScreen />)
@@ -400,6 +401,45 @@ describe('ChatScreen', () => {
     )
   })
 
+  it('should swap profiles silently when the saved profile came from a previous mock chip', async () => {
+    const sendMessage = vi.fn()
+    useChatMock.mockReturnValue({
+      messages: [],
+      sendMessage,
+      setMessages: vi.fn(),
+      stop: vi.fn(),
+      error: undefined,
+      status: 'ready',
+    })
+    window.sessionStorage.removeItem(SESSION_KEYS.apiKey)
+    window.sessionStorage.setItem(SESSION_KEYS.provider, 'mock')
+    window.sessionStorage.setItem(
+      SESSION_KEYS.profile,
+      'A previous mock-chip profile body',
+    )
+    window.sessionStorage.setItem(SESSION_KEYS.profileSource, 'mock')
+    const user = userEvent.setup()
+
+    render(<ChatScreen />)
+
+    await user.click(
+      screen.getByRole('button', {
+        name: /Show me Stockholm AI engineering roles/i,
+      }),
+    )
+
+    expect(screen.queryByText(/Replace your profile/i)).not.toBeInTheDocument()
+    expect(sendMessage).toHaveBeenCalledWith({
+      text: 'Show me Stockholm AI engineering roles',
+    })
+    expect(window.sessionStorage.getItem(SESSION_KEYS.profile)).not.toBe(
+      'A previous mock-chip profile body',
+    )
+    expect(window.sessionStorage.getItem(SESSION_KEYS.profileSource)).toBe(
+      'mock',
+    )
+  })
+
   it('should replace the saved profile when the mock-chip overwrite dialog confirms', async () => {
     const sendMessage = vi.fn()
     useChatMock.mockReturnValue({
@@ -416,6 +456,7 @@ describe('ChatScreen', () => {
       SESSION_KEYS.profile,
       'My existing profile body',
     )
+    window.sessionStorage.setItem(SESSION_KEYS.profileSource, 'user')
     const user = userEvent.setup()
 
     render(<ChatScreen />)
