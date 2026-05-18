@@ -2,7 +2,10 @@
 
 Job board search ranks for the platform, not for you. jobtriage triages Swedish job ads against a profile you paste, lays the results onto a spatial canvas you can compare and shortlist on, and shows the agent's tool calls inline so the ranking stays auditable.
 
-Live demo: [jobtriage.erclx.dev](https://jobtriage.erclx.dev). The demo path replays a scripted session captured against live JobTech ads, so it walks through real cards without needing a provider key. Bring an Anthropic, OpenAI, or Gemini key to drive the agent yourself.
+**Live demo:** https://jobtriage.erclx.dev  
+**Video walkthrough:** https://youtu.be/puAueu9ed3o
+
+The demo path replays a scripted session captured against live JobTech ads, so it walks through real cards without needing a provider key. Bring an Anthropic, OpenAI, or Gemini key to drive the agent yourself.
 
 ## Features
 
