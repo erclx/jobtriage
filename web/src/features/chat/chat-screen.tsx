@@ -54,7 +54,9 @@ import {
   RAIL_WIDTH_DEFAULT,
   RAIL_WIDTH_MAX,
   RAIL_WIDTH_MIN,
+  readProfileSource,
   SESSION_KEYS,
+  writeProfileSource,
 } from '@/features/chat/storage-keys'
 import { ToolTrace } from '@/features/chat/tool-trace'
 import { useSessionValue } from '@/features/chat/use-session-value'
@@ -331,6 +333,7 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
         const match = MOCK_PROMPTS.find((entry) => entry.prompt === text)
         if (match) {
           setStoredProfile(match.profile)
+          writeProfileSource('mock')
           latestProfile = match.profile
         }
       }
@@ -350,7 +353,13 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
       const match = MOCK_PROMPTS.find((entry) => entry.prompt === text)
       const chipProfile = match?.profile ?? ''
       const savedProfile = storedProfile.trim()
-      if (savedProfile && chipProfile && storedProfile !== chipProfile) {
+      const profileSource = readProfileSource()
+      const isUserProfileAtRisk =
+        Boolean(savedProfile) &&
+        Boolean(chipProfile) &&
+        storedProfile !== chipProfile &&
+        profileSource !== 'mock'
+      if (isUserProfileAtRisk) {
         setPendingMockOverwrite({ text, chipProfile })
         return
       }

@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import {
   BYOK_PROVIDERS,
   type ByokProvider,
+  clearProfileSource,
   getByokProviderMeta,
   MOCK_MARKER,
   OLLAMA_MARKER,
@@ -108,6 +109,7 @@ export function ApiKeyGate({
     window.sessionStorage.removeItem(SESSION_KEYS.canvas)
     if (storedProvider === MOCK_MARKER) {
       window.sessionStorage.removeItem(SESSION_KEYS.profile)
+      clearProfileSource()
     }
   }
 

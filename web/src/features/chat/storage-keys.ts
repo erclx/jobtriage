@@ -1,12 +1,31 @@
 export const SESSION_KEYS = {
   apiKey: 'jobtriage:anthropic-api-key',
   profile: 'jobtriage:profile-markdown',
+  profileSource: 'jobtriage:profile-source',
   provider: 'jobtriage:provider',
   canvas: 'jobtriage:canvas-state',
   railWidth: 'jobtriage:rail-width',
   chat: 'jobtriage:chat-messages',
   triedPrompts: 'jobtriage:tried-prompts',
 } as const
+
+export type ProfileSource = 'mock' | 'user'
+
+export function readProfileSource(): ProfileSource | null {
+  if (typeof window === 'undefined') return null
+  const value = window.sessionStorage.getItem(SESSION_KEYS.profileSource)
+  return value === 'mock' || value === 'user' ? value : null
+}
+
+export function writeProfileSource(source: ProfileSource): void {
+  if (typeof window === 'undefined') return
+  window.sessionStorage.setItem(SESSION_KEYS.profileSource, source)
+}
+
+export function clearProfileSource(): void {
+  if (typeof window === 'undefined') return
+  window.sessionStorage.removeItem(SESSION_KEYS.profileSource)
+}
 
 export const RAIL_WIDTH_DEFAULT = 440
 export const RAIL_WIDTH_MIN = 320
