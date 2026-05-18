@@ -473,6 +473,7 @@ function ChatScreenInner({ onSwitchProvider }: ChatScreenProps) {
             readOnly={isMockMode}
             aria-disabled={isMockMode}
             tabIndex={isMockMode ? -1 : 0}
+            className={cn(isMockMode && 'cursor-not-allowed')}
           />
         </PromptInputBody>
         <PromptInputFooter>
