@@ -97,6 +97,18 @@ export const stockholmNursingScript: MockScript = {
             occupation_label: 'Sjuksköterska, grundutbildad',
           },
           {
+            ad_id: '31046718',
+            headline: 'Leg. Sjuksköterska - Omgående start i Stockholm',
+            employer_name: 'Palmelind Konsult AB',
+            municipality: 'Stockholm',
+            application_deadline: '2026-05-31T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31046718',
+            description_excerpt:
+              'Vi söker dig som är legitimerad sjuksköterska och har några års erfarenhet av yrket. Uppdraget startar så snart som möjligt och pågår under sommaren 2026, enligt överenskommelse. Skicka in din ansökan redan idag – vi ser fram emot att höra från dig! Om Magnifiq Kompetens Vi är ett bemanningsföretag inom vård och omsorg som sätter kvalitet, trygghet och omtanke först. Vi värdesätter våra konsulter högt och arbetar för att du ska känna dig sedd, stöttad och uppskattad under hel…',
+            occupation_label: 'Sjuksköterska, grundutbildad',
+          },
+          {
             ad_id: '31016470',
             headline: 'Sjuksköterska för vaccination - Stockholm med omnejd',
             employer_name: 'Vaccinova AB',
@@ -120,19 +132,6 @@ export const stockholmNursingScript: MockScript = {
               'Vi söker dig som är legitimerad sjuksköterska och har några års erfarenhet av yrket. Uppdraget pågår mellan v.26-36 enligt överenskommelse. Skicka in din ansökan redan idag – vi ser fram emot att höra från dig! Om Magnifiq Kompetens Vi är ett bemanningsföretag inom vård och omsorg som sätter kvalitet, trygghet och omtanke först. Vi värdesätter våra konsulter högt och arbetar för att du ska känna dig sedd, stöttad och uppskattad under hela din resa hos oss. Magnifiq Kompetens…',
             occupation_label: 'Sjuksköterska, grundutbildad',
           },
-          {
-            ad_id: '30912892',
-            headline:
-              'Sjuksköterska sökes till avdelning 20, Psykosvård Stockholm',
-            employer_name: 'REGION STOCKHOLM',
-            municipality: 'Stockholm',
-            application_deadline: '2026-05-15T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30912892',
-            description_excerpt:
-              'Psykosvård Stockholm (PVS) är en ny verksamhet inom Stockholms läns sjukvårdsområde, där vi samlat alla våra befintliga öppenvårdsmottagningar och heldygnsvårdsavdelningar för patienter med psykossjukdom i en organisatorisk enhet. Nu söker vi en driven och entusiastisk sjuksköterska till oss på avdelning 20, S:t Görans sjukhusområde, som tillsammans med oss vill vara med och bidra till avdelningens utveckling. Här har vi högt i tak och nära till skratt! Om enheten S:t Görans…',
-            occupation_label: 'Sjuksköterska, grundutbildad',
-          },
         ],
       },
     },
@@ -148,11 +147,11 @@ export const stockholmNursingScript: MockScript = {
           },
           {
             label: 'Consider',
-            ad_ids: ['31016470', '30969235'],
+            ad_ids: ['31046718', '31016470'],
           },
           {
             label: 'Worth a look',
-            ad_ids: ['30912892'],
+            ad_ids: ['30969235'],
           },
         ],
       },
@@ -165,11 +164,11 @@ export const stockholmNursingScript: MockScript = {
           },
           {
             label: 'Consider',
-            ad_ids: ['31016470', '30969235'],
+            ad_ids: ['31046718', '31016470'],
           },
           {
             label: 'Worth a look',
-            ad_ids: ['30912892'],
+            ad_ids: ['30969235'],
           },
         ],
       },
@@ -193,13 +192,13 @@ export const stockholmNursingScript: MockScript = {
               'Acute-ward responsibility matches the experience in the profile.',
           },
           {
-            ad_id: '31016470',
+            ad_id: '31046718',
             score: 0.68,
             rationale:
               'Generalist nursing role that the profile experience covers.',
           },
           {
-            ad_id: '30969235',
+            ad_id: '31016470',
             score: 0.56,
             rationale:
               'Generalist nursing role that the profile experience covers.',
@@ -222,13 +221,13 @@ export const stockholmNursingScript: MockScript = {
               'Acute-ward responsibility matches the experience in the profile.',
           },
           {
-            ad_id: '31016470',
+            ad_id: '31046718',
             score: 0.68,
             rationale:
               'Generalist nursing role that the profile experience covers.',
           },
           {
-            ad_id: '30969235',
+            ad_id: '31016470',
             score: 0.56,
             rationale:
               'Generalist nursing role that the profile experience covers.',
