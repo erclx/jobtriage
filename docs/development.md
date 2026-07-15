@@ -127,7 +127,7 @@ Run from `python/` after `cd python`.
 
 ## Shell scripts
 
-All `.sh` files live under `scripts/` in their owning folder. Do not place shell scripts elsewhere. Verify scripts follow the [bash-script prompt](../prompts/bash-script.md).
+All `.sh` files live under `scripts/` in their owning folder. Do not place shell scripts elsewhere.
 
 ## Husky hooks
 

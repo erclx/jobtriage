@@ -8,7 +8,7 @@ Four-tier ownership model. Know which tier holds what before reading or writing.
 
 - `README.md`: public pitch and 60-second setup for an outside visitor. No internal contracts.
 - `docs/`: contributor-facing reference rendered on github.com. Setup commands, CI structure, deploy procedures, script tables. Audience is a human reading on the repo page.
-- `.claude/context/`: per-domain working knowledge for Claude Code editing that domain. Layer responsibilities, decisions, gotchas, hidden contracts. See `.claude/context/index.md` for the catalog. New entries follow `standards/context.md`.
+- `.claude/context/`: per-domain working knowledge for Claude Code editing that domain. Layer responsibilities, decisions, gotchas, hidden contracts. See `.claude/context/index.md` for the catalog. New entries follow `.claude/standards/context.md`.
 - `.claude/` planning docs (`TASKS.md`, `ARCHITECTURE.md`, `REQUIREMENTS.md`, `DESIGN.md`, `DIAGRAMS.md`): always-loaded product-wide invariants. Read before changes, when present. The `claude-feature` skill loads them in parallel. Wireframes live in `.claude/wireframes/` and load on demand per surface.
 - `.claude/rules/`: coding standards. Always-on rules apply every session. Path-scoped rules apply to files matching their `paths:` glob.
 
@@ -56,10 +56,10 @@ Rule of thumb when a fact lives in two places: if a contributor needs it to run 
 
 ## Markdown
 
-- Before writing or editing an artifact with a matching standard in `prompts/` or `standards/` (bash scripts, READMEs, PRs, commits, branches, snippets, skills, prose), read that file first and follow it.
-- When editing `README.md`, follow `standards/readme.md`. Keep it user-facing. Technical detail belongs in `docs/` or `.claude/`.
-- When writing or updating `.claude/context/<domain>.md`, follow `standards/context.md`.
-- When editing `.claude/DIAGRAMS.md` or any markdown that embeds a Mermaid diagram, follow `standards/diagrams.md`. Vertical `flowchart TB`, short labels, explanation paragraph below each diagram.
+- Before writing or editing an artifact with a matching standard in `.claude/standards/` (READMEs, PRs, commits, branches, snippets, skills, prose), read that file first and follow it.
+- When editing `README.md`, follow `.claude/standards/readme.md`. Keep it user-facing. Technical detail belongs in `docs/` or `.claude/`.
+- When writing or updating `.claude/context/<domain>.md`, follow `.claude/standards/context.md`.
+- When editing `.claude/DIAGRAMS.md` or any markdown that embeds a Mermaid diagram, follow `.claude/standards/diagrams.md`. Vertical `flowchart TB`, short labels, explanation paragraph below each diagram.
 
 ## Commands
 

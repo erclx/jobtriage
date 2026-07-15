@@ -6,7 +6,7 @@ title: Diagrams
 
 Read top to bottom. The order is chronological. The system gets framed first, then the corpus comes to life, then a query travels through it, then we measure how well it worked.
 
-Authored per `standards/diagrams.md`. Vertical layout, short labels, prose under each diagram.
+Authored per `.claude/standards/diagrams.md`. Vertical layout, short labels, prose under each diagram.
 
 ## 1. The whole system in five boxes
 
