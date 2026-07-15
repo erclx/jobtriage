@@ -2,6 +2,7 @@
   "version": "0.2",
   "language": "en,sv",
   "useGitignore": true,
+  "gitignoreRoot": ".",
   "import": ["@cspell/dict-sv/cspell-ext.json"],
   "dictionaryDefinitions": [
     {

@@ -14,6 +14,9 @@ Three-tier ownership model. Know which tier holds what before reading or writing
 Rule of thumb when a fact lives in two places: if an outside visitor needs it to evaluate the project, `README.md`. Everything a contributor or Claude needs to run or modify it lives in `.claude/context/`, keyed by domain.
 
 @.claude/context/index.md
+@.claude/REQUIREMENTS.md
+@.claude/ARCHITECTURE.md
+@.claude/wireframes/index.md
 
 ## Behavior
 
@@ -30,16 +33,6 @@ Rule of thumb when a fact lives in two places: if an outside visitor needs it to
 - Before any multi-path `rm` or `rm -rf`, list every target path in chat and wait for explicit confirmation. "Clean up X" authorizes a different destructive action than a previous one, never a blanket nuke.
 - Before proposing a new doc home for a convention (eval format, fixture kinds, scratch path), grep `CLAUDE.md` and `.claude/context/` for the topic. Extend the existing entry over creating a new section.
 
-## Testing the agent
-
-- When you need to verify agent behavior (tool selection, prompt edits, model output, SSE shape), drive the running stack directly via `curl -X POST http://localhost:3000/api/chat`. Do not ask the user to open the browser and paste prompts unless the test requires visual rendering. Probe multiple times to surface non-determinism, since local Ollama is sampling-noisy.
-- A minimal probe body: `{"messages":[{"id":"u1","role":"user","parts":[{"type":"text","text":"<prompt>"}]}],"profile":null}` with header `x-jobtriage-provider: ollama` for the local path or `Authorization: Bearer sk-ant-...` for the deployed Anthropic path.
-- To exercise the deploy posture (live JobTech path, `lookupConcept` plus live `searchJobs`) on the local Ollama branch without burning Anthropic credits, add `x-jobtriage-mode: deploy` to the curl headers, or open the browser at `http://127.0.0.1:3000/?mode=deploy` so the chat client sends the same header. The route gates the override on the absence of `process.env.VERCEL`, so production traffic cannot force the posture.
-- Read tool-call ordering with `grep -oE '"toolName":"[a-zA-Z]+"'` and final text with `grep -oE '"delta":"[^"]*"'`. The user runs visual checks (card layout, overflow, theme contrast).
-- Before loading a local model, start `scripts/monitor.sh` and check host RAM via PowerShell. Override `num_ctx` to 8192 via `OLLAMA_NUM_CTX` or route `providerOptions`. Ollama's default 131k allocates a KV cache that spills WSL2 into Windows host RAM on 30B-class models. Abort if host is already at 80%.
-- When a model ignores a prompt rule across 3-5 curl probes at the working temperature, stop tightening the prompt. Document it as a known limitation in the PR body and queue a model-swap or guard-rail follow-up instead.
-- The canonical UI inventory lives in `web/scripts/screenshots.ts` as surface-level capture cases (`byok`, `chat`, `profile`, `canvas`). When a change alters how an existing case renders, rerun `bun run screenshots` (or `SCREENSHOT_FILTER=<surface> bun run screenshots` for single-surface changes) and eyeball the diff against `.claude/wireframes/<surface>.md`. When a change introduces a layout configuration the harness does not yet cover, add a capture case first, then run. Component-only tweaks that do not change any captured PNG are exempt.
-
 ## Shipping
 
 - After implementing a feature, run `bun run check` plus the test suite for the surfaces you touched. Fix what fails before opening a PR.
@@ -55,10 +48,7 @@ Rule of thumb when a fact lives in two places: if an outside visitor needs it to
 
 ## Markdown
 
-- Before writing or editing an artifact with a matching standard in `.claude/standards/` (READMEs, PRs, commits, branches, snippets, skills, prose), read that file first and follow it.
-- When editing `README.md`, follow `.claude/standards/readme.md`. Keep it user-facing. Technical detail belongs in `.claude/`.
-- When writing or updating `.claude/context/<domain>.md`, follow `.claude/standards/context.md`.
-- When editing `.claude/DIAGRAMS.md` or any markdown that embeds a Mermaid diagram, follow `.claude/standards/diagrams.md`. Vertical `flowchart TB`, short labels, explanation paragraph below each diagram.
+- Before drafting a PR body, commit message, branch name, or snippet, read the matching standard in `.claude/standards/` and follow it. None of these is a file on disk, so no path-scoped rule fires for them.
 
 ## Commands
 

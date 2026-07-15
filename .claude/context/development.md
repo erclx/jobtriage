@@ -131,6 +131,7 @@ Deployment Protection is off for this project, so preview URLs are publicly acce
 
 ## Hidden contracts
 
+- The canonical UI inventory lives in `web/scripts/screenshots.ts` as surface-level capture cases (`byok`, `chat`, `profile`, `canvas`). When a change alters how an existing case renders, rerun `bun run screenshots` (or `SCREENSHOT_FILTER=<surface> bun run screenshots` for a single surface) and eyeball the diff against `.claude/wireframes/<surface>.md`. When a change introduces a layout the harness does not yet cover, add a capture case first, then run. Component-only tweaks that change no captured PNG are exempt.
 - All `.sh` files live under `scripts/` in their owning folder. Do not place shell scripts elsewhere.
 - Husky wires three hooks: `pre-commit` runs `lint-staged` against staged files (prettier, cspell, shfmt, shellcheck), `commit-msg` runs `commitlint` against the conventional commit format, and `pre-push` runs the full `bun run check` cascade.
 

@@ -63,6 +63,27 @@ Spatial tools (`placeAds`, `groupAds`, `connectProfileToAds`, `pairAdsForCompare
 
 JobTech `/search` filters occupation concept ids via `occupation-name`, not `occupation-concept-id`. The latter is silently ignored and returns the unfiltered global corpus. JobTech's taxonomy `suggesters/autocomplete` accepts one `type` per request, so cross-taxonomy lookups must fan out to parallel calls. When adding any new JobTech filter, hit the live endpoint and verify the response narrows. Do not trust parameter names from training data or from other endpoints in the same API.
 
+## Probing the agent
+
+Verify agent behavior (tool selection, prompt edits, model output, SSE shape) by driving the running stack directly rather than through the browser. Only reach for the browser when the check needs visual rendering. Probe multiple times to surface non-determinism, since local Ollama is sampling-noisy.
+
+```bash
+curl -X POST http://localhost:3000/api/chat \
+  -H 'content-type: application/json' \
+  -H 'x-jobtriage-provider: ollama' \
+  -d '{"messages":[{"id":"u1","role":"user","parts":[{"type":"text","text":"<prompt>"}]}],"profile":null}'
+```
+
+Swap `x-jobtriage-provider: ollama` for `Authorization: Bearer sk-ant-...` to drive the deployed Anthropic path.
+
+To exercise the deploy posture (live JobTech path, `lookupConcept` plus live `searchJobs`) on the local Ollama branch without burning Anthropic credits, add `x-jobtriage-mode: deploy` to the headers, or open `http://127.0.0.1:3000/?mode=deploy` so the chat client sends the same header. The route gates the override on the absence of `process.env.VERCEL`, so production traffic cannot force the posture.
+
+Read tool-call ordering with `grep -oE '"toolName":"[a-zA-Z]+"'` and final text with `grep -oE '"delta":"[^"]*"'`.
+
+Before loading a local model, start `scripts/monitor.sh` and check host RAM. Override `num_ctx` to 8192 via `OLLAMA_NUM_CTX` or route `providerOptions`. Ollama's default 131k allocates a KV cache that spills WSL2 into Windows host RAM on 30B-class models. Abort if host is already at 80%. Full rationale in `development.md`.
+
+When a model ignores a prompt rule across 3-5 probes at the working temperature, stop tightening the prompt. Document it as a known limitation and queue a model-swap or guard-rail follow-up instead.
+
 ## Hidden contracts
 
 - `x-jobtriage-mode` default is empty, not `local`. The resolver falls through to step 2 when the header is absent or anything other than `deploy`.
