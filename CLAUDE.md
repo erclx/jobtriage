@@ -1,18 +1,17 @@
-# Project
+# jobtriage
 
-[One-line description]
+Triages Swedish job ads against a pasted profile, lays results onto a spatial canvas, and shows the agent's tool calls inline so the ranking stays auditable. Next.js app in `web/`, FastAPI tool server and CLI in `python/`.
 
 ## Context
 
-Four-tier ownership model. Know which tier holds what before reading or writing.
+Three-tier ownership model. Know which tier holds what before reading or writing.
 
 - `README.md`: public pitch and 60-second setup for an outside visitor. No internal contracts.
-- `docs/`: contributor-facing reference rendered on github.com. Setup commands, CI structure, deploy procedures, script tables. Audience is a human reading on the repo page.
 - `.claude/context/`: per-domain working knowledge for Claude Code editing that domain. Layer responsibilities, decisions, gotchas, hidden contracts. See `.claude/context/index.md` for the catalog. New entries follow `.claude/standards/context.md`.
 - `.claude/` planning docs (`TASKS.md`, `ARCHITECTURE.md`, `REQUIREMENTS.md`, `DESIGN.md`, `DIAGRAMS.md`): always-loaded product-wide invariants. Read before changes, when present. The `claude-feature` skill loads them in parallel. Wireframes live in `.claude/wireframes/` and load on demand per surface.
 - `.claude/rules/`: coding standards. Always-on rules apply every session. Path-scoped rules apply to files matching their `paths:` glob.
 
-Rule of thumb when a fact lives in two places: if a contributor needs it to run the project, `docs/`. If Claude needs it to modify the project safely, `.claude/context/`. If both, `docs/` carries a thin pointer and `.claude/context/` carries the depth.
+Rule of thumb when a fact lives in two places: if an outside visitor needs it to evaluate the project, `README.md`. Everything a contributor or Claude needs to run or modify it lives in `.claude/context/`, keyed by domain.
 
 @.claude/context/index.md
 
@@ -25,11 +24,11 @@ Rule of thumb when a fact lives in two places: if a contributor needs it to run 
 - Do not add features the user did not ask for.
 - When rewriting a section, preserve existing code blocks, tables, and grouped examples unless the user asked to remove them.
 - When planning an edit to `CLAUDE.md`, show the proposed change as a fenced `diff` block in chat first, then wait for approval before calling `Edit`
-- This is a public repo. Do not write personal names into READMEs, `docs/`, `.claude/` planning docs, source comments, or commit messages. Use neutral phrasing like "the user", "a recruiter", or "a local file". Brief content under `.tmp/` is local context, not output.
+- This is a public repo. Do not write personal names into READMEs, `.claude/` planning docs, source comments, or commit messages. Use neutral phrasing like "the user", "a recruiter", or "a local file". Brief content under `.tmp/` is local context, not output.
 - Do not cite `.claude/` paths (TASKS.md, plans, review, .tmp) from PR bodies, READMEs, or other artifacts a reviewer reads. Inline the context or use neutral phrasing like "queued as a follow-up".
 - For deploy infrastructure (Cloud Run, Vercel, Cloudflare), prefer CLI over the dashboard. `gcloud` and `vercel` are authenticated locally and persist across sessions. Run inspection, redeploy, env-var, and domain commands from Bash rather than asking the user to click through. Confirm before destructive operations (delete service, force-push production, change live DNS).
 - Before any multi-path `rm` or `rm -rf`, list every target path in chat and wait for explicit confirmation. "Clean up X" authorizes a different destructive action than a previous one, never a blanket nuke.
-- Before proposing a new doc home for a convention (eval format, fixture kinds, scratch path), grep `CLAUDE.md` and `docs/` for the topic. Extend the existing entry over creating a new section.
+- Before proposing a new doc home for a convention (eval format, fixture kinds, scratch path), grep `CLAUDE.md` and `.claude/context/` for the topic. Extend the existing entry over creating a new section.
 
 ## Testing the agent
 
@@ -57,13 +56,13 @@ Rule of thumb when a fact lives in two places: if a contributor needs it to run 
 ## Markdown
 
 - Before writing or editing an artifact with a matching standard in `.claude/standards/` (READMEs, PRs, commits, branches, snippets, skills, prose), read that file first and follow it.
-- When editing `README.md`, follow `.claude/standards/readme.md`. Keep it user-facing. Technical detail belongs in `docs/` or `.claude/`.
+- When editing `README.md`, follow `.claude/standards/readme.md`. Keep it user-facing. Technical detail belongs in `.claude/`.
 - When writing or updating `.claude/context/<domain>.md`, follow `.claude/standards/context.md`.
 - When editing `.claude/DIAGRAMS.md` or any markdown that embeds a Mermaid diagram, follow `.claude/standards/diagrams.md`. Vertical `flowchart TB`, short labels, explanation paragraph below each diagram.
 
 ## Commands
 
-- `bun run check` runs the full verify cascade. Full script reference in `docs/development.md`.
+- `bun run check` runs the full verify cascade. Full script reference in `.claude/context/development.md`.
 - Do not run `bun run dev`. The script is disabled. Run `bun run restart:web` from the repo root for any local server need. It kills stale `next-server` and Playwright zombies, rebuilds, starts the server in the background with logs at `.claude/.tmp/restart/server.log`, and verifies the listening pid changed. Do not rely on `lsof -ti:3000`, it can miss `next-server`.
 
 ## Output
@@ -76,9 +75,11 @@ Rule of thumb when a fact lives in two places: if a contributor needs it to run 
 
 ## Key paths
 
-- `src/`: [description]
+- `web/`: Next.js app, bun-managed, owns the chat surface, canvas, and the agent route
+- `python/`: FastAPI tool server and Typer CLI, uv-managed, owns retrieval and the JobTech client
+- `scripts/`: repo-root shell tooling (restart, monitor)
 - `.claude/`: planning docs (requirements, architecture, wireframes, design, tasks)
-- `.claude/context/`: per-domain narrative loaded when editing that domain. See `.claude/context/index.md` for the catalog. Entries cover agent loop, canvas, web, python, retrieval, evals, development, deploy.
+- `.claude/context/`: per-domain narrative loaded when editing that domain. See `.claude/context/index.md` for the catalog. Entries cover agent loop, canvas, ci, web, python, retrieval, evals, development, deploy.
 - `.claude/wireframes/`: per-surface ASCII layouts loaded on demand, indexed via `.claude/wireframes/index.md`
 - `.claude/evals/`: structured JSON fixtures consumed by `web/scripts/model-probe.ts`. See `.claude/context/evals.md` for fixture shape, `kind` semantics, and the `workflow_dispatch` posture.
 - `.claude/review/`: gitignored scratch for review and UI-test output, overwritten on each run

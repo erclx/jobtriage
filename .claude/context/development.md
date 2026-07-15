@@ -1,11 +1,97 @@
 ---
 title: Development
-description: Local dev rules, WSL2 constraints, and regen-gate workflow for Claude Code
+description: Local dev workflow, scripts, WSL2 constraints, and the regen-gate pattern
 ---
 
 # Development
 
-Rules and rationale a Claude Code session must respect when editing this repo. Setup commands, scripts tables, and contributor onboarding live in `docs/development.md`.
+Local dev for this monorepo. Two stack folders sit beside a thin orchestration root. This entry is the single discoverable surface for how to run the project, and the rationale behind the rules that constrain it.
+
+## Layer responsibilities
+
+- `web/` owns the Next.js app, bun-managed, with its own lint, tests, and build.
+- `python/` owns the FastAPI backend and CLI, uv-managed, with its own lint, types, and tests.
+- Root owns format, spelling, and shell checks, plus the cascade that runs both stack verifies.
+
+Per-stack structure and conventions live in `web.md` and `python.md`.
+
+## Setup
+
+- Install [Bun](https://bun.sh): `curl -fsSL https://bun.sh/install | bash`
+- Install [uv](https://docs.astral.sh/uv/): `curl -LsSf https://astral.sh/uv/install.sh | sh`
+- Root deps: `bun install`
+- Web deps: `cd web && bun install`
+- Python deps: `cd python && uv sync`
+
+## Scripts
+
+### Verify cascade
+
+| Command         | What runs                                                                      | Approx wall |
+| --------------- | ------------------------------------------------------------------------------ | ----------- |
+| `bun run check` | Format, spell, shell, python (ruff, mypy, pytest), web (typecheck, lint, test) | ~5s         |
+
+`check` runs on every `git push` via the husky `pre-push` hook. The python verify also regenerates `python/openapi.json` and fails if the working copy drifts. Commit the regenerated file alongside the source change.
+
+### Root scripts
+
+| Command                | Purpose                                                                  |
+| ---------------------- | ------------------------------------------------------------------------ |
+| `bun run check`        | Full cascade. Asserts format, spell, shell, python, and web checks pass. |
+| `bun run dev:api`      | FastAPI backend with `--reload` on `http://127.0.0.1:8000`.              |
+| `bun run restart:web`  | Kill stale `next-server`, rebuild, and serve on `http://localhost:3000`. |
+| `bun run format`       | Auto-fix prettier and shfmt formatting.                                  |
+| `bun run check:format` | Assert prettier and shfmt are clean.                                     |
+| `bun run check:spell`  | Assert cspell passes against dictionaries.                               |
+| `bun run check:shell`  | Assert shellcheck passes at warning level.                               |
+| `bun run clean`        | Wipe `node_modules/`, clear bun cache, reinstall.                        |
+| `bun run update`       | Interactive `bun update` followed by verification.                       |
+
+### Web scripts
+
+Run from `web/` after `cd web`.
+
+| Command                 | Purpose                                                                                                                                                                                                                                                                                                                                      |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bun run dev`           | Disabled. Prints a pointer to `bun run restart:web` and exits 1.                                                                                                                                                                                                                                                                             |
+| `bun run build`         | Production build.                                                                                                                                                                                                                                                                                                                            |
+| `bun run start`         | Serve the production build.                                                                                                                                                                                                                                                                                                                  |
+| `bun run lint`          | ESLint, zero warnings allowed.                                                                                                                                                                                                                                                                                                               |
+| `bun run lint:fix`      | Auto-fix ESLint issues.                                                                                                                                                                                                                                                                                                                      |
+| `bun run typecheck`     | `tsc --noEmit`.                                                                                                                                                                                                                                                                                                                              |
+| `bun run test`          | Vitest in watch mode.                                                                                                                                                                                                                                                                                                                        |
+| `bun run test:run`      | Vitest once with verbose reporter.                                                                                                                                                                                                                                                                                                           |
+| `bun run test:coverage` | Vitest with coverage.                                                                                                                                                                                                                                                                                                                        |
+| `bun run test:e2e`      | Playwright end-to-end.                                                                                                                                                                                                                                                                                                                       |
+| `bun run favicon`       | Regenerate `src/app/favicon.ico` from `src/app/icon.svg`.                                                                                                                                                                                                                                                                                    |
+| `bun run screenshots`   | Capture canonical UI states to `.claude/review/screenshots/<host>/` (`localhost/` by default, derived from `SCREENSHOT_BASE_URL`). Set `SCREENSHOT_FILTER=<substring>` to capture only matching `surface/name` labels and skip the wipe so other surfaces stay intact. Pass `--check-console-clean` to fail on any captured `console.error`. |
+| `bun run smoke:prod`    | Run `screenshots` against `https://jobtriage.erclx.dev` with `--check-console-clean`. Output lands in `.claude/review/screenshots/jobtriage.erclx.dev/`.                                                                                                                                                                                     |
+| `bun run check`         | Web verify (typecheck, lint, test).                                                                                                                                                                                                                                                                                                          |
+
+### Python commands
+
+Run from `python/` after `cd python`.
+
+| Command                  | Purpose                   |
+| ------------------------ | ------------------------- |
+| `uv run ruff check .`    | Lint.                     |
+| `uv run ruff format .`   | Auto-format.              |
+| `uv run mypy .`          | Strict typecheck.         |
+| `uv run pytest -v`       | Tests.                    |
+| `bash scripts/verify.sh` | Full python verify.       |
+| `uv run jobtriage-api`   | Start the FastAPI server. |
+
+## Local smoke
+
+To open the chat surface against the real backend on `http://localhost:3000`:
+
+```bash
+# terminal 1
+bun run dev:api
+
+# terminal 2
+bun run restart:web
+```
 
 ## Decisions
 
@@ -35,13 +121,34 @@ The pre-push hook runs the full `bun run check` cascade. The cascade may reforma
 
 The Ollama branch sets `num_ctx` to 8192 by default via `providerOptions`, overridable through `OLLAMA_NUM_CTX`. Ollama's stock 131k context window allocates a KV cache that spills past WSL2's memory cap into Windows host RAM under inference, freezing the desktop. The 8192 floor fits the agent loop with multi-turn tool calls and keeps the cache resident in VRAM.
 
+### Preview deploys are the outer loop, not the inner one
+
+Every push to a branch with an open PR triggers a Vercel preview deploy, producing two URLs in the PR comment: a per-commit immutable URL (`jobtriage-<commitHash>-...`) and a per-branch alias (`jobtriage-git-<branch>-...`) that tracks the latest commit.
+
+Stay on `bun run restart:web` for the inner loop. Local builds reflect edits in seconds, previews take minutes. Reach for a preview when a reviewer needs to click without a local checkout, when the change needs cross-device verification, when an OG card crawler must fetch the page (LinkedIn Post Inspector, Slack, and Twitter Card Validator cannot reach localhost), or when verifying that Vercel env vars produce the expected runtime.
+
+Deployment Protection is off for this project, so preview URLs are publicly accessible. If a branch ever needs gated previews, toggle it to `Only Preview Deployments` in Vercel project settings.
+
+## Hidden contracts
+
+- All `.sh` files live under `scripts/` in their owning folder. Do not place shell scripts elsewhere.
+- Husky wires three hooks: `pre-commit` runs `lint-staged` against staged files (prettier, cspell, shfmt, shellcheck), `commit-msg` runs `commitlint` against the conventional commit format, and `pre-push` runs the full `bun run check` cascade.
+
 ## Gotchas
 
 ### Hardware monitor before any local model load
 
 Local LLM smoke runs (Ollama with `gemma4:26b`, the multilingual e5 embedder) can saturate WSL2 memory or push the Windows host into swap. WSL2 caps the guest at half the host by default, so the Linux side reports a much smaller ceiling than the physical install.
 
-Run `scripts/monitor.sh` in a separate terminal before starting any local model. The script samples four pressure sources every 3s (Windows host RAM, WSL guest RAM, GPU VRAM and utilization, loaded Ollama models) and warns at host RAM 85% or GPU util 90%. Abort the model load if host is already at 80%.
+Run `scripts/monitor.sh` in a separate terminal before starting any local model:
+
+```bash
+./scripts/monitor.sh                         # 3s interval, frame UI on stderr, samples on stdout
+./scripts/monitor.sh 1                       # 1s interval
+./scripts/monitor.sh > /tmp/mon.log 2>&1 &   # detach, background, single combined log
+```
+
+The script samples four pressure sources every 3s (Windows host RAM, WSL guest RAM, GPU VRAM and utilization, loaded Ollama models) and warns at host RAM 85% or GPU util 90%. Abort the model load if host is already at 80%.
 
 ### `next build` and Playwright e2e are out of the verify cascade by design
 
