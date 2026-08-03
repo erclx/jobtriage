@@ -26,6 +26,18 @@ export const compareThreeRolesScript: MockScript = {
       output: {
         results: [
           {
+            ad_id: '31226420',
+            headline: 'Machine Learning Engineer',
+            employer_name: 'Nextory AB',
+            municipality: 'Stockholm',
+            application_deadline: '2026-12-26T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31226420',
+            description_excerpt:
+              'You know that bit where every company says they’re “changing the world”? Yeah, it can feel a little forced. But we like to think our story actually has some realness to it. Our story begins with Shadi Bitar and Ninos Malki, who came to Sweden from Syria as kids and discovered that books could be a bridge - helping them learn the language, understand the culture, and explore new worlds. A thought emerged, what if everyone could have that? And just like that, Nextory was born -…',
+            occupation_label: 'Backend-utvecklare',
+          },
+          {
             ad_id: '31027393',
             headline: 'Machine Learning Engineer',
             employer_name: 'Leapit Nordics AB',
@@ -36,18 +48,6 @@ export const compareThreeRolesScript: MockScript = {
             description_excerpt:
               'Machine Learning Engineer Leapit Consulting - Malmö, Sweden About the role Leapit is looking for experienced Machine Learning Engineers to join our growing engineering team in Sweden. We work with leading international companies across technology, finance, telecom, automotive, retail, and digital products. As a Machine Learning Engineer, you will design, build, and deploy machine learning solutions that solve real business problems at scale. You will work end-to-end, from dat…',
             occupation_label: 'Dataingenjör',
-          },
-          {
-            ad_id: '30916616',
-            headline: 'Machine Learning Engineer',
-            employer_name: 'Sellhelp AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-06-30T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30916616',
-            description_excerpt:
-              'Leverage the power of AI to revolutionize sustainable shopping for millions of customers. 💙 Sellpy’s vision is to empower everyone to live circularly. We believe that every item deserves a second life, and we see huge financial, social and environmental value in making sure this happens. Join us in building technology that drives real change. Machine Learning at Sellpy We look for you who want to be part of our journey to make sustainable shopping the first-hand choice by bu…',
-            occupation_label: 'Systemutvecklare/Programmerare',
           },
           {
             ad_id: '30646235',
@@ -74,10 +74,22 @@ export const compareThreeRolesScript: MockScript = {
       toolName: 'compareRoles',
       toolCallId: 'mock-compare-roles-call-2',
       input: {
-        ad_ids: ['31027393', '30916616'],
+        ad_ids: ['31226420', '31027393'],
       },
       output: {
         results: [
+          {
+            ad_id: '31226420',
+            headline: 'Machine Learning Engineer',
+            employer_name: 'Nextory AB',
+            municipality: 'Stockholm',
+            application_deadline: '2026-12-26T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31226420',
+            description_excerpt:
+              'You know that bit where every company says they’re “changing the world”? Yeah, it can feel a little forced. But we like to think our story actually has some realness to it. Our story begins with Shadi Bitar and Ninos Malki, who came to Sweden from Syria as kids and discovered that books could be a bridge - helping them learn the language, understand the culture, and explore new worlds. A thought emerged, what if everyone could have that? And just like that, Nextory was born -…',
+            occupation_label: 'Backend-utvecklare',
+          },
           {
             ad_id: '31027393',
             headline: 'Machine Learning Engineer',
@@ -90,18 +102,6 @@ export const compareThreeRolesScript: MockScript = {
               'Machine Learning Engineer Leapit Consulting - Malmö, Sweden About the role Leapit is looking for experienced Machine Learning Engineers to join our growing engineering team in Sweden. We work with leading international companies across technology, finance, telecom, automotive, retail, and digital products. As a Machine Learning Engineer, you will design, build, and deploy machine learning solutions that solve real business problems at scale. You will work end-to-end, from dat…',
             occupation_label: 'Dataingenjör',
           },
-          {
-            ad_id: '30916616',
-            headline: 'Machine Learning Engineer',
-            employer_name: 'Sellhelp AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-06-30T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30916616',
-            description_excerpt:
-              'Leverage the power of AI to revolutionize sustainable shopping for millions of customers. 💙 Sellpy’s vision is to empower everyone to live circularly. We believe that every item deserves a second life, and we see huge financial, social and environmental value in making sure this happens. Join us in building technology that drives real change. Machine Learning at Sellpy We look for you who want to be part of our journey to make sustainable shopping the first-hand choice by bu…',
-            occupation_label: 'Systemutvecklare/Programmerare',
-          },
         ],
       },
     },
@@ -110,50 +110,50 @@ export const compareThreeRolesScript: MockScript = {
       toolName: 'pairAdsForCompare',
       toolCallId: 'mock-compare-roles-call-3',
       input: {
-        ad_id_a: '31027393',
-        ad_id_b: '30916616',
+        ad_id_a: '31226420',
+        ad_id_b: '31027393',
         diffs: [
           {
             field: 'Employer',
-            a: 'Leapit Nordics AB',
-            b: 'Sellhelp AB',
+            a: 'Nextory AB',
+            b: 'Leapit Nordics AB',
             verdict: 'neither',
           },
           {
             field: 'Location',
-            a: 'Malmö',
-            b: 'Stockholm',
+            a: 'Stockholm',
+            b: 'Malmö',
             verdict: 'neither',
           },
           {
             field: 'Deadline',
-            a: '2026-08-31',
-            b: '2026-06-30',
+            a: '2026-12-26',
+            b: '2026-08-31',
             verdict: 'a',
           },
         ],
       },
       output: {
         accepted: true,
-        ad_id_a: '31027393',
-        ad_id_b: '30916616',
+        ad_id_a: '31226420',
+        ad_id_b: '31027393',
         diffs: [
           {
             field: 'Employer',
-            a: 'Leapit Nordics AB',
-            b: 'Sellhelp AB',
+            a: 'Nextory AB',
+            b: 'Leapit Nordics AB',
             verdict: 'neither',
           },
           {
             field: 'Location',
-            a: 'Malmö',
-            b: 'Stockholm',
+            a: 'Stockholm',
+            b: 'Malmö',
             verdict: 'neither',
           },
           {
             field: 'Deadline',
-            a: '2026-08-31',
-            b: '2026-06-30',
+            a: '2026-12-26',
+            b: '2026-08-31',
             verdict: 'a',
           },
         ],

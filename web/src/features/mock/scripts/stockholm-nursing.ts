@@ -31,18 +31,18 @@ export const stockholmNursingScript: MockScript = {
             type: 'occupation',
           },
           {
+            concept_id: 'bXNH_MNX_dUR',
+            preferred_label: 'Sjuksköterska, grundutbildad',
+            type: 'occupation',
+          },
+          {
             concept_id: 'uaJs_9YA_Cnp',
             preferred_label: 'Sjuksköterska, äldreomsorg och -vård/geriatrik',
             type: 'occupation',
           },
           {
-            concept_id: '4KeX_GcW_9jY',
-            preferred_label: 'Sjuksköterska, medicin och kirurgi',
-            type: 'occupation',
-          },
-          {
-            concept_id: 'LVyV_dGP_pee',
-            preferred_label: 'Sjuksköterska, diagnostisk radiologi',
+            concept_id: 'kHno_7rL_Lcm',
+            preferred_label: 'Sjuksköterska, geriatrisk vård',
             type: 'occupation',
           },
           {
@@ -73,11 +73,23 @@ export const stockholmNursingScript: MockScript = {
       output: {
         results: [
           {
+            ad_id: '31092227',
+            headline: 'Sjuksköterska inom vårdförsäkring i Stockholm',
+            employer_name: 'The Finance Family AB',
+            municipality: 'Stockholm',
+            application_deadline: '2026-08-31T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31092227',
+            description_excerpt:
+              'The Finance Family söker nu efter en sjuksköterska för ett uppdrag i Stockholm. Tjänsten startar som ett konsultuppdrag, med möjlighet till förlängning efter uppdragets slut. Preliminär start augusti/september 2026 och t o m 30 april 2027 (initialt). Om rollen och arbetsuppgifter: Som sjuksköterska hos vår kund inom vårdförsäkring, blir du en del av ett större team som ansvarar för hanteringen av bolagets kunders försäkringsärenden. Du stödjer dig på gällande försäkringsvillk…',
+            occupation_label: 'Sjuksköterska, grundutbildad',
+          },
+          {
             ad_id: '30879803',
             headline: 'Legitimerad Sjuksköterska Sökes till Stockholm',
             employer_name: 'Omsorg & Behandling 1 AB',
             municipality: 'Stockholm',
-            application_deadline: '2026-05-20T23:59:59',
+            application_deadline: '2026-08-04T23:59:59',
             webpage_url:
               'https://arbetsformedlingen.se/platsbanken/annonser/30879803',
             description_excerpt:
@@ -85,51 +97,39 @@ export const stockholmNursingScript: MockScript = {
             occupation_label: 'Sjuksköterska, grundutbildad',
           },
           {
-            ad_id: '30543967',
-            headline: 'Sjuksköterska till Stockholm sommar 2026',
-            employer_name: 'Tribonum Vårdbemanning AB',
+            ad_id: '31265789',
+            headline: 'Sjuksköterska till vårdcentral i Södra Stockholm',
+            employer_name: 'Medcura AB',
             municipality: 'Stockholm',
-            application_deadline: '2026-05-31T23:59:59',
+            application_deadline: '2026-08-09T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30543967',
+              'https://arbetsformedlingen.se/platsbanken/annonser/31265789',
             description_excerpt:
-              'Sjuksköterska till privat vårdgivare – Sommar 2026 (Stockholm) Vill du arbeta som sjuksköterska i sommar hos en privat vårdgivare i Stockholm, med god arbetsmiljö, flexibla arbetstider och möjlighet att verkligen göra skillnad? Då kan detta vara uppdraget för dig! Om uppdraget Vi söker legitimerade sjuksköterskor för sommaruppdrag under juni–augusti 2026. Uppdraget är hos en privat vårdgivare i Stockholmsområdet och passar dig som vill kombinera professionell utveckling med e…',
+              'Om Jobbet Erfaren sjuksköterska sökes till uppdrag på vårdcentral i södra Stockholm Vi söker nu en erfaren sjuksköterska för uppdrag på en primärvårds vårdcentral i södra Stockholm under vecka 29–31. Arbetstid: Måndag–fredag Kl. 08:00–15:00 Krav: Legitimerad sjuksköterska Erfarenhet av arbete inom primärvård/vårdcentral God förmåga att arbeta självständigt och i team Är du tillgänglig under perioden och intresserad av uppdraget? Hör gärna av dig med ditt CV och en kort presen…',
             occupation_label: 'Sjuksköterska, grundutbildad',
           },
           {
-            ad_id: '31046718',
-            headline: 'Leg. Sjuksköterska - Omgående start i Stockholm',
-            employer_name: 'Palmelind Konsult AB',
+            ad_id: '31254161',
+            headline: 'Sjuksköterska sökes v.29-33 i Stockholm 85.000kr lön!',
+            employer_name: 'Viraliv AB',
             municipality: 'Stockholm',
-            application_deadline: '2026-05-31T23:59:59',
+            application_deadline: '2026-09-30T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31046718',
+              'https://arbetsformedlingen.se/platsbanken/annonser/31254161',
             description_excerpt:
-              'Vi söker dig som är legitimerad sjuksköterska och har några års erfarenhet av yrket. Uppdraget startar så snart som möjligt och pågår under sommaren 2026, enligt överenskommelse. Skicka in din ansökan redan idag – vi ser fram emot att höra från dig! Om Magnifiq Kompetens Vi är ett bemanningsföretag inom vård och omsorg som sätter kvalitet, trygghet och omtanke först. Vi värdesätter våra konsulter högt och arbetar för att du ska känna dig sedd, stöttad och uppskattad under hel…',
+              'Viraliv söker nu akut legitimerad sjuksköterska för uppdrag inom äldreomsorg i Södra Stockholm mellan v.29-33 Hos oss får du inte bara ett uppdrag – du får en partner som satsar på dig. Du kommer att arbeta inom en verksamhet där du gör verklig skillnad varje dag. Arbetsuppgifterna inkluderar bland annat: Medicinska bedömningar och omvårdnad Läkemedelshantering Dokumentation enligt gällande riktlinjer Samarbete med övrig vårdpersona Vi söker dig som Är legitimerad sjuksköters…',
             occupation_label: 'Sjuksköterska, grundutbildad',
           },
           {
-            ad_id: '31016470',
-            headline: 'Sjuksköterska för vaccination - Stockholm med omnejd',
-            employer_name: 'Vaccinova AB',
+            ad_id: '31306287',
+            headline: 'Sjuksköterska till 1177 på telefon i Region Stockholm',
+            employer_name: 'REGION STOCKHOLM',
             municipality: 'Stockholm',
-            application_deadline: '2026-11-04T23:59:59',
+            application_deadline: '2026-09-30T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31016470',
+              'https://arbetsformedlingen.se/platsbanken/annonser/31306287',
             description_excerpt:
-              'Vi på Vaccinova söker nu engagerade och utåtriktade sjuksköterskor för arbete med vaccination på timmar till våra mottagning i Stockholmsregionen. Tjänsten omfattar deltid på ett kontinuerligt schema. Vaccinova är en vaccinatör med stort fokus på trygghet och hälsa. Vi är specialister på vaccination och finns idag på över 180 platser i Sverige – både på våra egna vaccinationsmottagningar samt hos våra samarbetspartners. Vi söker nu efter nästa medlem i vårt team! Arbetet hos…',
-            occupation_label: 'Sjuksköterska, grundutbildad',
-          },
-          {
-            ad_id: '30969235',
-            headline: 'Leg. Sjuksköterska - Stockholm - Sommar 2026',
-            employer_name: 'Palmelind Konsult AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-05-28T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30969235',
-            description_excerpt:
-              'Vi söker dig som är legitimerad sjuksköterska och har några års erfarenhet av yrket. Uppdraget pågår mellan v.26-36 enligt överenskommelse. Skicka in din ansökan redan idag – vi ser fram emot att höra från dig! Om Magnifiq Kompetens Vi är ett bemanningsföretag inom vård och omsorg som sätter kvalitet, trygghet och omtanke först. Vi värdesätter våra konsulter högt och arbetar för att du ska känna dig sedd, stöttad och uppskattad under hela din resa hos oss. Magnifiq Kompetens…',
+              'Möjlighet att arbeta hemifrån inom Sverige Är du legitimerad sjuksköterska med god erfarenhet, trygghet i yrkesrollen och förmåga att arbeta självständigt? Vill du arbeta med kvalificerad sjukvårdsrådgivning per telefon, med möjlighet till distansarbete? Hos Sjukvårdsrådgivningen på telefon i Region Stockholm får du en viktig roll där du varje dag bidrar till att invånare får rätt råd, rätt bedömning och vägledning till rätt vårdnivå. Rollen ger dig möjlighet att arbeta hemif…',
             occupation_label: 'Sjuksköterska, grundutbildad',
           },
         ],
@@ -143,15 +143,15 @@ export const stockholmNursingScript: MockScript = {
         groups: [
           {
             label: 'Strong fit',
-            ad_ids: ['30879803', '30543967'],
+            ad_ids: ['31092227', '30879803'],
           },
           {
             label: 'Consider',
-            ad_ids: ['31046718', '31016470'],
+            ad_ids: ['31265789', '31254161'],
           },
           {
             label: 'Worth a look',
-            ad_ids: ['30969235'],
+            ad_ids: ['31306287'],
           },
         ],
       },
@@ -160,15 +160,15 @@ export const stockholmNursingScript: MockScript = {
         groups: [
           {
             label: 'Strong fit',
-            ad_ids: ['30879803', '30543967'],
+            ad_ids: ['31092227', '30879803'],
           },
           {
             label: 'Consider',
-            ad_ids: ['31046718', '31016470'],
+            ad_ids: ['31265789', '31254161'],
           },
           {
             label: 'Worth a look',
-            ad_ids: ['30969235'],
+            ad_ids: ['31306287'],
           },
         ],
       },
@@ -180,25 +180,25 @@ export const stockholmNursingScript: MockScript = {
       input: {
         links: [
           {
-            ad_id: '30879803',
+            ad_id: '31092227',
             score: 0.92,
             rationale:
               'Cardiology specialist scope aligns with the profile training.',
           },
           {
-            ad_id: '30543967',
+            ad_id: '30879803',
             score: 0.8,
             rationale:
               'Acute-ward responsibility matches the experience in the profile.',
           },
           {
-            ad_id: '31046718',
+            ad_id: '31265789',
             score: 0.68,
             rationale:
               'Generalist nursing role that the profile experience covers.',
           },
           {
-            ad_id: '31016470',
+            ad_id: '31254161',
             score: 0.56,
             rationale:
               'Generalist nursing role that the profile experience covers.',
@@ -209,25 +209,25 @@ export const stockholmNursingScript: MockScript = {
         accepted: true,
         links: [
           {
-            ad_id: '30879803',
+            ad_id: '31092227',
             score: 0.92,
             rationale:
               'Cardiology specialist scope aligns with the profile training.',
           },
           {
-            ad_id: '30543967',
+            ad_id: '30879803',
             score: 0.8,
             rationale:
               'Acute-ward responsibility matches the experience in the profile.',
           },
           {
-            ad_id: '31046718',
+            ad_id: '31265789',
             score: 0.68,
             rationale:
               'Generalist nursing role that the profile experience covers.',
           },
           {
-            ad_id: '31016470',
+            ad_id: '31254161',
             score: 0.56,
             rationale:
               'Generalist nursing role that the profile experience covers.',

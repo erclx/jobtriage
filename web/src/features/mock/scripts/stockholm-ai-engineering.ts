@@ -54,18 +54,6 @@ export const stockholmAiEngineeringScript: MockScript = {
       output: {
         results: [
           {
-            ad_id: '31002285',
-            headline: 'AI Engineer ',
-            employer_name: 'ASSA ABLOY AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-06-05T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31002285',
-            description_excerpt:
-              'Help AI move from experimentation to production impact. What if your work didn’t stop at prototypes — but became part of how a global business operates, makes decisions, and ensures trust in its systems? At ASSA ABLOY Entrance Systems in Stockholm, you’ll help build AI systems such as AI assistants, knowledge retrieval tools, and automation services integrated into business workflows. Why this role matters AI adoption is moving beyond experimentation into production-grade sys…',
-            occupation_label: 'Servicedesigner/Tjänstedesigner',
-          },
-          {
             ad_id: '30991050',
             headline: 'AI Engineer',
             employer_name: 'Umain AB',
@@ -78,40 +66,52 @@ export const stockholmAiEngineeringScript: MockScript = {
             occupation_label: 'Mjukvaruutvecklare',
           },
           {
-            ad_id: '30801194',
-            headline: 'AI Engineer',
-            employer_name: 'Epiminds AB',
-            municipality: 'Sundbyberg',
-            application_deadline: '2026-06-30T23:59:59',
+            ad_id: '31290812',
+            headline: 'AI Enablement Engineer',
+            employer_name: 'Extenda Retail AB',
+            municipality: 'Solna',
+            application_deadline: '2026-08-10T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30801194',
+              'https://arbetsformedlingen.se/platsbanken/annonser/31290812',
             description_excerpt:
-              'If you have experience building and scaling multi-agentic systems, we would love to speak with you. We just raised from Lightspeed and are currently building out a world-class team. At Epiminds, we’re building a self-learning marketing team of 20+ autonomous agents working across data, creative, strategy, and execution — all led by Lucy, a super-agent who collaborates with human marketers like a real teammate: reaching out, listening, emailing, and even calling. Today, 17 age…',
-            occupation_label: 'Systemutvecklare/Programmerare',
-          },
-          {
-            ad_id: '30554390',
-            headline: 'AI Engineer',
-            employer_name: 'Lovable Labs Sweden AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-07-02T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30554390',
-            description_excerpt:
-              'TL;DR - We’re looking for Founding AI Engineers who will shape how we fine-tune, serve, and evaluate LLMs and frontier models in production - and help define what it means to build a truly lovable AI product. Why Lovable? Lovable lets anyone and everyone build software with plain English. From solopreneurs to Fortune 100 teams, millions of people use Lovable to transform raw ideas into real products - fast. We are at the forefront of a foundational shift in software creation,…',
+              'We are looking for an AI Enablement Engineer. Your mission is to develop and improve our AI capabilities, and make these available across the company. As an AI Enablement Engineer, you will work with the design, implementation, and scaling of AI architecture and solutions. You will follow industry trends connecting the potential of AI with organizational functions. Working closely with senior stakeholders and cross-functional teams, you will ensure that technical solutions al…',
             occupation_label: 'Mjukvaruutvecklare',
           },
           {
-            ad_id: '30365029',
-            headline: 'AI Engineer',
-            employer_name: 'Tendium AB',
+            ad_id: '31288284',
+            headline: 'Founding AI Engineer',
+            employer_name: 'Spiich Labs AB',
             municipality: 'Stockholm',
-            application_deadline: '2026-05-30T23:59:59',
+            application_deadline: '2026-08-21T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30365029',
+              'https://arbetsformedlingen.se/platsbanken/annonser/31288284',
             description_excerpt:
-              "Do you want to join the technological revolution? Tendium is looking for a AI Engineer to join the team. About TendiumPublic procurement is broken. Thousands of opportunities are buried in fragmented systems, complex documents, and outdated workflows. Organisations miss contracts they should have won simply because they couldn't find them in time or make sense of the data. At Tendium, we're fixing that. Our AI-powered platform transforms how organizations discover, analyze, a…",
-            occupation_label: 'Systemutvecklare/Programmerare',
+              "TL;DR We're looking for a founding AI Engineer to help build the AI colleague every sales professional wishes they had. You'll own the agent stack end-to-end - from model selection to database (knowledge graph) structure and search algorithm development. Must be curious, experimental, and obsessed with agentic systems. Why join We’re a small, talent-dense team of engineers building a generation-defining company from Stockholm. We value speed, rigour, and extreme ownership. If…",
+            occupation_label: 'Dataingenjör',
+          },
+          {
+            ad_id: '31284834',
+            headline: 'AI Enablement Engineer',
+            employer_name: 'Xensam AB',
+            municipality: 'Stockholm',
+            application_deadline: '2027-01-16T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31284834',
+            description_excerpt:
+              'Xensam: Join the Future of SAM Xensam is the leader in AI-powered, cloud-based Software Asset Management. Our technology brings clarity to complex IT environments, helping users make smart, data-driven decisions and maximize software ROI. Recognized with the Highest Growth Award and ranked #3 Overall Champion at the Main Software 50 Awards Nordics, we’re scaling fast and looking for people who want to join the journey. At Xensam, you play a key role in a team built on energy,…',
+            occupation_label: 'Backend-utvecklare',
+          },
+          {
+            ad_id: '31256366',
+            headline: 'Senior AI Engineer',
+            employer_name: 'Workday Sweden Aktiebolag',
+            municipality: 'Stockholm',
+            application_deadline: '2027-01-01T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31256366',
+            description_excerpt:
+              'Sana is an AI lab building superintelligence for work. We believe organizations can accomplish their missions faster when teams can effortlessly access knowledge, automate repetitive work, and learn anything with the help of agentic AI. As part of Workday, we are committed to building AI that augments people - not replaces them. We bring this mission to life through two products. Sana Agents provide a seamless way to access all your company’s apps, knowledge, and data, enabli…',
+            occupation_label: 'Backend-utvecklare',
           },
         ],
       },
@@ -121,13 +121,13 @@ export const stockholmAiEngineeringScript: MockScript = {
       toolName: 'placeAds',
       toolCallId: 'mock-sthlm-ai-call-3',
       input: {
-        ad_ids: ['31002285', '30991050', '30801194', '30554390', '30365029'],
+        ad_ids: ['30991050', '31290812', '31288284', '31284834', '31256366'],
         layout: 'grid',
         emphasis: 'none',
       },
       output: {
         accepted: true,
-        ad_ids: ['31002285', '30991050', '30801194', '30554390', '30365029'],
+        ad_ids: ['30991050', '31290812', '31288284', '31284834', '31256366'],
         layout: 'grid',
         emphasis: 'none',
       },
@@ -135,7 +135,7 @@ export const stockholmAiEngineeringScript: MockScript = {
     {
       kind: 'text',
       content:
-        ' Found 5 active roles. The strongest signal comes from AI Engineer at ASSA ABLOY AB, AI Engineer at Umain AB, AI Engineer at Epiminds AB. Cards are on the canvas to the right. Click any card to expand the description.',
+        ' Found 5 active roles. The strongest signal comes from AI Engineer at Umain AB, AI Enablement Engineer at Extenda Retail AB, Founding AI Engineer at Spiich Labs AB. Cards are on the canvas to the right. Click any card to expand the description.',
     },
   ],
 } as const
