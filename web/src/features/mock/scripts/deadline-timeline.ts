@@ -26,54 +26,34 @@ export const deadlineTimelineScript: MockScript = {
       output: {
         results: [
           {
-            ad_id: '30970532',
-            headline: 'Junior AI Engineer / Data Scientist',
-            employer_name: 'Effektify AB',
+            ad_id: '31261053',
+            headline: 'Embedded AI Engineer, Lund',
+            employer_name: 'AXIS COMMUNICATIONS AKTIEBOLAG',
             municipality: 'Lund',
-            application_deadline: '2026-05-21T23:59:59',
+            application_deadline: '2026-08-06T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30970532',
+              'https://arbetsformedlingen.se/platsbanken/annonser/31261053',
             days_until_deadline: 4,
           },
           {
-            ad_id: '30340646',
-            headline: 'Gameplay AI / ML Engineer',
-            employer_name: 'Embark Studios AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-05-23T23:59:59',
+            ad_id: '31290812',
+            headline: 'AI Enablement Engineer',
+            employer_name: 'Extenda Retail AB',
+            municipality: 'Solna',
+            application_deadline: '2026-08-10T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30340646',
-            days_until_deadline: 6,
+              'https://arbetsformedlingen.se/platsbanken/annonser/31290812',
+            days_until_deadline: 8,
           },
           {
-            ad_id: '30306504',
-            headline: 'Junior AI Systems Engineer',
-            employer_name: 'Mindark Pe AB (Publ)',
-            municipality: 'Göteborg',
-            application_deadline: '2026-05-24T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30306504',
-            days_until_deadline: 7,
-          },
-          {
-            ad_id: '30975894',
-            headline: 'Principal AI Solution Engineer ',
-            employer_name: 'Midasplayer AB',
+            ad_id: '31288284',
+            headline: 'Founding AI Engineer',
+            employer_name: 'Spiich Labs AB',
             municipality: 'Stockholm',
-            application_deadline: '2026-05-29T23:59:59',
+            application_deadline: '2026-08-21T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30975894',
-            days_until_deadline: 12,
-          },
-          {
-            ad_id: '30365029',
-            headline: 'AI Engineer',
-            employer_name: 'Tendium AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-05-30T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30365029',
-            days_until_deadline: 13,
+              'https://arbetsformedlingen.se/platsbanken/annonser/31288284',
+            days_until_deadline: 19,
           },
         ],
       },
@@ -83,19 +63,19 @@ export const deadlineTimelineScript: MockScript = {
       toolName: 'placeAdsOnTimeline',
       toolCallId: 'mock-deadline-ai-call-2',
       input: {
-        ad_ids: ['30970532', '30340646', '30306504', '30975894', '30365029'],
-        today_cursor: '2026-05-18',
+        ad_ids: ['31261053', '31290812', '31288284'],
+        today_cursor: '2026-08-03',
       },
       output: {
         accepted: true,
-        ad_ids: ['30970532', '30340646', '30306504', '30975894', '30365029'],
-        today_cursor: '2026-05-18',
+        ad_ids: ['31261053', '31290812', '31288284'],
+        today_cursor: '2026-08-03',
       },
     },
     {
       kind: 'text',
       content:
-        ' 5 roles laid on the date axis. The soonest is Junior AI Engineer / Data Scientist at Effektify AB, 4 days out.',
+        ' 3 roles laid on the date axis. The soonest is Embedded AI Engineer, Lund at AXIS COMMUNICATIONS AKTIEBOLAG, 4 days out.',
     },
   ],
 } as const
