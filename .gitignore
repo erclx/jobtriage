@@ -12,14 +12,19 @@ node_modules/
 
 # Claude
 .claude/.tmp/
+.claude/briefs/
+.claude/groundwork/
+.claude/intake/
 .claude/memory/
 .claude/plans/
+.claude/plans-archive/
 .claude/review/
-.claude/scheduled_tasks.lock
+.claude/task-archive/
+.claude/tasks/
 .claude/worktrees/
-.claude/TASKS.md
-.claude/briefs/
 .claude/ROADMAP.md
+.claude/TASKS.md
+.claude/scheduled_tasks.lock
 
 # Runtime
 var/
