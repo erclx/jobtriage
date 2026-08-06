@@ -10,7 +10,7 @@ Applies to per-domain narrative entries under `.claude/context/`. Skip for `inde
 ## Frontmatter
 
 - `title` (required): sentence case, names the domain (`Web`, `API`, `Agents`).
-- `description` (required): one line describing what the domain covers, under 100 characters, no trailing period.
+- `description` (required): one line describing what the domain covers.
 
 Both fields feed `.claude/context/index.md` when regenerated.
 
@@ -19,14 +19,20 @@ Both fields feed `.claude/context/index.md` when regenerated.
 These cover most entries. Add domain-specific headings as needed. Do not pad an entry with empty sections.
 
 - `## Layer responsibilities`: which folders own what, how the domain is sliced. One line per item in owns-X form. Implementation detail moves to `## Decisions`, `## Hidden contracts`, or `## Gotchas`.
-- `## Decisions`: non-obvious technical choices that do not fit `ARCHITECTURE.md` and would otherwise need re-deriving from code.
+- `## Decisions`: non-obvious technical choices that do not fit `.claude/ARCHITECTURE.md` and would otherwise need re-deriving from code.
 - `## Hidden contracts`: invariants the code does not self-document (shape constraints, skip rules, header semantics). Use when the reader needs the invariant itself. Use `## Decisions` when they need the reasoning behind picking it.
 - `## Gotchas`: workarounds, things tried and rejected, scar tissue worth preserving.
+
+## The development entry
+
+Only the `development` entry carries this section. It is not a general-purpose heading for other domains.
+
+- `## Scripts`: a table of run commands (command plus purpose). The single discoverable surface for how to run the project. Keep run commands here, not scattered across `CLAUDE.md`.
 
 ## What goes in
 
 - Per-domain narrative on how the code is structured and why
-- Decisions specific to the domain. Broader cross-domain decisions belong in `ARCHITECTURE.md`.
+- Decisions specific to the domain. Broader cross-domain decisions belong in `.claude/ARCHITECTURE.md`.
 - Constraints, gotchas, things tried and rejected
 - Domain-specific conventions that do not fit a `paths:`-scoped rule
 
@@ -36,7 +42,7 @@ These cover most entries. Add domain-specific headings as needed. Do not pad an 
 - Rules. Those go in `.claude/rules/<scope>.md` with a `paths:` glob.
 - Tutorials or human onboarding. Those go in `docs/` if a public audience exists.
 - Generated content (API references). Generate, do not write by hand.
-- Anything already in `REQUIREMENTS.md` or `ARCHITECTURE.md`.
+- Anything already in `.claude/REQUIREMENTS.md` or `.claude/ARCHITECTURE.md`.
 
 ## Length
 

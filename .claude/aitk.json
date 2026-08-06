@@ -1,0 +1,59 @@
+{
+  "covers": ["snippets", "governance", "tooling"],
+  "domains": {
+    "snippets": {
+      "syncedAt": "2026-08-06T07:38:26.025Z",
+      "files": {
+        ".claude/snippets/compact-summary.md": "sha256:bc5194176a43efd367ba50f612192817fb5f9e4553e0996cf41b40b9402351aa",
+        ".claude/snippets/decision-help.md": "sha256:21c940028d8de16f22d025499fded57620afe6fc7c994d094d270f60f69032a1",
+        ".claude/snippets/step-by-step.md": "sha256:9b6c210fa1fe88e9222fb5e81f0a943cf71fb3a8e072d27402764ab37dcff735"
+      }
+    },
+    "governance": {
+      "syncedAt": "2026-08-06T07:38:26.148Z",
+      "files": {
+        ".claude/rules/claude/500-prose.md": "sha256:efcd09441646abc406bdf087193e93c3f4275b092e9b3ec166f906fe6280f974",
+        ".claude/rules/claude/510-context.md": "sha256:b724e033f54b196f484099d099e20e74195c8222e4d8925b04a4e21de3b79df7",
+        ".claude/rules/claude/520-wireframes.md": "sha256:4d02337bd6fe0c76a39c121d90f9e9f40494cf22ea015c0a725e79d2e93a8135",
+        ".claude/rules/claude/530-requirements.md": "sha256:6e31ac5372ade6c97aa2772178cdea4af58593d0b23168220ea5e8bfbaa326a2",
+        ".claude/rules/claude/540-architecture.md": "sha256:568eb9c04faeb0bf7f60240cabf8ef5ea28206b8a46f07ca47c2a4cb2ef7cda7",
+        ".claude/rules/claude/550-design.md": "sha256:23c306ab5eb8ba9ae0b05f191057908a8719750b905ab5d6d6512f37d78ac616",
+        ".claude/rules/claude/555-tasks.md": "sha256:08202481bc2a7fd8a8c4585b512fab7d8d7c8cda12dd5a4f4bc380827936d849",
+        ".claude/rules/claude/560-diagrams.md": "sha256:3939cfb60b9b9ba1f5495cae67cfb0050f6cc903a99dcbb49658e888431750b2",
+        ".claude/rules/claude/570-skill.md": "sha256:8832ad1fe7030bcc1f215d936fc5540e1073fa3ba24bf059105412de6667875d",
+        ".claude/rules/claude/580-readme.md": "sha256:100d754af14946dcdf65ab62b2c696646e1a421d4c03620f6932c9b40e7bd859",
+        ".claude/rules/claude/590-rule-authoring.md": "sha256:87e1e96b9eb7c088f5620683289a55f3a1e55f1e4f527e67651f64aa4696509c",
+        ".claude/rules/core/000-constitution.md": "sha256:f0a61628b5a95bee868d6b62204df8a63c647906aa66af6157c6a6e8a3ecb7cc",
+        ".claude/rules/core/010-testing.md": "sha256:6506b7092bec6c633687d5311e880cf1adc800fb4413ed99aaa213d6697223bd",
+        ".claude/rules/core/020-concurrency.md": "sha256:df6a2e89d3f0ef02a5718caf7e1b17c67e1360f1386ace7f4661a33fbadd3908",
+        ".claude/rules/core/030-error-handling.md": "sha256:b3c028abf2229f245fe9a173b8bb84502843f1d73ac1940d10f48eebff0764b5",
+        ".claude/rules/core/040-performance.md": "sha256:174d2f9e6ad58b2b2ae43b7ab69d2efeaf344bc52ddebf9d38a47b2eb8882cda",
+        ".claude/rules/core/050-logging.md": "sha256:6257b92add0effa81c034c3a220698dd77c107e8736205e0ddbe7fc53df16297",
+        ".claude/rules/core/060-naming.md": "sha256:7b4bf67615c18078852b1e6fece426ba91689a5ac2842db031f580e13bba4481",
+        ".claude/rules/core/070-planning.md": "sha256:b7cb355b67eb4cd3d4fa404bccca0aa115327c88a962f4349df6e818ce822601",
+        ".claude/rules/core/080-config-comments.md": "sha256:70e23f9b7903ae9dc1239730ce3b8ecf5c0760c0fa411ece1bfac239b978c6dd",
+        ".claude/rules/framework/200-react.md": "sha256:42cfe72c7458dc0ca5c27e6baad21852d8dfc81245be52f061f7ae3e2ee5c8bc",
+        ".claude/rules/framework/220-fastapi.md": "sha256:ecc15adb2730a60cbb0740ef85d3f4de83f265f8c3e5a81213a4f3c6bdeb08d1",
+        ".claude/rules/framework/230-nextjs.md": "sha256:ec9db98806fc8637c2078b1f76ef3d03d093925a605835809cc2bde1499e0eb3",
+        ".claude/rules/framework/250-tailwind.md": "sha256:5904032cc0c90abcd734ec2a64311e67b41c68bbf60c205af7575d72fd42cb7e",
+        ".claude/rules/framework/260-shadcn.md": "sha256:5d82aaa2cb5e8dbeef520feb3e32b76746771d9889962d760132c062306a38c9",
+        ".claude/rules/lang/100-typescript.md": "sha256:5378af975febe5b4b2e2ac4edf4163fc0d9fddf406df8055a858a11bd9656416",
+        ".claude/rules/lang/110-python.md": "sha256:50e5be542a1994e0ae268cf1c62990612f9b2c6bf32240d84854d85cefccf78e",
+        ".claude/rules/lib/300-testing-ts.md": "sha256:b749d8dcd62ff27159c1851f245ab2fa18b2af930df7707dbd03c2ba8527aa99",
+        ".claude/rules/lib/310-zod.md": "sha256:ad1ef82babf02e3fcf1a5abe4ccea6d0b6b4cf1c3b83b3dfbed7a8c739b8a0ab",
+        ".claude/rules/lib/330-testing-py.md": "sha256:68f1248f1423b3ef7bc93006eb05783bdcf7c50379133c1855f1d2f5224b180b",
+        ".claude/rules/lib/340-pydantic.md": "sha256:60240b552c274572f3c1335f8666ba84e28fac8ab6834c67a2a673a34d7e6c79",
+        ".claude/rules/lib/350-security-web.md": "sha256:016a4e9fd6fc0a22088cc287ceaabcef8a4c81f36fa883b2fc99fd365aa8caf1",
+        ".claude/rules/ui/400-ui.md": "sha256:3e3d43fa2c94a4701598f0fee0b7d215c43549cab97daeb1c22e6ca3b0ffbd9a",
+        ".claude/rules/ui/410-a11y.md": "sha256:679b7f5db82e3af107d7a2cd574c22b30c4739308a23490d4d32dc83865f9a07",
+        ".claude/rules/ui/420-forms.md": "sha256:05337dd6ce1fe15bd647c4b75e223858355bd159a9ad2c5b67c2076531b7e1b6",
+        ".claude/rules/ui/430-ux-completeness.md": "sha256:b76fc1156f4842ca2e9700aa19fd1691b76c35e5e779875294fd945844af46b4"
+      }
+    },
+    "tooling": {
+      "syncedAt": "2026-08-06T07:39:49.971Z",
+      "files": {},
+      "chain": ["base"]
+    }
+  }
+}

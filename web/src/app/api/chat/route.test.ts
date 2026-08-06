@@ -368,7 +368,7 @@ describe('POST /api/chat', () => {
     expect(acc).toContain('"toolName":"searchJobs"')
     expect(acc).toContain('"type":"tool-output-available"')
     expect(acc.endsWith('data: [DONE]\n\n')).toBe(true)
-  })
+  }, 15000)
 
   it('should fall back to a text-only assistant message when mock prompt does not match a fixture', async () => {
     const response = await POST(

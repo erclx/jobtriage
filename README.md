@@ -28,7 +28,7 @@ Start the FastAPI backend on `http://127.0.0.1:8000` and the web app on `http://
 
 ```bash
 bun run dev:api          # FastAPI tool server
-bun run restart:web      # Next.js production build, see docs/development.md
+bun run restart:web      # Next.js production build, see .claude/context/development.md
 ```
 
 ## How it works
@@ -101,9 +101,9 @@ Built with Claude Code as the primary agent, planned through the `.claude/` plan
 
 ## Documentation
 
-- [Development](docs/development.md) covers the verify cascade, scripts, and husky hooks.
-- [Deployment](docs/deployment.md) covers the Cloud Run backend, Vercel frontend, and Cloudflare custom domain.
-- [CI](docs/ci.md) covers the GitHub Actions job structure.
+- [Development](.claude/context/development.md) covers the verify cascade, scripts, and husky hooks.
+- [Deploy](.claude/context/deploy.md) covers the Cloud Run backend, Vercel frontend, and Cloudflare custom domain.
+- [CI](.claude/context/ci.md) covers the GitHub Actions job structure.
 - [Architecture](.claude/ARCHITECTURE.md) covers the five-layer request flow and key technical decisions.
 - [Requirements](.claude/REQUIREMENTS.md) covers the problem statement, MVP features, and constraints.
 

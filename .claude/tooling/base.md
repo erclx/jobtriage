@@ -1,0 +1,96 @@
+# Tooling base reference
+
+## Overview
+
+The base layer covers every project the toolkit scaffolds, whatever language sits on top. It ships formatting, spelling, shell linting, conventional commits, git hooks, CI, and three maintenance scripts. Every other stack extends it, so a decision made here is one every stack inherits.
+
+## What ships as golden configs
+
+Golden config files live in `tooling/base/configs/` and are copied into the target on `aitk tooling sync base .`. They are the source of truth. The reference covers rationale and tradeoffs. Configs show the concrete setup.
+
+- `.prettierrc`: `semi: false`, `singleQuote: true`, plus a parser override per non-standard extension (`.mdx` to `markdown`).
+- `.shellcheckrc`: `external-sources=true`. Required for shellcheck to follow `source` directives.
+- `.editorconfig`: `root = true`, with an `[*.sh]` block setting `indent_style = space` and `indent_size = 2`.
+- `commitlint.config.js`: ESM default export extending `@commitlint/config-conventional`. Rules are `header-max-length: 72`, `scope-case: lower-case`, `subject-full-stop: never`, and `subject-case` disabled.
+- `.husky/`: `pre-commit`, `commit-msg`, `pre-push`, `post-merge`, `post-rewrite`.
+- `.github/workflows/verify.yml`: runs on pull requests targeting `main` and on `workflow_dispatch`.
+- `.github/pull_request_template.md`: `## Summary`, `## Key Changes`, `## Technical Context`, `## Testing`.
+- `.vscode/extensions.json` and `.vscode/settings.json`: editor wiring for Prettier, cspell, shfmt, and shellcheck.
+- `scripts/verify.sh`, `scripts/clean.sh`, `scripts/update.sh`: the maintenance entry points behind `check`, `clean`, and `update`.
+
+## What ships as user-owned seeds
+
+Seeds live in `tooling/base/seeds/`. Sync drops each once on first install and never overwrites it, so a project extends them freely.
+
+- `cspell.json`: `version: "0.2"`, `language: "en"`, `useGitignore: true`, `gitignoreRoot: ["."]`, dictionary definitions for `project-terms` and `tech-stack` with `addWords: true` on both, and `ignorePaths: [".cspell/**", ".git/**"]` to skip dictionary self-checks and git object files.
+- `.cspell/project-terms.txt` and `.cspell/tech-stack.txt`: one word per line, sorted alphabetically.
+- `.lintstagedrc`: the glob map below.
+- `.prettierignore`: created empty. Projects add their own entries.
+- `.claude/context/`: extend the `ci` and `development` entries with project-specific commands, workflows, or deploy steps. Canonical rationale stays in this reference.
+
+## Tool pairing
+
+- Runtime: `bun` as package manager and script runner, `bunx` over `npx` for a one-off executable.
+- Formatting: Prettier for what it parses, shfmt for shell. Two formatters because Prettier has no shell parser.
+- Spelling: cspell over the whole tree, with project vocabulary split into a project-terms dictionary and a tech-stack one.
+- Shell: shfmt formats and shellcheck lints at warning severity. shfmt takes a directory argument, shellcheck has no directory mode and needs `find`.
+- Commits: commitlint against conventional commits, wired through the husky `commit-msg` hook. Format is `<type>(<scope>): <subject>` in imperative mood with no trailing period.
+- Dev dependencies: `prettier`, `cspell`, `husky`, `@commitlint/cli`, `@commitlint/config-conventional`. Install via `bun add -D`.
+
+## File layout
+
+- All shell scripts live in `scripts/`. Do not place a `.sh` file outside it.
+- Dictionaries live in `.cspell/`, hooks in `.husky/`, seeded context docs in `.claude/context/`.
+- The `.claude/context/` location matches the three-tier context model: project-wide invariants in `CLAUDE.md`, `.claude/REQUIREMENTS.md`, and `.claude/ARCHITECTURE.md`, path-scoped rules in `.claude/rules/`, and on-demand domain narrative in `.claude/context/`. Indexes stay opt-in.
+
+## Hooks
+
+- `pre-commit` runs `bunx lint-staged`.
+- `commit-msg` runs `bunx commitlint --edit "$1"`.
+- `pre-push` runs `bun run check`.
+- `post-merge` names `.claude/tasks/` archive candidates, staying silent otherwise and when the board is absent.
+- `post-rewrite` delegates to `post-merge` on `rebase`, so a `pull.rebase=true` machine still gets the check.
+
+## lint-staged
+
+Seeded baseline globs:
+
+- `**/*.{json,md,mdc}` runs `prettier --write --ignore-path .gitignore --ignore-path .prettierignore` then `cspell --no-must-find-files`
+- `**/*.md` runs `aitk indexes regen`
+- `**/*.sh` runs `shfmt --write --indent 2` then `shellcheck --severity=warning`
+
+## CI
+
+- Steps: checkout, setup Bun at latest, `bun install --frozen-lockfile`, install `shfmt` and `shellcheck` via apt, then `check:format`, `check:spell`, and `check:shell`.
+- CI asserts and never writes. Format must be clean before push.
+
+## Gitignore
+
+- `# System`: `.DS_Store`
+- `# Dependencies`: `node_modules/`
+- `# Secrets`: `.env`, `.env.*`, `*.local`, `!.env.example`
+
+## Anti-patterns
+
+Sticky negative knowledge. Do not relearn.
+
+- Do NOT drop `gitignoreRoot: ["."]` from `cspell.json`. Without it, cspell run from inside a linked worktree under `.claude/worktrees/` walks up into the parent repo's `.gitignore`, resolves every worktree file as living under the ignored worktree path, and checks zero files. New words then pass locally and fail in CI.
+- Do NOT rely on the default `**` glob for spelling. It skips dot-prefixed folders, leaving `.claude/`, `.github/`, and `.husky/` unchecked. Pass `'**' '.*/**' '.*'` explicitly.
+- Do NOT invoke prettier without both `--ignore-path .gitignore --ignore-path .prettierignore`. Passing one drops the other, since the flag replaces the default rather than adding to it.
+- Do NOT omit `--log-level warn` from a prettier invocation. The default prints a line per unchanged file.
+- Do NOT put logic in a husky hook and expect its shebang to hold. Husky runs hooks as `sh -e`, so a hook carrying logic is POSIX sh under errexit whatever the first line says.
+- Do NOT drop the `[*.sh]` block from `.editorconfig` because shfmt already sets indentation. The editor and shfmt then disagree and produce spurious git diffs.
+- Do NOT copy lint-staged's `**/*.sh` glob into a package.json script. lint-staged expands its own globs and passes matched files as arguments, which a bare shell script does not.
+
+## CLI
+
+| Script                 | What it does                                                                                                                                                                                           |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `bun run check`        | Full verification suite via `scripts/verify.sh`. Runs `format` first to auto-fix drifted code, then asserts. Honors `VERIFY_NESTED=true` to suppress timeline boundaries when another script calls it. |
+| `bun run check:format` | Asserts prettier and shfmt formatting without writing                                                                                                                                                  |
+| `bun run check:spell`  | Runs cspell across every file, with context on failures                                                                                                                                                |
+| `bun run check:shell`  | Runs shellcheck at warning severity                                                                                                                                                                    |
+| `bun run format`       | Writes prettier and shfmt formatting in place                                                                                                                                                          |
+| `bun run prepare`      | Initializes husky hooks, run automatically on `bun install`                                                                                                                                            |
+| `bun run clean`        | Removes `node_modules/`, clears the bun cache, reinstalls fresh                                                                                                                                        |
+| `bun run update`       | Runs `bun update --interactive`, then `verify.sh` with `VERIFY_NESTED=true`                                                                                                                            |
