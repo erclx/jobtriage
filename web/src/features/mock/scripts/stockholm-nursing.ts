@@ -73,6 +73,42 @@ export const stockholmNursingScript: MockScript = {
       output: {
         results: [
           {
+            ad_id: '31376391',
+            headline: 'Sjuksköterska i Stockholm',
+            employer_name: 'VårdIX AB',
+            municipality: 'Stockholm',
+            application_deadline: '2026-08-30T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31376391',
+            description_excerpt:
+              'Hitta ditt nästa uppdrag med VårdIX-Bemanning På VårdIX-Bemanning tror vi att de bästa resultaten skapas när våra konsulter känner sig trygga, uppskattade och väl omhändertagna. Vi bygger långsiktiga relationer med våra sjuksköterskor och finns med som ett personligt stöd före, under och efter varje uppdrag. För oss handlar bemanning om mer än att matcha kompetens – det handlar om att hitta rätt uppdrag för rätt person och skapa ett samarbete som håller över tid. Nu söker vi…',
+            occupation_label: 'Sjuksköterska, grundutbildad',
+          },
+          {
+            ad_id: '31376296',
+            headline: 'Sjuksköterska i Stockholm',
+            employer_name: 'VårdIX AB',
+            municipality: 'Stockholm',
+            application_deadline: '2026-08-24T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31376296',
+            description_excerpt:
+              'Hitta ditt nästa uppdrag med VårdIX-Bemanning På VårdIX-Bemanning tror vi att de bästa resultaten skapas när våra konsulter känner sig trygga, uppskattade och väl omhändertagna. Vi bygger långsiktiga relationer med våra sjuksköterskor och finns med som ett personligt stöd före, under och efter varje uppdrag. För oss handlar bemanning om mer än att matcha kompetens – det handlar om att hitta rätt uppdrag för rätt person och skapa ett samarbete som håller över tid. Nu söker vi…',
+            occupation_label: 'Sjuksköterska, grundutbildad',
+          },
+          {
+            ad_id: '31339409',
+            headline: 'Sjuksköterska till kranskommun till Stockholm',
+            employer_name: 'OFELIA VÅRD AB',
+            municipality: 'Södertälje',
+            application_deadline: '2026-09-14T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31339409',
+            description_excerpt:
+              'Ofelia Vård AB är tillsammans med Skandinavisk Hälsovård, Svensk Närsjukvård, Doc Care, HLR Landslaget och Linguacom, en del av Skandinavisk Hälsovård Group. Vi söker för kunds räkning sjuksköterska. Uppdraget gäller från omgående och under hösten. Ofelia Vård är ett auktoriserat bemanningsföretag med medlemskap i Kompetensföretagen. Med detta följer en garanti på att vi följer arbetsmarknadens lagar och regler. Vi har kollektivavtal med Vårdförbundet, Läkarförbundet och Unio…',
+            occupation_label: 'Sjuksköterska, grundutbildad',
+          },
+          {
             ad_id: '31092227',
             headline: 'Sjuksköterska inom vårdförsäkring i Stockholm',
             employer_name: 'The Finance Family AB',
@@ -89,47 +125,11 @@ export const stockholmNursingScript: MockScript = {
             headline: 'Legitimerad Sjuksköterska Sökes till Stockholm',
             employer_name: 'Omsorg & Behandling 1 AB',
             municipality: 'Stockholm',
-            application_deadline: '2026-08-04T23:59:59',
+            application_deadline: '2026-08-25T23:59:59',
             webpage_url:
               'https://arbetsformedlingen.se/platsbanken/annonser/30879803',
             description_excerpt:
               'Välkommen till Omsorg & Behandling! Just nu söker vi leg.sjuksköterskor men även ni som är specialistutbildade till vårat team. Omsorg & Behandling är ett auktoriserat bemanningsföretag för Sveriges regioner, kommuner och privata vårdgivare. Vi är ett bemanningsföretag som är aktiva i hela Sverige . Våra konsultchefer i företaget är Sjuksköterskor med lång erfarenhet från vården och arbetar aktivt ute hos våra kunder.Kollektivavtal: Vi är medlem i Tjänsteföretagens Arbetsgiva…',
-            occupation_label: 'Sjuksköterska, grundutbildad',
-          },
-          {
-            ad_id: '31265789',
-            headline: 'Sjuksköterska till vårdcentral i Södra Stockholm',
-            employer_name: 'Medcura AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-08-09T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31265789',
-            description_excerpt:
-              'Om Jobbet Erfaren sjuksköterska sökes till uppdrag på vårdcentral i södra Stockholm Vi söker nu en erfaren sjuksköterska för uppdrag på en primärvårds vårdcentral i södra Stockholm under vecka 29–31. Arbetstid: Måndag–fredag Kl. 08:00–15:00 Krav: Legitimerad sjuksköterska Erfarenhet av arbete inom primärvård/vårdcentral God förmåga att arbeta självständigt och i team Är du tillgänglig under perioden och intresserad av uppdraget? Hör gärna av dig med ditt CV och en kort presen…',
-            occupation_label: 'Sjuksköterska, grundutbildad',
-          },
-          {
-            ad_id: '31254161',
-            headline: 'Sjuksköterska sökes v.29-33 i Stockholm 85.000kr lön!',
-            employer_name: 'Viraliv AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-09-30T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31254161',
-            description_excerpt:
-              'Viraliv söker nu akut legitimerad sjuksköterska för uppdrag inom äldreomsorg i Södra Stockholm mellan v.29-33 Hos oss får du inte bara ett uppdrag – du får en partner som satsar på dig. Du kommer att arbeta inom en verksamhet där du gör verklig skillnad varje dag. Arbetsuppgifterna inkluderar bland annat: Medicinska bedömningar och omvårdnad Läkemedelshantering Dokumentation enligt gällande riktlinjer Samarbete med övrig vårdpersona Vi söker dig som Är legitimerad sjuksköters…',
-            occupation_label: 'Sjuksköterska, grundutbildad',
-          },
-          {
-            ad_id: '31306287',
-            headline: 'Sjuksköterska till 1177 på telefon i Region Stockholm',
-            employer_name: 'REGION STOCKHOLM',
-            municipality: 'Stockholm',
-            application_deadline: '2026-09-30T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31306287',
-            description_excerpt:
-              'Möjlighet att arbeta hemifrån inom Sverige Är du legitimerad sjuksköterska med god erfarenhet, trygghet i yrkesrollen och förmåga att arbeta självständigt? Vill du arbeta med kvalificerad sjukvårdsrådgivning per telefon, med möjlighet till distansarbete? Hos Sjukvårdsrådgivningen på telefon i Region Stockholm får du en viktig roll där du varje dag bidrar till att invånare får rätt råd, rätt bedömning och vägledning till rätt vårdnivå. Rollen ger dig möjlighet att arbeta hemif…',
             occupation_label: 'Sjuksköterska, grundutbildad',
           },
         ],
@@ -143,15 +143,15 @@ export const stockholmNursingScript: MockScript = {
         groups: [
           {
             label: 'Strong fit',
-            ad_ids: ['31092227', '30879803'],
+            ad_ids: ['31376391', '31376296'],
           },
           {
             label: 'Consider',
-            ad_ids: ['31265789', '31254161'],
+            ad_ids: ['31339409', '31092227'],
           },
           {
             label: 'Worth a look',
-            ad_ids: ['31306287'],
+            ad_ids: ['30879803'],
           },
         ],
       },
@@ -160,15 +160,15 @@ export const stockholmNursingScript: MockScript = {
         groups: [
           {
             label: 'Strong fit',
-            ad_ids: ['31092227', '30879803'],
+            ad_ids: ['31376391', '31376296'],
           },
           {
             label: 'Consider',
-            ad_ids: ['31265789', '31254161'],
+            ad_ids: ['31339409', '31092227'],
           },
           {
             label: 'Worth a look',
-            ad_ids: ['31306287'],
+            ad_ids: ['30879803'],
           },
         ],
       },
@@ -180,25 +180,25 @@ export const stockholmNursingScript: MockScript = {
       input: {
         links: [
           {
-            ad_id: '31092227',
+            ad_id: '31376391',
             score: 0.92,
             rationale:
               'Cardiology specialist scope aligns with the profile training.',
           },
           {
-            ad_id: '30879803',
+            ad_id: '31376296',
             score: 0.8,
             rationale:
               'Acute-ward responsibility matches the experience in the profile.',
           },
           {
-            ad_id: '31265789',
+            ad_id: '31339409',
             score: 0.68,
             rationale:
               'Generalist nursing role that the profile experience covers.',
           },
           {
-            ad_id: '31254161',
+            ad_id: '31092227',
             score: 0.56,
             rationale:
               'Generalist nursing role that the profile experience covers.',
@@ -209,25 +209,25 @@ export const stockholmNursingScript: MockScript = {
         accepted: true,
         links: [
           {
-            ad_id: '31092227',
+            ad_id: '31376391',
             score: 0.92,
             rationale:
               'Cardiology specialist scope aligns with the profile training.',
           },
           {
-            ad_id: '30879803',
+            ad_id: '31376296',
             score: 0.8,
             rationale:
               'Acute-ward responsibility matches the experience in the profile.',
           },
           {
-            ad_id: '31265789',
+            ad_id: '31339409',
             score: 0.68,
             rationale:
               'Generalist nursing role that the profile experience covers.',
           },
           {
-            ad_id: '31254161',
+            ad_id: '31092227',
             score: 0.56,
             rationale:
               'Generalist nursing role that the profile experience covers.',
