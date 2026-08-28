@@ -7,8 +7,8 @@ Triages Swedish job ads against a pasted profile, lays results onto a spatial ca
 Three-tier ownership model. Know which tier holds what before reading or writing.
 
 - `README.md`: public pitch and 60-second setup for an outside visitor. No internal contracts.
-- `.claude/context/`: per-domain working knowledge for Claude Code editing that domain. Layer responsibilities, decisions, gotchas, hidden contracts. See `.claude/context/index.md` for the catalog. New entries follow `.claude/standards/context.md`.
-- `.claude/` planning docs (`TASKS.md`, `ARCHITECTURE.md`, `REQUIREMENTS.md`, `DESIGN.md`, `DIAGRAMS.md`): always-loaded product-wide invariants. Read before changes, when present. The `claude-feature` skill loads them in parallel. Wireframes live in `.claude/wireframes/` and load on demand per surface.
+- `.claude/context/`: per-domain working knowledge for Claude Code editing that domain. Layer responsibilities, decisions, gotchas, hidden contracts. See `.claude/context/index.md` for the catalog. New entries follow `aitk standards context`.
+- `.claude/` planning docs (`ARCHITECTURE.md`, `REQUIREMENTS.md`, `DESIGN.md`): always-loaded product-wide invariants. Read before changes, when present. The `claude-feature` skill loads them in parallel. Wireframes live in `.claude/wireframes/` and diagrams in `.claude/diagrams/`, both loading on demand.
 - `.claude/rules/`: coding standards. Always-on rules apply every session. Path-scoped rules apply to files matching their `paths:` glob.
 
 Rule of thumb when a fact lives in two places: if an outside visitor needs it to evaluate the project, `README.md`. Everything a contributor or Claude needs to run or modify it lives in `.claude/context/`, keyed by domain.
@@ -48,7 +48,7 @@ Rule of thumb when a fact lives in two places: if an outside visitor needs it to
 
 ## Markdown
 
-- Before drafting a PR body, commit message, branch name, or snippet, read the matching standard in `.claude/standards/` and follow it. None of these is a file on disk, so no path-scoped rule fires for them.
+- Before drafting a PR body, commit message, or branch name, read the matching standard via `aitk standards <name>` and follow it. None of these is a file on disk, so no path-scoped rule fires for them.
 
 ## Commands
 
@@ -82,17 +82,11 @@ Rule of thumb when a fact lives in two places: if an outside visitor needs it to
 - Keep dictionary files sorted alphabetically.
 - `@cspell/dict-sv` covers Swedish words. Do not add them to the custom txt files unless cspell still flags them after the dict is loaded.
 
-## Snippets
-
-- When a snippet is referenced with `@`, execute its instructions immediately using available session context.
-
 ## Tasks
 
-- `.claude/TASKS.md` is gitignored local session scratch. Edit freely. No staging or revert before commits.
+- `.claude/tasks/` is gitignored local session scratch, one file per task per `aitk standards tasks`. Edit freely. No staging or revert before commits.
 - Only create a task for work that spans multiple sessions or has real dependencies. Handle small edits immediately without a task entry.
 - Do not add tasks retroactively for work already completed. Completed work is visible in git.
-- When a task needs execution detail beyond `.claude/TASKS.md`, create a plan in `.claude/plans/` and link to it from the task block's intro paragraph. When that task ships, delete its plan file.
-- Write the plan in the same session as the task block. The session that executes the plan later inherits reasoning context it would otherwise have to re-derive.
 
 ## Memory
 
@@ -108,7 +102,7 @@ Rule of thumb when a fact lives in two places: if an outside visitor needs it to
 ## Worktrees
 
 - Default to working on the active branch in the main checkout. Reach for a linked worktree via `/claude-worktree` only when a concurrent session would otherwise fight over working-tree state.
-- Shared session scratch (`.claude/plans/`, `.claude/review/`, `.claude/memory/`, `.claude/TASKS.md`) lives at the main worktree root, not inside a linked worktree. From a linked worktree, resolve these paths against the main root via `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`. Fall back to `pwd` if not a git repo.
-- From a linked worktree, every `Edit` or `Write` to a tracked file (source, docs) must use a path starting with `pwd`. Only shared session scratch (`.claude/plans/`, `.claude/review/`, `.claude/memory/`, `.claude/TASKS.md`) resolves to the main worktree root.
+- Shared session scratch (`.claude/plans/`, `.claude/review/`, `.claude/memory/`, `.claude/tasks/`) lives at the main worktree root, not inside a linked worktree. From a linked worktree, resolve these paths against the main root via `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`. Fall back to `pwd` if not a git repo.
+- From a linked worktree, every `Edit` or `Write` to a tracked file (source, docs) must use a path starting with `pwd`. Only shared session scratch (`.claude/plans/`, `.claude/review/`, `.claude/memory/`, `.claude/tasks/`) resolves to the main worktree root.
 - The pre-push cspell check is blind to worktree changes because `useGitignore: true` walks up to the parent `.gitignore` that excludes `.claude/worktrees/`, and pushing from main scans `main`'s working tree, not the branch tip. Before pushing a worktree branch with new vocabulary (new product names, libs, jargon), spell-check the diff explicitly: `git diff --name-only main | grep -vE 'bun\.lock$|\.png$' | xargs bunx cspell --no-must-find-files --no-progress --no-gitignore`. Add unknown real words to the right `.cspell/<bucket>.txt` before pushing.
 - Push a worktree branch from the main checkout via `cd <main-root> && git push -u origin <branch>`, not `git -C <main-root> push`. The career-level CLAUDE.md documents the `git -C` form, but in this repo it triggers a phantom prettier failure under pre-push (`Unable to read file ".claude/.claude/review/..."`). The `cd` form runs the same hook cleanly.

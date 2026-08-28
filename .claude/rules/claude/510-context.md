@@ -10,7 +10,6 @@ paths:
 
 - Before non-trivial work in a domain, read its `.claude/context/<domain>.md` entry. Use `.claude/context/index.md` to find it.
 - Leave the entry conforming when work in its domain changes what it describes.
-- Rewrite the decision a change supersedes rather than appending a second one narrating the transition.
 
 ## Narration pronouns
 
@@ -26,4 +25,4 @@ Do not put a sibling bullet's design in the past with one of these.
 
 ## Authority
 
-- Follow `.claude/standards/context.md` for entry shape: frontmatter, sections, length, and what goes in. It is the single source.
+- Follow the context standard for entry shape: frontmatter, sections, length, and what goes in. It is the single source. Read it with `aitk standards context`.

@@ -16,6 +16,7 @@ coveragerc
 dataclass
 dataclasses
 dbaeumer
+Descr
 domcontentloaded
 dotenv
 dotfolders

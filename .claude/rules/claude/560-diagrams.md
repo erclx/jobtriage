@@ -9,11 +9,10 @@ paths:
 
 ## Authority
 
-- Follow `.claude/standards/diagrams.md` for Mermaid diagram layout, budgets, accessibility, verification, and explanation prose. It is the single source.
+- Follow the diagrams standard for Mermaid diagram layout, budgets, accessibility, verification, and explanation prose. It is the single source. Read it with `aitk standards diagrams`.
 - A diagram entry carries structure and flow, not implementation. Read the standard before adding or revising a kind.
 
 ## Scope
 
 - Write a new diagram to `.claude/diagrams/<kind>.md`, never to `.claude/DIAGRAMS.md`
 - Convert a `.claude/DIAGRAMS.md` left by an older install into per-kind entries before editing it
-- Refresh only the entries whose source signal moved. Do not rewrite the folder wholesale.
