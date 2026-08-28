@@ -31,7 +31,7 @@ case "$file_path" in
 esac
 
 case "$file_path" in
-*/.claude/tasks/index.md) exit 0 ;;
+*/.claude/tasks/index.md | */.claude/tasks/archive/*) exit 0 ;;
 esac
 
 # Report a missing CLI rather than exiting quietly. The path guard above already
