@@ -37,5 +37,8 @@ sthlm
 tappable
 timespec
 topk
+unconfigured
 unstub
+unwired
+updatability
 wordmark

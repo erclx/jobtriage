@@ -11,8 +11,14 @@ paths:
 
 ## Before editing
 
-- Read the skill's sibling `REQUIREMENT.md` when one exists. If the change closes no gap it states, change the requirement first or drop the change.
+- Confirm `aitk:create-skill`'s two creation-time questions are answered before a new `SKILL.md` lands, whether drafted by hand, by another skill, or by `aitk:create-skill` itself. Carry the third question into the sibling `REQUIREMENT.md`'s `Must not` section as a review criterion rather than a gate.
+- Report it rather than proceeding silently when `aitk:create-skill` does not resolve. It ships with the plugin and this rule ships with the CLI, so a project that installed governance alone does not have it.
+
+## After editing
+
+- Re-read a skill body this session edited before invoking that skill again in the same session
+- Do not read a resolved file path in a held body as evidence the body is current
 
 ## Authority
 
-- Follow `.claude/standards/skill.md` for skill structure, frontmatter fields, invocation rules, and the shape a `REQUIREMENT.md` states. It is the single source.
+- Follow the skill standard for skill structure, frontmatter fields, invocation rules, and the shape a `REQUIREMENT.md` states. It is the single source. Read it with `aitk standards skill`.
