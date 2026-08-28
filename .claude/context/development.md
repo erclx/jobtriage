@@ -151,6 +151,12 @@ Run `scripts/monitor.sh` in a separate terminal before starting any local model:
 
 The script samples four pressure sources every 3s (Windows host RAM, WSL guest RAM, GPU VRAM and utilization, loaded Ollama models) and warns at host RAM 85% or GPU util 90%. Abort the model load if host is already at 80%.
 
+### `aitk tooling sync` covers only the shared root layer
+
+The `base` tooling stack `aitk tooling sync` resolves for this repo covers `.editorconfig`, the husky hooks, prettier, cspell, and commitlint, the layer described in Layer responsibilities above as "root owns format, spelling, and shell checks." `.vscode/extensions.json`, `.vscode/settings.json`, `scripts/verify.sh`, and `.github/workflows/verify.yml` hand-diverge from the toolkit's generic single-folder template by design, since they orchestrate the `web/` plus `python/` split.
+
+Running `aitk tooling sync base --write` without reviewing the diff first replaces those four files with content built for a single-folder project: the Python and TypeScript editor config disappears from `.vscode/`, and `scripts/verify.sh` drops its calls into `python/scripts/verify.sh` and `web/scripts/verify.sh` entirely. Check the diff on each file the tool reports before applying it.
+
 ### `next build` and Playwright e2e are out of the verify cascade by design
 
 The previous scaffold ran `next build` in `pre-push` and froze under WSL2. CI now runs the build on every PR instead. Run `cd web && bun run build` and `cd web && bun run test:e2e` manually before opening a PR if you want full parity.
