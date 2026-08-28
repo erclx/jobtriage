@@ -7,7 +7,7 @@ Triages Swedish job ads against a pasted profile, lays results onto a spatial ca
 Three-tier ownership model. Know which tier holds what before reading or writing.
 
 - `README.md`: public pitch and 60-second setup for an outside visitor. No internal contracts.
-- `.claude/context/`: per-domain working knowledge for Claude Code editing that domain. Layer responsibilities, decisions, gotchas, hidden contracts. See `.claude/context/index.md` for the catalog. New entries follow `.claude/standards/context.md`.
+- `.claude/context/`: per-domain working knowledge for Claude Code editing that domain. Layer responsibilities, decisions, gotchas, hidden contracts. See `.claude/context/index.md` for the catalog. New entries follow `aitk standards context`.
 - `.claude/` planning docs (`ARCHITECTURE.md`, `REQUIREMENTS.md`, `DESIGN.md`): always-loaded product-wide invariants. Read before changes, when present. The `claude-feature` skill loads them in parallel. Wireframes live in `.claude/wireframes/` and diagrams in `.claude/diagrams/`, both loading on demand.
 - `.claude/rules/`: coding standards. Always-on rules apply every session. Path-scoped rules apply to files matching their `paths:` glob.
 
@@ -48,7 +48,7 @@ Rule of thumb when a fact lives in two places: if an outside visitor needs it to
 
 ## Markdown
 
-- Before drafting a PR body, commit message, branch name, or snippet, read the matching standard in `.claude/standards/` and follow it. None of these is a file on disk, so no path-scoped rule fires for them.
+- Before drafting a PR body, commit message, or branch name, read the matching standard via `aitk standards <name>` and follow it. None of these is a file on disk, so no path-scoped rule fires for them.
 
 ## Commands
 
