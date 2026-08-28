@@ -43,7 +43,7 @@ flowchart TB
     models["Ollama, Anthropic,<br/>OpenAI, or Gemini"]
     table["Per-axis pass table"]
 
-    fixtures --> probe -->|curl| route --> models --> probe --> table
+    fixtures --> probe -->|fetch| route --> models --> probe --> table
 
     goldenset["Swedish golden query set"]
     pyharness["Python eval harness"]
@@ -53,6 +53,6 @@ flowchart TB
     goldenset --> pyharness --> retriever --> ablation
 ```
 
-Two harnesses, one per concern. `model-probe.ts` drives the live `/api/chat` route with JSON fixtures and reports per-axis pass rates per provider, run on every PR that touches the prompt or the tools.
+Two harnesses, one per concern. `model-probe.ts` drives the live `/api/chat` route with JSON fixtures and reports per-axis pass rates per provider. `agent-eval.yml` runs it on `workflow_dispatch` only, capping the maintainer key rather than firing on every PR or on a schedule.
 
 The Python harness runs the Swedish golden query set against the retriever alone, no LLM in the loop, and produces the four-configuration ablation table that ships in the README. Neither harness calls the other. Both are documented in `.claude/context/evals.md`.

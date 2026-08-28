@@ -36,7 +36,7 @@ The deployed Cloud Run image is slim and omits the corpus, since v4.10 gated cor
 
 ```mermaid
 flowchart TB
-    accTitle: Every data tool fires exactly one spatial tool after it
+    accTitle: Every data tool fires at least one spatial tool after it
     accDescr: The system prompt fixes the pairing between the seven data tools and the eight spatial tools. searchJobs and semanticSearch both pair with placeAds. The other five data tools each pair with one distinct spatial tool. pinToShortlist and setView are user-driven and pair with no data tool.
 
     agent[Agent picks a data tool]
@@ -48,8 +48,8 @@ flowchart TB
     agent -.-> user
 ```
 
-The system prompt fixes one spatial tool per data tool call. `searchJobs` and `semanticSearch` both pair with `placeAds`, since both return a ranked ad list for the canvas to lay out.
+The system prompt fixes a default spatial tool per data tool call. `searchJobs` and `semanticSearch` both pair with `placeAds`, since both return a ranked ad list for the canvas to lay out.
 
 The other five data tools each pair with a distinct spatial tool matching what they compute: `groupAds` for a batch triage, `connectProfileToAds` for a profile match, `pairAdsForCompare` for a comparison, `placeAdsOnTimeline` for a deadline query, `markStatus` for an engagement update. `pinToShortlist` and `setView` never follow a data tool. A user action drives both directly.
 
-The exact pairing table, plus how profile-fit composition stacks `connectProfileToAds` on top of the default pairing, lives in `.claude/context/agent.md`.
+The exact pairing table, plus how profile-fit composition stacks `connectProfileToAds` on top of the default pairing, lives in `.claude/context/canvas.md` under `## Data-spatial pairing`.
