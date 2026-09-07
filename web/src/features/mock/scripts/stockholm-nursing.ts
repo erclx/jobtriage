@@ -26,11 +26,6 @@ export const stockholmNursingScript: MockScript = {
       output: {
         results: [
           {
-            concept_id: 'HdXc_PNB_pcU',
-            preferred_label: 'Sjuksköterska, barnavårdscentral',
-            type: 'occupation',
-          },
-          {
             concept_id: 'bXNH_MNX_dUR',
             preferred_label: 'Sjuksköterska, grundutbildad',
             type: 'occupation',
@@ -38,6 +33,11 @@ export const stockholmNursingScript: MockScript = {
           {
             concept_id: 'uaJs_9YA_Cnp',
             preferred_label: 'Sjuksköterska, äldreomsorg och -vård/geriatrik',
+            type: 'occupation',
+          },
+          {
+            concept_id: '4KeX_GcW_9jY',
+            preferred_label: 'Sjuksköterska, medicin och kirurgi',
             type: 'occupation',
           },
           {
@@ -73,27 +73,27 @@ export const stockholmNursingScript: MockScript = {
       output: {
         results: [
           {
-            ad_id: '31376391',
-            headline: 'Sjuksköterska i Stockholm',
-            employer_name: 'VårdIX AB',
+            ad_id: '31434274',
+            headline: 'Almia söker sjuksköterska till Stockholm',
+            employer_name: 'Almia AB',
             municipality: 'Stockholm',
-            application_deadline: '2026-08-30T23:59:59',
+            application_deadline: '2026-09-13T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31376391',
+              'https://arbetsformedlingen.se/platsbanken/annonser/31434274',
             description_excerpt:
-              'Hitta ditt nästa uppdrag med VårdIX-Bemanning På VårdIX-Bemanning tror vi att de bästa resultaten skapas när våra konsulter känner sig trygga, uppskattade och väl omhändertagna. Vi bygger långsiktiga relationer med våra sjuksköterskor och finns med som ett personligt stöd före, under och efter varje uppdrag. För oss handlar bemanning om mer än att matcha kompetens – det handlar om att hitta rätt uppdrag för rätt person och skapa ett samarbete som håller över tid. Nu söker vi…',
+              'Gör det som du älskar, som konsult! Kvalifikationer Vi söker dig med minst två års erfarenhet. Vi ser gärna att du som konsult har god samarbetsförmåga, är noggrann, och ansvarstagande. Arbetsuppgifter Sedvanliga arbetsuppgifter som Leg. Sjuksköterska med erfarenhet från {{department}}. Finner du tjänsten som Leg. Sjuksköterska till Stockholm intressant är du är varmt välkommen att höra av dig direkt till Amanda Aletto eller någon av hennes kollegor på rekrytering@almia.se el…',
             occupation_label: 'Sjuksköterska, grundutbildad',
           },
           {
-            ad_id: '31376296',
-            headline: 'Sjuksköterska i Stockholm',
-            employer_name: 'VårdIX AB',
+            ad_id: '31422642',
+            headline: 'Sjuksköterska sökes till hemsjukvård Stockholm',
+            employer_name: 'Dedicare AB (publ)',
             municipality: 'Stockholm',
-            application_deadline: '2026-08-24T23:59:59',
+            application_deadline: '2026-09-30T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31376296',
+              'https://arbetsformedlingen.se/platsbanken/annonser/31422642',
             description_excerpt:
-              'Hitta ditt nästa uppdrag med VårdIX-Bemanning På VårdIX-Bemanning tror vi att de bästa resultaten skapas när våra konsulter känner sig trygga, uppskattade och väl omhändertagna. Vi bygger långsiktiga relationer med våra sjuksköterskor och finns med som ett personligt stöd före, under och efter varje uppdrag. För oss handlar bemanning om mer än att matcha kompetens – det handlar om att hitta rätt uppdrag för rätt person och skapa ett samarbete som håller över tid. Nu söker vi…',
+              'Dedicare är ett av Nordens största rekryterings- och bemanningsföretag inom vård och socialt arbete med verksamhet i Sverige, Norge, Finland och Danmark. Dedicare bemannar och rekryterar läkare, sjuksköterskor och socionomer till kunder i både privat och offentlig verksamhet. Koncernen är noterat på Nasdaq Stockholm sedan maj 2011. Dedicare är medlem i Almega Kompetensföretagen och har därmed kollektivavtal för alla anställda. Dedicare är kvalitetscertifierat enligt ISO 9001:…',
             occupation_label: 'Sjuksköterska, grundutbildad',
           },
           {
@@ -109,27 +109,27 @@ export const stockholmNursingScript: MockScript = {
             occupation_label: 'Sjuksköterska, grundutbildad',
           },
           {
-            ad_id: '31092227',
-            headline: 'Sjuksköterska inom vårdförsäkring i Stockholm',
-            employer_name: 'The Finance Family AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-08-31T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31092227',
-            description_excerpt:
-              'The Finance Family söker nu efter en sjuksköterska för ett uppdrag i Stockholm. Tjänsten startar som ett konsultuppdrag, med möjlighet till förlängning efter uppdragets slut. Preliminär start augusti/september 2026 och t o m 30 april 2027 (initialt). Om rollen och arbetsuppgifter: Som sjuksköterska hos vår kund inom vårdförsäkring, blir du en del av ett större team som ansvarar för hanteringen av bolagets kunders försäkringsärenden. Du stödjer dig på gällande försäkringsvillk…',
-            occupation_label: 'Sjuksköterska, grundutbildad',
-          },
-          {
             ad_id: '30879803',
             headline: 'Legitimerad Sjuksköterska Sökes till Stockholm',
             employer_name: 'Omsorg & Behandling 1 AB',
             municipality: 'Stockholm',
-            application_deadline: '2026-08-25T23:59:59',
+            application_deadline: '2026-09-08T23:59:59',
             webpage_url:
               'https://arbetsformedlingen.se/platsbanken/annonser/30879803',
             description_excerpt:
               'Välkommen till Omsorg & Behandling! Just nu söker vi leg.sjuksköterskor men även ni som är specialistutbildade till vårat team. Omsorg & Behandling är ett auktoriserat bemanningsföretag för Sveriges regioner, kommuner och privata vårdgivare. Vi är ett bemanningsföretag som är aktiva i hela Sverige . Våra konsultchefer i företaget är Sjuksköterskor med lång erfarenhet från vården och arbetar aktivt ute hos våra kunder.Kollektivavtal: Vi är medlem i Tjänsteföretagens Arbetsgiva…',
+            occupation_label: 'Sjuksköterska, grundutbildad',
+          },
+          {
+            ad_id: '31441913',
+            headline: 'Vi söker sjuksköterska till HSL/LSS-teamet Stockholm',
+            employer_name: 'Attendo Sverige AB',
+            municipality: 'Stockholm',
+            application_deadline: '2027-03-03T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31441913',
+            description_excerpt:
+              'Välkommen till en värderingsstyrd organisation Vill du vara med och bygga framtidens LSS-vård? Nu har du chansen att bli en del av vårt kompetenta och engagerade team! Vi är ett arbetslag med sjuksköterskor och ett eget rehabteam – och nu söker vi en sjuksköterska till våra LSS boenden i Stockholm. Beskrivning av tjänsten: Tillsammans med kollegor inom olika professioner och externa vårdkontakter arbetar du för att skapa den bästa möjliga vården – alltid med patienten i fokus…',
             occupation_label: 'Sjuksköterska, grundutbildad',
           },
         ],
@@ -143,15 +143,15 @@ export const stockholmNursingScript: MockScript = {
         groups: [
           {
             label: 'Strong fit',
-            ad_ids: ['31376391', '31376296'],
+            ad_ids: ['31434274', '31422642'],
           },
           {
             label: 'Consider',
-            ad_ids: ['31339409', '31092227'],
+            ad_ids: ['31339409', '30879803'],
           },
           {
             label: 'Worth a look',
-            ad_ids: ['30879803'],
+            ad_ids: ['31441913'],
           },
         ],
       },
@@ -160,15 +160,15 @@ export const stockholmNursingScript: MockScript = {
         groups: [
           {
             label: 'Strong fit',
-            ad_ids: ['31376391', '31376296'],
+            ad_ids: ['31434274', '31422642'],
           },
           {
             label: 'Consider',
-            ad_ids: ['31339409', '31092227'],
+            ad_ids: ['31339409', '30879803'],
           },
           {
             label: 'Worth a look',
-            ad_ids: ['30879803'],
+            ad_ids: ['31441913'],
           },
         ],
       },
@@ -180,13 +180,13 @@ export const stockholmNursingScript: MockScript = {
       input: {
         links: [
           {
-            ad_id: '31376391',
+            ad_id: '31434274',
             score: 0.92,
             rationale:
               'Cardiology specialist scope aligns with the profile training.',
           },
           {
-            ad_id: '31376296',
+            ad_id: '31422642',
             score: 0.8,
             rationale:
               'Acute-ward responsibility matches the experience in the profile.',
@@ -198,7 +198,7 @@ export const stockholmNursingScript: MockScript = {
               'Generalist nursing role that the profile experience covers.',
           },
           {
-            ad_id: '31092227',
+            ad_id: '30879803',
             score: 0.56,
             rationale:
               'Generalist nursing role that the profile experience covers.',
@@ -209,13 +209,13 @@ export const stockholmNursingScript: MockScript = {
         accepted: true,
         links: [
           {
-            ad_id: '31376391',
+            ad_id: '31434274',
             score: 0.92,
             rationale:
               'Cardiology specialist scope aligns with the profile training.',
           },
           {
-            ad_id: '31376296',
+            ad_id: '31422642',
             score: 0.8,
             rationale:
               'Acute-ward responsibility matches the experience in the profile.',
@@ -227,7 +227,7 @@ export const stockholmNursingScript: MockScript = {
               'Generalist nursing role that the profile experience covers.',
           },
           {
-            ad_id: '31092227',
+            ad_id: '30879803',
             score: 0.56,
             rationale:
               'Generalist nursing role that the profile experience covers.',
