@@ -54,6 +54,18 @@ export const stockholmAiEngineeringScript: MockScript = {
       output: {
         results: [
           {
+            ad_id: '31429441',
+            headline: 'AI Engineer',
+            employer_name: 'SAVR AB',
+            municipality: 'Stockholm',
+            application_deadline: '2027-03-01T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31429441',
+            description_excerpt:
+              'SAVR is a fast-growing Swedish fintech company on a mission to reinvent investing. We empower investors with a platform that offers lower fees, greater transparency, and a radically improved experience. We’re not just building another investment service — we’re reimagining how financial products should work for people, not just institutions. As part of our ambitious, innovative and curious team, you’ll help shape the future of investing in Sweden and beyond. A quick note: Thi…',
+            occupation_label: 'Mjukvaruutvecklare',
+          },
+          {
             ad_id: '30991050',
             headline: 'AI Engineer',
             employer_name: 'Umain AB',
@@ -66,52 +78,40 @@ export const stockholmAiEngineeringScript: MockScript = {
             occupation_label: 'Mjukvaruutvecklare',
           },
           {
-            ad_id: '31385277',
-            headline: 'Fullstack AI Engineer',
-            employer_name: 'Tendium AB',
+            ad_id: '31420374',
+            headline: 'AI Software Engineer',
+            employer_name: 'Jobway AB',
             municipality: 'Stockholm',
-            application_deadline: '2027-02-18T23:59:59',
+            application_deadline: '2026-09-25T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31385277',
+              'https://arbetsformedlingen.se/platsbanken/annonser/31420374',
             description_excerpt:
-              'Do you want to join the technological revolution? Tendium is looking for a Fullstack AI Engineer to join our team. About Tendium Tendium is the global pioneer in AI-driven public tender management, transforming how companies discover, analyse, and win government contracts. Our platform turns complex processes into something simple and transparent, empowering businesses to compete fairly for billions in public sector opportunities. We’ve been building our AI-native platform si…',
-            occupation_label: 'Fullstack-utvecklare',
+              'Är du en utvecklare som gärna bygger hela lösningen från idé till färdig produkt? Brinner du för AI, modern teknik och att ligga i framkant av utvecklingen? Då kan detta vara möjligheten för dig! Ansök redan idag! I rollen som AI Software Engineer hos Qrendo blir du en viktig del av ett litet, snabbfotat produktteam där du får arbeta med den senaste tekniken inom AI och mjukvaruutveckling. Du kommer att vara med och vidareutveckla ReqAI, ett AI-drivet kravhanteringssystem som…',
+            occupation_label: 'Systemutvecklare/Programmerare',
           },
           {
-            ad_id: '31284834',
-            headline: 'AI Enablement Engineer',
-            employer_name: 'Xensam AB',
+            ad_id: '31472123',
+            headline: 'AI Platform Engineer',
+            employer_name: 'Nordea Bank Abp, filial i Sverige',
             municipality: 'Stockholm',
-            application_deadline: '2027-01-16T23:59:59',
+            application_deadline: '2026-09-24T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31284834',
+              'https://arbetsformedlingen.se/platsbanken/annonser/31472123',
             description_excerpt:
-              'Xensam: Join the Future of SAM Xensam is the leader in AI-powered, cloud-based Software Asset Management. Our technology brings clarity to complex IT environments, helping users make smart, data-driven decisions and maximize software ROI. Recognized with the Highest Growth Award and ranked #3 Overall Champion at the Main Software 50 Awards Nordics, we’re scaling fast and looking for people who want to join the journey. At Xensam, you play a key role in a team built on energy,…',
-            occupation_label: 'Backend-utvecklare',
+              'Job ID: 3525 We are looking for an AI Platform Engineer to drive the development and adoption of AI-powered solutions that strengthen our ability to detect and investigate financial crime. The role is permanent and can be based in Helsinki, Tallinn, Poland or Stockholm. About our team Meet the Data and Platform Team. Our role is to improve how we detect and investigate financial crime with the help of AI and machine learning to keep our customers, Nordea and society safe. Our…',
+            occupation_label: 'IT-arkitekt',
           },
           {
-            ad_id: '31256366',
+            ad_id: '31469989',
             headline: 'Senior AI Engineer',
-            employer_name: 'Workday Sweden Aktiebolag',
+            employer_name: 'Rasulson Consulting AB',
             municipality: 'Stockholm',
-            application_deadline: '2027-01-01T23:59:59',
+            application_deadline: '2026-09-16T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31256366',
+              'https://arbetsformedlingen.se/platsbanken/annonser/31469989',
             description_excerpt:
-              'Sana is an AI lab building superintelligence for work. We believe organizations can accomplish their missions faster when teams can effortlessly access knowledge, automate repetitive work, and learn anything with the help of agentic AI. As part of Workday, we are committed to building AI that augments people - not replaces them. We bring this mission to life through two products. Sana Agents provide a seamless way to access all your company’s apps, knowledge, and data, enabli…',
-            occupation_label: 'Backend-utvecklare',
-          },
-          {
-            ad_id: '31220873',
-            headline: 'Edge AI Engineer',
-            employer_name: 'Sigma Connectivity AB',
-            municipality: 'Lund',
-            application_deadline: '2026-08-30T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31220873',
-            description_excerpt:
-              'Jobbeskrivning Sigma Connectivity’s Edge AI initiatives span multiple domains—computer vision, audio intelligence, sensor fusion, and embedded ML—delivering low‑latency, privacy‑preserving intelligence directly on devices across diverse hardware platforms. Projects routinely involve developing and optimizing ML models for tasks such as gesture recognition, defect detection, object tracking, and contextual human‑machine interaction, deployed on edge hardware including Qualcomm…',
-            occupation_label: 'Mjukvaruutvecklare',
+              "Role We're looking for a senior AI Engineer for a consulting assignment focused on building AI-driven capabilities in a business-critical, quality-sensitive setting for a company within healthcare/medtech. Responsibilities Build AI functions that turn clinical content into practical, actionable suggestions for therapists in their daily work. Design end-to-end pipelines, including prompt and chain architectures, with structured outputs broken into clear, independently testable…",
+            occupation_label: 'Systemansvarig',
           },
         ],
       },
@@ -121,13 +121,13 @@ export const stockholmAiEngineeringScript: MockScript = {
       toolName: 'placeAds',
       toolCallId: 'mock-sthlm-ai-call-3',
       input: {
-        ad_ids: ['30991050', '31385277', '31284834', '31256366', '31220873'],
+        ad_ids: ['31429441', '30991050', '31420374', '31472123', '31469989'],
         layout: 'grid',
         emphasis: 'none',
       },
       output: {
         accepted: true,
-        ad_ids: ['30991050', '31385277', '31284834', '31256366', '31220873'],
+        ad_ids: ['31429441', '30991050', '31420374', '31472123', '31469989'],
         layout: 'grid',
         emphasis: 'none',
       },
@@ -135,7 +135,7 @@ export const stockholmAiEngineeringScript: MockScript = {
     {
       kind: 'text',
       content:
-        ' Found 5 active roles. The strongest signal comes from AI Engineer at Umain AB, Fullstack AI Engineer at Tendium AB, AI Enablement Engineer at Xensam AB. Cards are on the canvas to the right. Click any card to expand the description.',
+        ' Found 5 active roles. The strongest signal comes from AI Engineer at SAVR AB, AI Engineer at Umain AB, AI Software Engineer at Jobway AB. Cards are on the canvas to the right. Click any card to expand the description.',
     },
   ],
 } as const
