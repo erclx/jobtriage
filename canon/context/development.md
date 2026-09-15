@@ -5,7 +5,7 @@ description: Local dev workflow, scripts, WSL2 constraints, and the regen-gate p
 
 # Development
 
-Local dev for this monorepo. Two stack folders sit beside a thin orchestration root. This entry is the single discoverable surface for how to run the project, and the rationale behind the rules that constrain it.
+Local dev for this monorepo. Two stack folders sit beside a thin orchestration root. This entry is the discoverable surface for a contributor with the source open: the rationale behind the rules that constrain local dev, plus every gotcha and hidden contract. `docs/development.md` is the public counterpart linked from the README, carrying only setup and the two commands to run the app, for a reader without the source cloned.
 
 ## Layer responsibilities
 
