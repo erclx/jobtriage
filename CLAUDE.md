@@ -22,5 +22,4 @@ Triages Swedish job ads against a pasted profile, lays results onto a spatial ca
 - `python/`: FastAPI tool server and Typer CLI, uv-managed, owns retrieval and the JobTech client
 - `scripts/`: repo-root shell tooling (restart, monitor)
 - `.claude/evals/`: structured JSON fixtures consumed by `web/scripts/model-probe.ts`. See `canon/context/evals.md` for fixture shape.
-- `.canon/tasks/`, `.canon/diagrams/`, `.canon/review/`: gitignored task board, per-kind diagrams, and review scratch
 - `.claude/wiki/`: durable reusable technical knowledge that outlives any single project decision
