@@ -12,7 +12,7 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="web/evidence/readme/dark.png">
-  <img src="web/evidence/readme/light.png" alt="The jobtriage canvas: a chat rail on the left, and three ad cards on the right connected to the profile node by colored edges carrying a match percentage and one-line rationale each">
+  <img src="web/evidence/readme/light.png" alt="The jobtriage canvas: a chat rail on the left, and five nursing ad cards on the right grouped into Strong fit, Consider, and Worth a look clusters, each connected to the profile node by a colored edge carrying a match percentage and one-line rationale">
 </picture>
 
 The demo path replays a scripted session captured against live JobTech ads, so it walks through real cards without needing a provider key. Bring an Anthropic, OpenAI, or Gemini key to drive the agent yourself.
