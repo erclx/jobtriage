@@ -26,53 +26,53 @@ export const deadlineTimelineScript: MockScript = {
       output: {
         results: [
           {
-            ad_id: '31302151',
-            headline: 'Embedded AI Engineer, Lund',
-            employer_name: 'AXIS COMMUNICATIONS AKTIEBOLAG',
-            municipality: 'Lund',
-            application_deadline: '2026-08-26T23:59:59',
+            ad_id: '31440715',
+            headline: 'Graduate AI Engineer - ADAS AI Agents',
+            employer_name: 'Luxoft Sweden AB',
+            municipality: 'Göteborg',
+            application_deadline: '2026-09-14T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31302151',
+              'https://arbetsformedlingen.se/platsbanken/annonser/31440715',
+            days_until_deadline: 1,
+          },
+          {
+            ad_id: '31469989',
+            headline: 'Senior AI Engineer',
+            employer_name: 'Rasulson Consulting AB',
+            municipality: 'Stockholm',
+            application_deadline: '2026-09-16T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31469989',
             days_until_deadline: 3,
           },
           {
-            ad_id: '31097241',
-            headline: 'AI Solutions Engineer',
-            employer_name: 'Etraveli Group AB',
+            ad_id: '31466329',
+            headline: 'AI Engineer - ADAS AI Agents',
+            employer_name: 'Luxoft Sweden AB',
             municipality: 'Göteborg',
-            application_deadline: '2026-08-27T23:59:59',
+            application_deadline: '2026-09-21T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31097241',
-            days_until_deadline: 4,
-          },
-          {
-            ad_id: '31220873',
-            headline: 'Edge AI Engineer',
-            employer_name: 'Sigma Connectivity AB',
-            municipality: 'Lund',
-            application_deadline: '2026-08-30T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31220873',
-            days_until_deadline: 7,
-          },
-          {
-            ad_id: '31254998',
-            headline: 'DevOps & AI Engineer',
-            employer_name: 'Fatalist Development AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-08-31T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31254998',
+              'https://arbetsformedlingen.se/platsbanken/annonser/31466329',
             days_until_deadline: 8,
           },
           {
-            ad_id: '31208149',
-            headline: 'Senior AI Enablement Engineer',
-            employer_name: 'Gears of Leo AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-08-31T23:59:59',
+            ad_id: '31379145',
+            headline: 'AI Engineer - Euromaster',
+            employer_name: 'EUROMASTER AKTIEBOLAG',
+            municipality: 'Varberg',
+            application_deadline: '2026-09-21T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31208149',
+              'https://arbetsformedlingen.se/platsbanken/annonser/31379145',
+            days_until_deadline: 8,
+          },
+          {
+            ad_id: '31417598',
+            headline: 'Embedded AI Engineer, Lund',
+            employer_name: 'Axis Communications Aktiebolag',
+            municipality: 'Lund',
+            application_deadline: '2026-09-21T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31417598',
             days_until_deadline: 8,
           },
         ],
@@ -83,19 +83,19 @@ export const deadlineTimelineScript: MockScript = {
       toolName: 'placeAdsOnTimeline',
       toolCallId: 'mock-deadline-ai-call-2',
       input: {
-        ad_ids: ['31302151', '31097241', '31220873', '31254998', '31208149'],
-        today_cursor: '2026-08-24',
+        ad_ids: ['31440715', '31469989', '31466329', '31379145', '31417598'],
+        today_cursor: '2026-09-14',
       },
       output: {
         accepted: true,
-        ad_ids: ['31302151', '31097241', '31220873', '31254998', '31208149'],
-        today_cursor: '2026-08-24',
+        ad_ids: ['31440715', '31469989', '31466329', '31379145', '31417598'],
+        today_cursor: '2026-09-14',
       },
     },
     {
       kind: 'text',
       content:
-        ' 5 roles laid on the date axis. The soonest is Embedded AI Engineer, Lund at AXIS COMMUNICATIONS AKTIEBOLAG, 3 days out.',
+        ' 5 roles laid on the date axis. The soonest is Graduate AI Engineer - ADAS AI Agents at Luxoft Sweden AB, 1 day out.',
     },
   ],
 } as const
