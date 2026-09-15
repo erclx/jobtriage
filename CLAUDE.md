@@ -8,7 +8,7 @@ Three-tier ownership model. Know which tier holds what before reading or writing
 
 - `README.md`: public pitch and 60-second setup for an outside visitor. No internal contracts.
 - `canon/context/`: per-domain working knowledge for Claude Code editing that domain. Layer responsibilities, decisions, gotchas, hidden contracts. See `canon/context/index.md` for the catalog. New entries follow the context standard, read with `canon standards context`.
-- `canon/ARCHITECTURE.md`, `canon/REQUIREMENTS.md`, `canon/DESIGN.md`, and `.claude/TASKS.md`/`.claude/DIAGRAMS.md`: always-loaded product-wide invariants. Read before changes, when present. The `claude-feature` skill loads them in parallel. Wireframes live in `canon/wireframes/` and load on demand per surface.
+- `canon/REQUIREMENTS.md`, `canon/ARCHITECTURE.md`: always-loaded product-wide invariants, eagerly loaded below. `canon/DESIGN.md` loads on demand when editing a UI surface, and wireframes live in `canon/wireframes/` and load on demand per surface.
 - `.claude/rules/`: coding standards. Always-on rules apply every session. Path-scoped rules apply to files matching their `paths:` glob.
 
 Rule of thumb when a fact lives in two places: if an outside visitor needs it to evaluate the project, `README.md`. Everything a contributor or Claude needs to run or modify it lives in `canon/context/`, keyed by domain.
@@ -20,8 +20,8 @@ Rule of thumb when a fact lives in two places: if an outside visitor needs it to
 
 ## Behavior
 
-- This is a public repo. Do not write personal names into READMEs, `.claude/` planning docs, source comments, or commit messages. Use neutral phrasing like "the user", "a recruiter", or "a local file". Brief content under `.tmp/` is local context, not output.
-- Do not cite `.claude/` paths (TASKS.md, plans, review, .tmp) from PR bodies, READMEs, or other artifacts a reviewer reads. Inline the context or use neutral phrasing like "queued as a follow-up".
+- This is a public repo. Do not write personal names into READMEs, `.claude/` or `canon/` planning docs, source comments, or commit messages. Use neutral phrasing like "the user", "a recruiter", or "a local file". Brief content under `.canon/tmp/` is local context, not output.
+- Do not cite `.canon/` paths (tasks, plans, review, tmp) from PR bodies, READMEs, or other artifacts a reviewer reads. Inline the context or use neutral phrasing like "queued as a follow-up".
 - For deploy infrastructure (Cloud Run, Vercel, Cloudflare), prefer CLI over the dashboard. `gcloud` and `vercel` are authenticated locally and persist across sessions. Run inspection, redeploy, env-var, and domain commands from Bash rather than asking the user to click through. Confirm before destructive operations (delete service, force-push production, change live DNS).
 - Before any multi-path `rm` or `rm -rf`, list every target path in chat and wait for explicit confirmation. "Clean up X" authorizes a different destructive action than a previous one, never a blanket nuke.
 - Before proposing a new doc home for a convention (eval format, fixture kinds, scratch path), grep `CLAUDE.md` and `canon/context/` for the topic. Extend the existing entry over creating a new section.
@@ -43,11 +43,13 @@ Rule of thumb when a fact lives in two places: if an outside visitor needs it to
 - `web/`: Next.js app, bun-managed, owns the chat surface, canvas, and the agent route
 - `python/`: FastAPI tool server and Typer CLI, uv-managed, owns retrieval and the JobTech client
 - `scripts/`: repo-root shell tooling (restart, monitor)
-- `.claude/`: task board (`TASKS.md`), diagrams (`DIAGRAMS.md`), rules, hooks, and settings
+- `.claude/`: rules, hooks, settings, and eval fixtures
 - `canon/`: canonical docs (`ARCHITECTURE.md`, `REQUIREMENTS.md`, `DESIGN.md`), per-domain context, and wireframes
 - `canon/context/`: per-domain narrative loaded when editing that domain. See `canon/context/index.md` for the catalog. Entries cover agent loop, canvas, ci, web, python, retrieval, evals, development, deploy.
 - `canon/wireframes/`: per-surface ASCII layouts loaded on demand, indexed via `canon/wireframes/index.md`
 - `.claude/evals/`: structured JSON fixtures consumed by `web/scripts/model-probe.ts`. See `canon/context/evals.md` for fixture shape, `kind` semantics, and the `workflow_dispatch` posture.
+- `.canon/tasks/`: gitignored task board, one file per task, indexed via `.canon/tasks/index.md`
+- `.canon/diagrams/`: gitignored per-kind Mermaid views, indexed via `.canon/diagrams/index.md`
 - `.canon/review/`: gitignored scratch for review and UI-test output, overwritten on each run
 - `wiki/`: durable reusable technical knowledge that outlives any single project decision (model landscapes, tool-stack notes, integration playbooks). Pages survive plan-file deletion when tasks ship.
 
@@ -61,14 +63,6 @@ Rule of thumb when a fact lives in two places: if an outside visitor needs it to
 
 - Before drafting a new snippet, load the `canon:create-snippet` skill and follow the standard it carries. It is not a file on disk, so no path-scoped rule fires for it, and it does not resolve through `canon standards`.
 
-## Tasks
-
-- `.claude/TASKS.md` is gitignored local session scratch. Edit freely. No staging or revert before commits.
-- Only create a task for work that spans multiple sessions or has real dependencies. Handle small edits immediately without a task entry.
-- Do not add tasks retroactively for work already completed. Completed work is visible in git.
-- When a task needs execution detail beyond `.claude/TASKS.md`, create a plan in `.canon/plans/` and link to it from the task block's intro paragraph. When that task ships, delete its plan file.
-- Write the plan in the same session as the task block. The session that executes the plan later inherits reasoning context it would otherwise have to re-derive.
-
 ## Memory
 
 - Save a feedback memory only when the same mistake happens twice in the session, or when the user explicitly corrects you. First-occurrence slips are noise.
@@ -77,8 +71,6 @@ Rule of thumb when a fact lives in two places: if an outside visitor needs it to
 
 ## Worktrees
 
-- Default to working on the active branch in the main checkout. Reach for a linked worktree via `/claude-worktree` only when a concurrent session would otherwise fight over working-tree state.
-- Shared session scratch (`.canon/plans/`, `.canon/review/`, `.canon/memory/`, `.claude/TASKS.md`) lives at the main worktree root, not inside a linked worktree. From a linked worktree, resolve these paths against the main root via `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`. Fall back to `pwd` if not a git repo.
-- From a linked worktree, every `Edit` or `Write` to a tracked file (source, docs) must use a path starting with `pwd`. Only shared session scratch (`.canon/plans/`, `.canon/review/`, `.canon/memory/`, `.claude/TASKS.md`) resolves to the main worktree root.
+- Default to working on the active branch in the main checkout, the opposite of the toolkit's own default. Reach for a linked worktree via `/claude-worktree` only when a concurrent session would otherwise fight over working-tree state.
 - The pre-push cspell check is blind to worktree changes because `useGitignore: true` walks up to the parent `.gitignore` that excludes `.claude/worktrees/`, and pushing from main scans `main`'s working tree, not the branch tip. Before pushing a worktree branch with new vocabulary (new product names, libs, jargon), spell-check the diff explicitly: `git diff --name-only main | grep -vE 'bun\.lock$|\.png$' | xargs bunx cspell --no-must-find-files --no-progress --no-gitignore`. Add unknown real words to the right `.cspell/<bucket>.txt` before pushing.
 - Push a worktree branch from the main checkout via `cd <main-root> && git push -u origin <branch>`, not `git -C <main-root> push`. The career-level CLAUDE.md documents the `git -C` form, but in this repo it triggers a phantom prettier failure under pre-push (`Unable to read file ".claude/.canon/review/..."`). The `cd` form runs the same hook cleanly.
