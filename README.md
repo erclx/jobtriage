@@ -1,9 +1,19 @@
-# jobtriage
+<p align="center">
+  <img src="web/src/app/icon.svg" width="72" alt="The jobtriage mark">
+</p>
 
-Job board search ranks for the platform, not for you. jobtriage triages Swedish job ads against a profile you paste, lays the results onto a spatial canvas you can compare and shortlist on, and shows the agent's tool calls inline so the ranking stays auditable.
+<h1 align="center">jobtriage</h1>
 
-**Live demo:** https://jobtriage.erclx.dev  
-**Video walkthrough:** https://youtu.be/puAueu9ed3o
+<p align="center"><a href="https://github.com/erclx/jobtriage/actions/workflows/verify.yml?query=branch%3Amain"><img src="https://github.com/erclx/jobtriage/actions/workflows/verify.yml/badge.svg?branch=main" alt="Verify status"></a></p>
+
+<p align="center">Job board search ranks for the platform, not for you. jobtriage triages Swedish job ads against a profile you paste, lays the results onto a spatial canvas you can compare and shortlist on, and shows the agent's tool calls inline so the ranking stays auditable.</p>
+
+<p align="center"><a href="https://jobtriage.erclx.dev"><b>Try it at jobtriage.erclx.dev</b></a> · <a href="https://youtu.be/puAueu9ed3o">Video walkthrough</a></p>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="web/evidence/readme/dark.png">
+  <img src="web/evidence/readme/light.png" alt="The jobtriage canvas: a chat rail on the left, and three ad cards on the right connected to the profile node by colored edges carrying a match percentage and one-line rationale each">
+</picture>
 
 The demo path replays a scripted session captured against live JobTech ads, so it walks through real cards without needing a provider key. Bring an Anthropic, OpenAI, or Gemini key to drive the agent yourself.
 
@@ -28,7 +38,7 @@ Start the FastAPI backend on `http://127.0.0.1:8000` and the web app on `http://
 
 ```bash
 bun run dev:api          # FastAPI tool server
-bun run restart:web      # Next.js production build, see canon/context/development.md
+bun run restart:web      # Next.js production build, see docs/development.md
 ```
 
 ## How it works
@@ -41,51 +51,19 @@ After every data tool the agent fires at least one spatial tool. The system prom
 
 Voice input ships in Chrome via the Web Speech API. The mic affordance hides cleanly in Firefox and Safari rather than breaking. Below 1024px the canvas hides and the chat rail surfaces a "Best viewed on a desktop" notice, since the spatial workspace is the load-bearing artifact.
 
-For the full layered request flow, decision rationale, and known limitations, see the [architecture doc](canon/ARCHITECTURE.md).
-
 ## Hybrid retrieval ablation
 
-Hybrid retrieval (BM25 plus dense embeddings fused via reciprocal rank fusion over a local SQLite corpus) powers the Typer CLI and the local Next.js dev surface. The deployed demo at the live URL does not run this path. It calls the JobTech taxonomy and JobSearch APIs directly so it can answer for any profession a visitor pastes, instead of being pinned to a maintainer-curated corpus. The numbers below describe the repo and CLI story, reproducible end-to-end against the checked-in golden set.
+Hybrid retrieval (BM25 plus dense embeddings fused via reciprocal rank fusion) powers the Typer CLI and the local dev surface. The deployed demo calls JobTech live instead, so it can answer for any profession rather than a maintainer-curated corpus.
 
-50-query Swedish golden set against a 59-ad corpus from Spotify, Klarna, Volvo Group, Volvo Cars, Ericsson, HT Engineering, Stig Ericsson Bil, Montico, and Isaksson Rekrytering. Embeddings from `intfloat/multilingual-e5-base`. Reproduce via `uv run jobtriage evaluate`.
-
-| Configuration | precision@1 | precision@5 | precision@10 | recall@10 | p50 ms | p95 ms |
-| ------------- | ----------- | ----------- | ------------ | --------- | ------ | ------ |
-| filter-only   | 0.020       | 0.020       | 0.020        | 0.150     | 0.0    | 0.0    |
-| bm25-only     | 0.680       | 0.224       | 0.124        | 0.920     | 0.2    | 1.2    |
-| dense-only    | 0.780       | 0.240       | 0.132        | 0.965     | 6.4    | 7.8    |
-| hybrid        | 0.720       | 0.240       | 0.128        | 0.950     | 6.2    | 15.2   |
-
-Dense alone wins precision@1 on this corpus by 6 points over hybrid, and the multilingual table below shows the gap widens at the larger encoder. Hybrid still earns its place on recall and on adversarial queries where exact keyword matches (model names, employer-specific jargon) dominate. The score floor at `JOBTRIAGE_RRF_FLOOR=0.025` suppresses low-relevance noise at the API boundary. See the [retrieval reference](canon/context/retrieval.md) for the chunking strategy and the embedding prefix contract.
+On a 50-query Swedish golden set, hybrid retrieval reaches 0.950 recall@10 against 0.150 for a plain JobTech filter. Dense embeddings alone edge out hybrid on precision@1, and hybrid earns its place back on adversarial queries where exact keyword matches dominate. Full numbers, the corpus, and the reproduction command are in [Evaluation](docs/evaluation.md).
 
 ## Agent eval
 
-The agent loop is measured side by side per provider through `web/scripts/model-probe.ts`, which drives `/api/chat` against fixtures in `web/evals/*.json`. The `conversation` fixture (`agent-conversation.json`) runs ten probes in deploy posture across six axes: multi-tool chains, concept-id discipline, profile-aware reasoning, adversarial queries, tool-error recovery, and citation discipline. Each probe asserts tool-call accuracy, keyword recall, and where applicable concept-id discipline and recovery detection. Static snapshot, refreshed on significant prompt or tool changes. Reproduce via `PROBE_FIXTURE=web/evals/agent-conversation.json bun web/scripts/model-probe.ts`.
-
-| Provider  | Model               | Passed | Tool-call accuracy | Keyword recall | Avg latency |
-| --------- | ------------------- | ------ | ------------------ | -------------- | ----------- |
-| anthropic | `claude-sonnet-4-5` | 5/10   | 92%                | 56%            | 31996 ms    |
-| openai    | `gpt-4o-mini`       | -      | -                  | -              | -           |
-| gemini    | `gemini-2.5-flash`  | -      | -                  | -              | -           |
-
-BYOK rows are populated via `workflow_dispatch` on the `Agent Eval` workflow with the maintainer key, kept off the nightly schedule to cap spend. Ad-id recall is reported only on probes scoped to the frozen local CLI corpus. Deploy-mode probes use keyword recall against snippets since the live JobTech ad set rotates daily. Local Ollama covers the local-corpus tools in `agent-discipline.json` and `agent-spatial-pairing.json`. Conversation fixture probes all force deploy mode so BYOK and Ollama see the same tool set when both run it.
-
-OpenAI and Gemini rows backfill in v6.1. Gemini's free tier rate-limits when the workflow runs three fixtures back to back, so the harness needs a per-probe pacing knob before its row reads honestly. OpenAI needs a maintainer key configured as a repo secret.
+The agent loop is measured per provider against a ten-probe fixture spanning multi-tool chains, adversarial queries, and citation discipline. Anthropic currently passes 5 of 10 with 92% tool-call accuracy. OpenAI and Gemini rows are pending a rate-limit fix in the eval harness. Full table and reproduction command in [Evaluation](docs/evaluation.md).
 
 ## Multilingual embedding comparison
 
-Same 50-query golden set, swapping the encoder while holding the corpus, BM25 index, and harness constant. The English-only baseline (`all-MiniLM-L6-v2`) measures what the project would look like without multilingual support. Reproduce via `uv run jobtriage evaluate-embeddings`.
-
-| Model                                  | Dim  | Configuration | precision@1 | precision@5 | precision@10 | recall@10 | p50 ms | p95 ms |
-| -------------------------------------- | ---- | ------------- | ----------- | ----------- | ------------ | --------- | ------ | ------ |
-| intfloat/multilingual-e5-base          | 768  | dense         | 0.780       | 0.240       | 0.132        | 0.965     | 4.4    | 6.0    |
-| intfloat/multilingual-e5-base          | 768  | hybrid        | 0.740       | 0.240       | 0.128        | 0.950     | 4.8    | 6.0    |
-| intfloat/multilingual-e5-large         | 1024 | dense         | 0.860       | 0.236       | 0.130        | 0.945     | 7.6    | 9.8    |
-| intfloat/multilingual-e5-large         | 1024 | hybrid        | 0.820       | 0.236       | 0.126        | 0.940     | 8.2    | 9.6    |
-| sentence-transformers/all-MiniLM-L6-v2 | 384  | dense         | 0.700       | 0.232       | 0.120        | 0.855     | 3.1    | 4.2    |
-| sentence-transformers/all-MiniLM-L6-v2 | 384  | hybrid        | 0.760       | 0.236       | 0.128        | 0.925     | 3.3    | 3.9    |
-
-The English-only baseline loses 11 points of recall@10 against `e5-base` on the Swedish golden set, and BM25 fusion recovers 7 of those points back. `e5-large` lifts precision@1 by 8 points over `e5-base` for `~70%` more memory and `~70%` more dense latency. MiniLM is the English-only baseline. The e5 prefix tokens it never trained on read as noise and suppress its dense numbers slightly. See the [retrieval reference](canon/context/retrieval.md) for the full prefix contract.
+Swapping the encoder on the same golden set: an English-only baseline loses 11 points of recall@10 on Swedish queries against the multilingual encoder this project ships with, and a larger multilingual encoder buys another 8 points of precision@1 for roughly 70% more memory and latency. Full table in [Evaluation](docs/evaluation.md).
 
 ## Differentiation against prior art
 
@@ -97,15 +75,13 @@ Other public projects in adjacent space and the gap jobtriage fills:
 
 ## Build approach
 
-Built with Claude Code as the primary agent, planned through the canonical docs ([requirements](canon/REQUIREMENTS.md), [architecture](canon/ARCHITECTURE.md)) and gated by the [coding standards](.claude/rules). The full setup is reproducible from the [Claude config](CLAUDE.md).
+Built with Claude Code as the primary agent. The planning docs, coding standards, and full agent config are reproducible from [CLAUDE.md](CLAUDE.md).
 
 ## Documentation
 
-- [Development](canon/context/development.md) covers the verify cascade, scripts, and husky hooks.
-- [Deploy](canon/context/deploy.md) covers the Cloud Run backend, Vercel frontend, and Cloudflare custom domain.
-- [CI](canon/context/ci.md) covers the GitHub Actions job structure.
-- [Architecture](canon/ARCHITECTURE.md) covers the five-layer request flow and key technical decisions.
-- [Requirements](canon/REQUIREMENTS.md) covers the problem statement, MVP features, and constraints.
+- [Development](docs/development.md) covers setup and running the app locally.
+- [Deploy](docs/deploy.md) covers taking your own fork to Cloud Run and Vercel.
+- [Evaluation](docs/evaluation.md) covers the retrieval, agent, and multilingual numbers, with reproduction commands.
 
 ## License
 
