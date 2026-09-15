@@ -154,3 +154,7 @@ The script samples four pressure sources every 3s (Windows host RAM, WSL guest R
 ### `next build` and Playwright e2e are out of the verify cascade by design
 
 The previous scaffold ran `next build` in `pre-push` and froze under WSL2. CI now runs the build on every PR instead. Run `cd web && bun run build` and `cd web && bun run test:e2e` manually before opening a PR if you want full parity.
+
+### A wall of `TS2307` errors in `bun run check` means stale `web/node_modules`, not a code problem
+
+`web/node_modules` can drift behind `web/package.json` and `web/bun.lock` when a dependency lands in the lockfile without a fresh install. The symptom is `tsc` failing with `Cannot find module` across many unrelated files at once (`lucide-react`, `radix-ui`, `ai`, `clsx`, and similar). Run `cd web && bun install` first before investigating further.
