@@ -203,7 +203,7 @@ Which of the active AI engineer roles match my profile?
 
 These cases exercise the v4.10 live JobTech path (`lookupConcept` then live `searchJobs`) instead of the local SQLite corpus. The deploy posture fires automatically on the Anthropic branch. To exercise it from the local Ollama branch, append `?mode=deploy` to the chat URL (`http://127.0.0.1:3000/?mode=deploy`). The chat client then sends `x-jobtriage-mode: deploy` and the route honors it because Vercel is not set in the local env.
 
-The structured fixture lives at `.claude/evals/agent-general-profile.json` and runs through `web/scripts/model-probe.ts` for automated regression.
+The structured fixture lives at `web/evals/agent-general-profile.json` and runs through `web/scripts/model-probe.ts` for automated regression.
 
 ## 14. Cross-profession search, nurse
 

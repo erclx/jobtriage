@@ -10,7 +10,7 @@ on:
       fixture:
         description: 'Fixture path relative to repo root'
         required: false
-        default: '.claude/evals/agent-discipline.json'
+        default: 'web/evals/agent-discipline.json'
       only_input_fixture:
         description: 'When true, run only the dispatch-supplied `fixture` and skip the hardcoded general-profile and conversation steps. Use for surgical reruns against a single fixture.'
         type: boolean
@@ -104,7 +104,7 @@ jobs:
         env:
           PROBE_PROVIDER: ${{ matrix.provider }}
           PROBE_API_KEY: ${{ steps.secret.outputs.key }}
-          PROBE_FIXTURE: .claude/evals/agent-general-profile.json
+          PROBE_FIXTURE: web/evals/agent-general-profile.json
         run: bun scripts/model-probe.ts
 
       - name: Run conversation fixture
@@ -113,7 +113,7 @@ jobs:
         env:
           PROBE_PROVIDER: ${{ matrix.provider }}
           PROBE_API_KEY: ${{ steps.secret.outputs.key }}
-          PROBE_FIXTURE: .claude/evals/agent-conversation.json
+          PROBE_FIXTURE: web/evals/agent-conversation.json
         run: bun scripts/model-probe.ts
 
       - name: Upload results

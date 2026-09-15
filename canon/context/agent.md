@@ -12,7 +12,7 @@ The agent loop is the project's core IP and the most-edited surface. This entry 
 - `web/src/lib/agent/tools.ts` owns the two tool registries (`jobtriageTools` local, `deployJobtriageTools` deploy)
 - `web/src/lib/agent/system-prompt.ts` owns `buildSystemPrompt` and the two base prompts per mode
 - `web/src/app/api/chat/route.ts` orchestrates per-request provider and mode resolution
-- `web/scripts/model-probe.ts` drives the chat route against `.claude/evals/` fixtures, see `evals.md`
+- `web/scripts/model-probe.ts` drives the chat route against `web/evals/` fixtures, see `evals.md`
 
 ## Decisions
 

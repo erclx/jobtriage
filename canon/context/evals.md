@@ -37,7 +37,7 @@ uv run jobtriage evaluate-embeddings --golden <path> [--db <path>] [--json-out <
 
 - `web/scripts/model-probe.ts` is the fixture-agnostic driver. Loads a JSON fixture, dispatches probes by `kind` field, emits one markdown table per provider or per model alongside a structured JSON artifact.
 - `web/scripts/probe-eval.ts` holds the pure SSE parser, the conversation-kind evaluators (tool-call accuracy, ad-id recall, keyword recall, concept-id discipline, recovery detection), and the markdown emitter. Imported by both the harness and `probe-eval.test.ts`.
-- `.claude/evals/*.json` carry the fixtures. Each declares a `kind` plus a `probes` array. Supported kinds: `discipline`, `language`, `pairing`, `general-profile`, `conversation`.
+- `web/evals/*.json` carry the fixtures. Each declares a `kind` plus a `probes` array. Supported kinds: `discipline`, `language`, `pairing`, `general-profile`, `conversation`.
 - `.github/workflows/agent-eval.yml` wires the harness into GitHub Actions on `workflow_dispatch` only.
 
 ### Fixture kinds
@@ -70,7 +70,7 @@ Response is the AI SDK SSE stream. The harness walks each `data:` line, decodes 
 ### `workflow_dispatch` posture and secrets
 
 - `agent-eval.yml` triggers on `workflow_dispatch` only. No cron. The maintainer-funded providers stay capped.
-- Inputs: `providers` (comma-separated, default `gemini` for the free tier), `fixture` (default `.claude/evals/agent-discipline.json`).
+- Inputs: `providers` (comma-separated, default `gemini` for the free tier), `fixture` (default `web/evals/agent-discipline.json`).
 - Per-provider gating reads `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`. Providers without a configured secret emit a warning and skip.
 - Each run starts a local web server (`bun build && bun start`), polls health, then drives the harness three times: the dispatch-supplied fixture, then `agent-general-profile.json`, then `agent-conversation.json`.
 - Output lands at `.canon/tmp/ollama-model-research/smoke-{provider}-{fixture-name}.md` plus a peer `.json` artifact and uploads both as a build artifact.

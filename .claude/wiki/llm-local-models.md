@@ -57,7 +57,7 @@ The Vercel AI SDK's `ollama-ai-provider-v2` was historically tuned for Qwen 3 Co
 
 ## Smoke harness
 
-`web/scripts/model-probe.ts` runs probe fixtures from `.claude/evals/*.json` against the live Next.js stack with the real system prompt and tool schemas. The harness reads `PROBE_FIXTURE` from env and branches on the fixture's `kind` field. Restart of the web server between models is automatic. Output lands at `.canon/tmp/ollama-model-research/smoke-<fixture>.md`.
+`web/scripts/model-probe.ts` runs probe fixtures from `web/evals/*.json` against the live Next.js stack with the real system prompt and tool schemas. The harness reads `PROBE_FIXTURE` from env and branches on the fixture's `kind` field. Restart of the web server between models is automatic. Output lands at `.canon/tmp/ollama-model-research/smoke-<fixture>.md`.
 
 Two fixtures ship today:
 
@@ -67,7 +67,7 @@ Two fixtures ship today:
 Run a single fixture against a single model:
 
 ```bash
-PROBE_MODELS=gemma4:26b PROBE_FIXTURE=.claude/evals/agent-language.json bun run web/scripts/model-probe.ts
+PROBE_MODELS=gemma4:26b PROBE_FIXTURE=web/evals/agent-language.json bun run web/scripts/model-probe.ts
 ```
 
 Re-run on every model swap and after any system-prompt or tool-description change. The fixture set is small enough to be cheap (~5 min per model) and broad enough to catch the failure axes that matter most: false-positive tool calls on chitchat, wrong-tool selection on warranted prompts, and reply-language drift.

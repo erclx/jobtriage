@@ -60,7 +60,7 @@ Dense alone wins precision@1 on this corpus by 6 points over hybrid, and the mul
 
 ## Agent eval
 
-The agent loop is measured side by side per provider through `web/scripts/model-probe.ts`, which drives `/api/chat` against fixtures in `.claude/evals/*.json`. The `conversation` fixture (`agent-conversation.json`) runs ten probes in deploy posture across six axes: multi-tool chains, concept-id discipline, profile-aware reasoning, adversarial queries, tool-error recovery, and citation discipline. Each probe asserts tool-call accuracy, keyword recall, and where applicable concept-id discipline and recovery detection. Static snapshot, refreshed on significant prompt or tool changes. Reproduce via `PROBE_FIXTURE=.claude/evals/agent-conversation.json bun web/scripts/model-probe.ts`.
+The agent loop is measured side by side per provider through `web/scripts/model-probe.ts`, which drives `/api/chat` against fixtures in `web/evals/*.json`. The `conversation` fixture (`agent-conversation.json`) runs ten probes in deploy posture across six axes: multi-tool chains, concept-id discipline, profile-aware reasoning, adversarial queries, tool-error recovery, and citation discipline. Each probe asserts tool-call accuracy, keyword recall, and where applicable concept-id discipline and recovery detection. Static snapshot, refreshed on significant prompt or tool changes. Reproduce via `PROBE_FIXTURE=web/evals/agent-conversation.json bun web/scripts/model-probe.ts`.
 
 | Provider  | Model               | Passed | Tool-call accuracy | Keyword recall | Avg latency |
 | --------- | ------------------- | ------ | ------------------ | -------------- | ----------- |

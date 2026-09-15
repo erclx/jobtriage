@@ -21,5 +21,5 @@ Triages Swedish job ads against a pasted profile, lays results onto a spatial ca
 - `web/`: Next.js app, bun-managed, owns the chat surface, canvas, and the agent route
 - `python/`: FastAPI tool server and Typer CLI, uv-managed, owns retrieval and the JobTech client
 - `scripts/`: repo-root shell tooling (restart, monitor)
-- `.claude/evals/`: structured JSON fixtures consumed by `web/scripts/model-probe.ts`. See `canon/context/evals.md` for fixture shape.
+- `web/evals/`: structured JSON fixtures consumed by `web/scripts/model-probe.ts`. See `canon/context/evals.md` for fixture shape.
 - `.claude/wiki/`: durable reusable technical knowledge that outlives any single project decision
