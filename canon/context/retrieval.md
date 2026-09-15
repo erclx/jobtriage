@@ -7,6 +7,8 @@ description: Chunking, embedding prefix contract, and the RRF score floor
 
 Reference for the hybrid retrieval stack in the repo and CLI path. The deployed demo bypasses this path after v4.10 and goes straight to live JobTech, so the surfaces below apply to local development and to anyone running `uv run jobtriage` against their own corpus.
 
+The reproducibility tables behind these numbers (hybrid retrieval ablation, agent eval, multilingual embedding comparison) live in `docs/evaluation.md`, linked from the README. This entry keeps the chunking rule, the embedding prefix contract, and the RRF floor rationale behind those numbers.
+
 ## Chunking
 
 Ad descriptions split into `~800` character chunks via a paragraph-first, length-second strategy in `python/src/jobtriage/storage/chunking.py`. The chunker groups paragraphs as long as the running total stays under `max_chars`. When a paragraph would overflow, it closes the current chunk and starts a new one. Paragraphs that exceed `max_chars` on their own slice at hard character boundaries.

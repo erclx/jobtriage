@@ -9,14 +9,14 @@ GitHub Actions for this monorepo. Three parallel jobs mirror the local `bun run 
 
 ## Layer responsibilities
 
-| File                                          | Trigger                          | Purpose                                                          |
-| --------------------------------------------- | -------------------------------- | ---------------------------------------------------------------- |
-| `.github/workflows/verify.yml`                | PR + workflow_dispatch           | Format, lint, types, tests, build                                |
-| `.github/workflows/eval.yml`                  | Nightly cron + workflow_dispatch | Retrieval ablation against the golden set                        |
-| `.github/workflows/agent-eval.yml`            | workflow_dispatch only           | Per-provider agent fixtures against Anthropic, OpenAI, Gemini    |
-| `.github/workflows/refresh-mock-fixtures.yml` | Weekly cron + workflow_dispatch  | Re-capture mock-mode fixtures and open a refresh PR when changed |
+| File                                          | Trigger                               | Purpose                                                          |
+| --------------------------------------------- | ------------------------------------- | ---------------------------------------------------------------- |
+| `.github/workflows/verify.yml`                | Push to main + PR + workflow_dispatch | Format, lint, types, tests, build                                |
+| `.github/workflows/eval.yml`                  | Nightly cron + workflow_dispatch      | Retrieval ablation against the golden set                        |
+| `.github/workflows/agent-eval.yml`            | workflow_dispatch only                | Per-provider agent fixtures against Anthropic, OpenAI, Gemini    |
+| `.github/workflows/refresh-mock-fixtures.yml` | Weekly cron + workflow_dispatch       | Re-capture mock-mode fixtures and open a refresh PR when changed |
 
-Triggers across all workflows: pull requests targeting `main`, `workflow_dispatch`, a nightly cron at 03:00 UTC for the eval workflow, and a weekly cron at 06:00 UTC Mondays for the mock-fixture refresh.
+Triggers across all workflows: pull requests targeting `main`, `workflow_dispatch`, a nightly cron at 03:00 UTC for the eval workflow, and a weekly cron at 06:00 UTC Mondays for the mock-fixture refresh. `verify.yml` also triggers on push to `main`, added so a status badge pinned to `main` in the README reports the branch it claims to cover rather than showing no runs.
 
 ## Verify jobs
 
