@@ -57,7 +57,7 @@ Same 50-query golden set, swapping the encoder while holding the corpus, BM25 in
 | sentence-transformers/all-MiniLM-L6-v2 | 384  | dense         | 0.700       | 0.232       | 0.120        | 0.855     | 3.1    | 4.2    |
 | sentence-transformers/all-MiniLM-L6-v2 | 384  | hybrid        | 0.760       | 0.236       | 0.128        | 0.925     | 3.3    | 3.9    |
 
-The English-only baseline loses 11 points of recall@10 against `e5-base` on the Swedish golden set, and BM25 fusion recovers 7 of those points back. `e5-large` lifts precision@1 by 8 points over `e5-base` for about 70% more memory and about 70% more dense latency. The e5 prefix tokens MiniLM never trained on read as noise and suppress its dense numbers slightly.
+The English-only baseline loses 11 points of recall@10 against `e5-base` on the Swedish golden set, and BM25 fusion recovers 7 of those points back. `e5-large` lifts precision@1 by 8 points over `e5-base` for about 70% more memory and dense latency. The e5 prefix tokens MiniLM never trained on read as noise and suppress its dense numbers slightly.
 
 ## Reproducing a run
 

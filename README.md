@@ -47,23 +47,33 @@ The chat surface runs in the browser on the Vercel AI SDK. Each user turn fires 
 
 Two postures share the same agent shell. The deployed demo runs `lookupConcept` against the JobTech taxonomy, then `searchJobs` against the live JobSearch API, then reasons in-context with `matchProfile` and `compareRoles` over the returned ads. The local CLI and the local browser dev surface keep the corpus-dependent stack: hybrid retrieval (BM25 plus dense over `multilingual-e5-base`) fused with reciprocal rank fusion, plus deadline filtering and engagement tracking against a local markdown log.
 
-After every data tool the agent fires at least one spatial tool. The system prompt pins the pairings: `searchJobs` to `placeAds`, `triageBatch` to `groupAds`, `matchProfile` to `connectProfileToAds`, `compareRoles` to `pairAdsForCompare`, `deadlineWatch` to `placeAdsOnTimeline`, `trackStatus` to `markStatus`. The canvas is the answer, not a decoration of the chat transcript. Chat, canvas, and pinned shortlist all hydrate from sessionStorage on refresh so a recruiter pasting a profile mid-session never loses state.
+After every data tool the agent fires a matching spatial tool that updates the canvas: a search places ad nodes, a profile match draws the scored edges, a deadline check lays ads on the timeline. The canvas is the answer, not a decoration of the chat transcript. Chat, canvas, and pinned shortlist all hydrate from sessionStorage on refresh so a recruiter pasting a profile mid-session never loses state.
 
 Voice input ships in Chrome via the Web Speech API. The mic affordance hides cleanly in Firefox and Safari rather than breaking. Below 1024px the canvas hides and the chat rail surfaces a "Best viewed on a desktop" notice, since the spatial workspace is the load-bearing artifact.
 
-## Hybrid retrieval ablation
+## Evaluation
 
-Hybrid retrieval (BM25 plus dense embeddings fused via reciprocal rank fusion) powers the Typer CLI and the local dev surface. The deployed demo calls JobTech live instead, so it can answer for any profession rather than a maintainer-curated corpus.
+Three measured comparisons back the claims above: a retrieval ablation, a per-provider agent eval, and a multilingual embedding comparison.
 
-On a 50-query Swedish golden set, hybrid retrieval reaches 0.950 recall@10 against 0.150 for a plain JobTech filter. Dense embeddings alone edge out hybrid on precision@1, and hybrid earns its place back on adversarial queries where exact keyword matches dominate. Full numbers, the corpus, and the reproduction command are in [Evaluation](docs/evaluation.md).
+| Comparison                | Headline result                                           |
+| ------------------------- | --------------------------------------------------------- |
+| Hybrid retrieval ablation | 0.950 recall@10, against 0.150 for a plain JobTech filter |
+| Agent eval (Anthropic)    | 5/10 probes passed, 92% tool-call accuracy                |
+| Multilingual embeddings   | +11 points recall@10 over an English-only baseline        |
 
-## Agent eval
+Full numbers, the corpora, and the reproduction commands live in [Evaluation](docs/evaluation.md).
 
-The agent loop is measured per provider against a ten-probe fixture spanning multi-tool chains, adversarial queries, and citation discipline. Anthropic currently passes 5 of 10 with 92% tool-call accuracy. OpenAI and Gemini rows are pending a rate-limit fix in the eval harness. Full table and reproduction command in [Evaluation](docs/evaluation.md).
+### Hybrid retrieval ablation
 
-## Multilingual embedding comparison
+Hybrid retrieval (BM25 plus dense embeddings fused via reciprocal rank fusion) powers the Typer CLI and the local dev surface. The deployed demo calls JobTech live instead, so it can answer for any profession rather than a maintainer-curated corpus. Dense embeddings alone edge out hybrid on precision@1, and hybrid earns its place back on adversarial queries where exact keyword matches dominate.
 
-Swapping the encoder on the same golden set: an English-only baseline loses 11 points of recall@10 on Swedish queries against the multilingual encoder this project ships with, and a larger multilingual encoder buys another 8 points of precision@1 for roughly 70% more memory and latency. Full table in [Evaluation](docs/evaluation.md).
+### Agent eval
+
+The agent loop is measured per provider against a ten-probe fixture covering six reasoning axes. OpenAI and Gemini rows are pending a rate-limit fix in the eval harness, which currently throttles Gemini's free tier when three fixtures run back to back.
+
+### Multilingual embedding comparison
+
+Swapping the encoder on the same golden set, a larger multilingual encoder buys another 8 points of precision@1 over the one this project ships with, for roughly 70% more memory and latency.
 
 ## Differentiation against prior art
 
