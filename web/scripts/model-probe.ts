@@ -18,13 +18,8 @@ import {
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = join(SCRIPT_DIR, '..', '..')
-const OUT_DIR = join(REPO_ROOT, '.claude', '.tmp', 'ollama-model-research')
-const DEFAULT_FIXTURE = join(
-  REPO_ROOT,
-  '.claude',
-  'evals',
-  'agent-discipline.json',
-)
+const OUT_DIR = join(REPO_ROOT, '.canon', 'tmp', 'ollama-model-research')
+const DEFAULT_FIXTURE = join(REPO_ROOT, 'web', 'evals', 'agent-discipline.json')
 
 const CHAT_URL = process.env.PROBE_CHAT_URL ?? 'http://localhost:3000/api/chat'
 const REQUEST_TIMEOUT_MS = Number(process.env.PROBE_TIMEOUT_MS ?? '180000')

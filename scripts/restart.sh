@@ -10,7 +10,7 @@ GREY='\033[0;90m'
 NC='\033[0m'
 
 PORT=3000
-LOG_DIR=".claude/.tmp/restart"
+LOG_DIR=".canon/tmp/restart"
 LOG_FILE="${LOG_DIR}/server.log"
 WAIT_SECONDS=120
 

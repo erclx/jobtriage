@@ -28,7 +28,7 @@ Start the FastAPI backend on `http://127.0.0.1:8000` and the web app on `http://
 
 ```bash
 bun run dev:api          # FastAPI tool server
-bun run restart:web      # Next.js production build, see .claude/context/development.md
+bun run restart:web      # Next.js production build, see canon/context/development.md
 ```
 
 ## How it works
@@ -41,7 +41,7 @@ After every data tool the agent fires at least one spatial tool. The system prom
 
 Voice input ships in Chrome via the Web Speech API. The mic affordance hides cleanly in Firefox and Safari rather than breaking. Below 1024px the canvas hides and the chat rail surfaces a "Best viewed on a desktop" notice, since the spatial workspace is the load-bearing artifact.
 
-For the full layered request flow, decision rationale, and known limitations, see the [architecture doc](.claude/ARCHITECTURE.md).
+For the full layered request flow, decision rationale, and known limitations, see the [architecture doc](canon/ARCHITECTURE.md).
 
 ## Hybrid retrieval ablation
 
@@ -56,11 +56,11 @@ Hybrid retrieval (BM25 plus dense embeddings fused via reciprocal rank fusion ov
 | dense-only    | 0.780       | 0.240       | 0.132        | 0.965     | 6.4    | 7.8    |
 | hybrid        | 0.720       | 0.240       | 0.128        | 0.950     | 6.2    | 15.2   |
 
-Dense alone wins precision@1 on this corpus by 6 points over hybrid, and the multilingual table below shows the gap widens at the larger encoder. Hybrid still earns its place on recall and on adversarial queries where exact keyword matches (model names, employer-specific jargon) dominate. The score floor at `JOBTRIAGE_RRF_FLOOR=0.025` suppresses low-relevance noise at the API boundary. See the [retrieval reference](.claude/context/retrieval.md) for the chunking strategy and the embedding prefix contract.
+Dense alone wins precision@1 on this corpus by 6 points over hybrid, and the multilingual table below shows the gap widens at the larger encoder. Hybrid still earns its place on recall and on adversarial queries where exact keyword matches (model names, employer-specific jargon) dominate. The score floor at `JOBTRIAGE_RRF_FLOOR=0.025` suppresses low-relevance noise at the API boundary. See the [retrieval reference](canon/context/retrieval.md) for the chunking strategy and the embedding prefix contract.
 
 ## Agent eval
 
-The agent loop is measured side by side per provider through `web/scripts/model-probe.ts`, which drives `/api/chat` against fixtures in `.claude/evals/*.json`. The `conversation` fixture (`agent-conversation.json`) runs ten probes in deploy posture across six axes: multi-tool chains, concept-id discipline, profile-aware reasoning, adversarial queries, tool-error recovery, and citation discipline. Each probe asserts tool-call accuracy, keyword recall, and where applicable concept-id discipline and recovery detection. Static snapshot, refreshed on significant prompt or tool changes. Reproduce via `PROBE_FIXTURE=.claude/evals/agent-conversation.json bun web/scripts/model-probe.ts`.
+The agent loop is measured side by side per provider through `web/scripts/model-probe.ts`, which drives `/api/chat` against fixtures in `web/evals/*.json`. The `conversation` fixture (`agent-conversation.json`) runs ten probes in deploy posture across six axes: multi-tool chains, concept-id discipline, profile-aware reasoning, adversarial queries, tool-error recovery, and citation discipline. Each probe asserts tool-call accuracy, keyword recall, and where applicable concept-id discipline and recovery detection. Static snapshot, refreshed on significant prompt or tool changes. Reproduce via `PROBE_FIXTURE=web/evals/agent-conversation.json bun web/scripts/model-probe.ts`.
 
 | Provider  | Model               | Passed | Tool-call accuracy | Keyword recall | Avg latency |
 | --------- | ------------------- | ------ | ------------------ | -------------- | ----------- |
@@ -85,7 +85,7 @@ Same 50-query golden set, swapping the encoder while holding the corpus, BM25 in
 | sentence-transformers/all-MiniLM-L6-v2 | 384  | dense         | 0.700       | 0.232       | 0.120        | 0.855     | 3.1    | 4.2    |
 | sentence-transformers/all-MiniLM-L6-v2 | 384  | hybrid        | 0.760       | 0.236       | 0.128        | 0.925     | 3.3    | 3.9    |
 
-The English-only baseline loses 11 points of recall@10 against `e5-base` on the Swedish golden set, and BM25 fusion recovers 7 of those points back. `e5-large` lifts precision@1 by 8 points over `e5-base` for `~70%` more memory and `~70%` more dense latency. MiniLM is the English-only baseline. The e5 prefix tokens it never trained on read as noise and suppress its dense numbers slightly. See the [retrieval reference](.claude/context/retrieval.md) for the full prefix contract.
+The English-only baseline loses 11 points of recall@10 against `e5-base` on the Swedish golden set, and BM25 fusion recovers 7 of those points back. `e5-large` lifts precision@1 by 8 points over `e5-base` for `~70%` more memory and `~70%` more dense latency. MiniLM is the English-only baseline. The e5 prefix tokens it never trained on read as noise and suppress its dense numbers slightly. See the [retrieval reference](canon/context/retrieval.md) for the full prefix contract.
 
 ## Differentiation against prior art
 
@@ -97,15 +97,15 @@ Other public projects in adjacent space and the gap jobtriage fills:
 
 ## Build approach
 
-Built with Claude Code as the primary agent, planned through the `.claude/` planning docs ([requirements](.claude/REQUIREMENTS.md), [architecture](.claude/ARCHITECTURE.md)) and gated by the [coding standards](.claude/rules). The full setup is reproducible from the [Claude config](CLAUDE.md).
+Built with Claude Code as the primary agent, planned through the canonical docs ([requirements](canon/REQUIREMENTS.md), [architecture](canon/ARCHITECTURE.md)) and gated by the [coding standards](.claude/rules). The full setup is reproducible from the [Claude config](CLAUDE.md).
 
 ## Documentation
 
-- [Development](.claude/context/development.md) covers the verify cascade, scripts, and husky hooks.
-- [Deploy](.claude/context/deploy.md) covers the Cloud Run backend, Vercel frontend, and Cloudflare custom domain.
-- [CI](.claude/context/ci.md) covers the GitHub Actions job structure.
-- [Architecture](.claude/ARCHITECTURE.md) covers the five-layer request flow and key technical decisions.
-- [Requirements](.claude/REQUIREMENTS.md) covers the problem statement, MVP features, and constraints.
+- [Development](canon/context/development.md) covers the verify cascade, scripts, and husky hooks.
+- [Deploy](canon/context/deploy.md) covers the Cloud Run backend, Vercel frontend, and Cloudflare custom domain.
+- [CI](canon/context/ci.md) covers the GitHub Actions job structure.
+- [Architecture](canon/ARCHITECTURE.md) covers the five-layer request flow and key technical decisions.
+- [Requirements](canon/REQUIREMENTS.md) covers the problem statement, MVP features, and constraints.
 
 ## License
 
