@@ -4,6 +4,8 @@ paths:
   - '**/*.tsx'
   - '**/*.jsx'
   - '**/*.astro'
+  - '**/*.html'
+  - '**/*.css'
 ---
 
 # UX completeness standards

@@ -7,16 +7,16 @@ Triages Swedish job ads against a pasted profile, lays results onto a spatial ca
 Three-tier ownership model. Know which tier holds what before reading or writing.
 
 - `README.md`: public pitch and 60-second setup for an outside visitor. No internal contracts.
-- `.claude/context/`: per-domain working knowledge for Claude Code editing that domain. Layer responsibilities, decisions, gotchas, hidden contracts. See `.claude/context/index.md` for the catalog. New entries follow the context standard, read with `aitk standards context`.
-- `.claude/` planning docs (`TASKS.md`, `ARCHITECTURE.md`, `REQUIREMENTS.md`, `DESIGN.md`, `DIAGRAMS.md`): always-loaded product-wide invariants. Read before changes, when present. The `claude-feature` skill loads them in parallel. Wireframes live in `.claude/wireframes/` and load on demand per surface.
+- `canon/context/`: per-domain working knowledge for Claude Code editing that domain. Layer responsibilities, decisions, gotchas, hidden contracts. See `canon/context/index.md` for the catalog. New entries follow the context standard, read with `canon standards context`.
+- `.claude/` planning docs (`TASKS.md`, `ARCHITECTURE.md`, `REQUIREMENTS.md`, `DESIGN.md`, `DIAGRAMS.md`): always-loaded product-wide invariants. Read before changes, when present. The `claude-feature` skill loads them in parallel. Wireframes live in `canon/wireframes/` and load on demand per surface.
 - `.claude/rules/`: coding standards. Always-on rules apply every session. Path-scoped rules apply to files matching their `paths:` glob.
 
-Rule of thumb when a fact lives in two places: if an outside visitor needs it to evaluate the project, `README.md`. Everything a contributor or Claude needs to run or modify it lives in `.claude/context/`, keyed by domain.
+Rule of thumb when a fact lives in two places: if an outside visitor needs it to evaluate the project, `README.md`. Everything a contributor or Claude needs to run or modify it lives in `canon/context/`, keyed by domain.
 
-@.claude/context/index.md
-@.claude/REQUIREMENTS.md
-@.claude/ARCHITECTURE.md
-@.claude/wireframes/index.md
+@canon/context/index.md
+@canon/REQUIREMENTS.md
+@canon/ARCHITECTURE.md
+@canon/wireframes/index.md
 
 ## Behavior
 
@@ -31,7 +31,7 @@ Rule of thumb when a fact lives in two places: if an outside visitor needs it to
 - Do not cite `.claude/` paths (TASKS.md, plans, review, .tmp) from PR bodies, READMEs, or other artifacts a reviewer reads. Inline the context or use neutral phrasing like "queued as a follow-up".
 - For deploy infrastructure (Cloud Run, Vercel, Cloudflare), prefer CLI over the dashboard. `gcloud` and `vercel` are authenticated locally and persist across sessions. Run inspection, redeploy, env-var, and domain commands from Bash rather than asking the user to click through. Confirm before destructive operations (delete service, force-push production, change live DNS).
 - Before any multi-path `rm` or `rm -rf`, list every target path in chat and wait for explicit confirmation. "Clean up X" authorizes a different destructive action than a previous one, never a blanket nuke.
-- Before proposing a new doc home for a convention (eval format, fixture kinds, scratch path), grep `CLAUDE.md` and `.claude/context/` for the topic. Extend the existing entry over creating a new section.
+- Before proposing a new doc home for a convention (eval format, fixture kinds, scratch path), grep `CLAUDE.md` and `canon/context/` for the topic. Extend the existing entry over creating a new section.
 
 ## Shipping
 
@@ -48,11 +48,11 @@ Rule of thumb when a fact lives in two places: if an outside visitor needs it to
 
 ## Markdown
 
-- Before drafting a PR body, commit message, branch name, or snippet, load the matching `aitk:git-*` or `aitk:create-snippet` skill and follow the standard it carries. None of these is a file on disk, so no path-scoped rule fires for them, and none resolves through `aitk standards`.
+- Before drafting a PR body, commit message, branch name, or snippet, load the matching `canon:git-*` or `canon:create-snippet` skill and follow the standard it carries. None of these is a file on disk, so no path-scoped rule fires for them, and none resolves through `canon standards`.
 
 ## Commands
 
-- `bun run check` runs the full verify cascade. Full script reference in `.claude/context/development.md`.
+- `bun run check` runs the full verify cascade. Full script reference in `canon/context/development.md`.
 - Do not run `bun run dev`. The script is disabled. Run `bun run restart:web` from the repo root for any local server need. It kills stale `next-server` and Playwright zombies, rebuilds, starts the server in the background with logs at `.canon/tmp/restart/server.log`, and verifies the listening pid changed. Do not rely on `lsof -ti:3000`, it can miss `next-server`.
 
 ## Output
@@ -69,9 +69,9 @@ Rule of thumb when a fact lives in two places: if an outside visitor needs it to
 - `python/`: FastAPI tool server and Typer CLI, uv-managed, owns retrieval and the JobTech client
 - `scripts/`: repo-root shell tooling (restart, monitor)
 - `.claude/`: planning docs (requirements, architecture, wireframes, design, tasks)
-- `.claude/context/`: per-domain narrative loaded when editing that domain. See `.claude/context/index.md` for the catalog. Entries cover agent loop, canvas, ci, web, python, retrieval, evals, development, deploy.
-- `.claude/wireframes/`: per-surface ASCII layouts loaded on demand, indexed via `.claude/wireframes/index.md`
-- `.claude/evals/`: structured JSON fixtures consumed by `web/scripts/model-probe.ts`. See `.claude/context/evals.md` for fixture shape, `kind` semantics, and the `workflow_dispatch` posture.
+- `canon/context/`: per-domain narrative loaded when editing that domain. See `canon/context/index.md` for the catalog. Entries cover agent loop, canvas, ci, web, python, retrieval, evals, development, deploy.
+- `canon/wireframes/`: per-surface ASCII layouts loaded on demand, indexed via `canon/wireframes/index.md`
+- `.claude/evals/`: structured JSON fixtures consumed by `web/scripts/model-probe.ts`. See `canon/context/evals.md` for fixture shape, `kind` semantics, and the `workflow_dispatch` posture.
 - `.canon/review/`: gitignored scratch for review and UI-test output, overwritten on each run
 - `wiki/`: durable reusable technical knowledge that outlives any single project decision (model landscapes, tool-stack notes, integration playbooks). Pages survive plan-file deletion when tasks ship.
 

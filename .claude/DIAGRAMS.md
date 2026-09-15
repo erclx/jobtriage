@@ -6,7 +6,7 @@ title: Diagrams
 
 Read top to bottom. The order is chronological. The system gets framed first, then the corpus comes to life, then a query travels through it, then we measure how well it worked.
 
-Authored per the diagrams standard, read with `aitk standards diagrams`. Vertical layout, short labels, prose under each diagram.
+Authored per the diagrams standard, read with `canon standards diagrams`. Vertical layout, short labels, prose under each diagram.
 
 ## 1. The whole system in five boxes
 
@@ -208,4 +208,4 @@ flowchart TB
   pyharness --> ablation
 ```
 
-Two harnesses, one per concern. `model-probe.ts` drives the live `/api/chat` route with JSON fixtures and reports per-axis pass rates per provider. Used to regression-check the agent on every PR that touches the prompt or tools. The Python harness runs the Swedish golden query set against the retriever alone, no LLM in the loop, and produces the four-configuration ablation table that ships in the README. Both stacks are documented in `.claude/context/evals.md`.
+Two harnesses, one per concern. `model-probe.ts` drives the live `/api/chat` route with JSON fixtures and reports per-axis pass rates per provider. Used to regression-check the agent on every PR that touches the prompt or tools. The Python harness runs the Swedish golden query set against the retriever alone, no LLM in the loop, and produces the four-configuration ablation table that ships in the README. Both stacks are documented in `canon/context/evals.md`.

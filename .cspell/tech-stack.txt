@@ -1,5 +1,4 @@
 addopts
-aitk
 ascontiguousarray
 BYOK
 appuser
