@@ -26,6 +26,30 @@ export const compareThreeRolesScript: MockScript = {
       output: {
         results: [
           {
+            ad_id: '31343756',
+            headline: 'Machine Learning Engineer ',
+            employer_name: 'Modulai AB',
+            municipality: 'Stockholm',
+            application_deadline: '2027-02-11T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31343756',
+            description_excerpt:
+              'Modulai works with fish, trains, clothes, money, pets, office spaces, sound sensors and much more. If there is data, we do ML (Machine Learning) on it. Our team consists of devoted ML engineers with strong track records from some of Sweden’s most successful startups. We work on project basis and take end-to-end responsibility. We love ML and we think that the best way for us to expand our knowledge is to be exposed to a diversified set of challenging and fun projects. MACHINE…',
+            occupation_label: 'Civilingenjör, systemutveckling',
+          },
+          {
+            ad_id: '31355712',
+            headline: 'Machine Learning Engineer',
+            employer_name: 'Lorex Labs AB',
+            municipality: 'Stockholm',
+            application_deadline: '2026-09-13T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31355712',
+            description_excerpt:
+              'Company Description: Lorex Labs specializes in verification, validation, and value optimization for unique AI solutions. The company helps organizations build AI systems that outperform competitors by focusing on measurable impact and trustworthiness. Lorex Labs supports clients in accelerating development velocity and improving the reliability of machine learning models. By unlocking actionable insights, the company enables real-world performance gains across diverse AI appl…',
+            occupation_label: 'Systemutvecklare/Programmerare',
+          },
+          {
             ad_id: '31226420',
             headline: 'Machine Learning Engineer',
             employer_name: 'Nextory AB',
@@ -36,30 +60,6 @@ export const compareThreeRolesScript: MockScript = {
             description_excerpt:
               'You know that bit where every company says they’re “changing the world”? Yeah, it can feel a little forced. But we like to think our story actually has some realness to it. Our story begins with Shadi Bitar and Ninos Malki, who came to Sweden from Syria as kids and discovered that books could be a bridge - helping them learn the language, understand the culture, and explore new worlds. A thought emerged, what if everyone could have that? And just like that, Nextory was born -…',
             occupation_label: 'Backend-utvecklare',
-          },
-          {
-            ad_id: '31027393',
-            headline: 'Machine Learning Engineer',
-            employer_name: 'Leapit Nordics AB',
-            municipality: 'Malmö',
-            application_deadline: '2026-08-31T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31027393',
-            description_excerpt:
-              'Machine Learning Engineer Leapit Consulting - Malmö, Sweden About the role Leapit is looking for experienced Machine Learning Engineers to join our growing engineering team in Sweden. We work with leading international companies across technology, finance, telecom, automotive, retail, and digital products. As a Machine Learning Engineer, you will design, build, and deploy machine learning solutions that solve real business problems at scale. You will work end-to-end, from dat…',
-            occupation_label: 'Dataingenjör',
-          },
-          {
-            ad_id: '30646235',
-            headline: 'Machine Learning Engineer ',
-            employer_name: 'Modulai AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-08-20T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30646235',
-            description_excerpt:
-              'Modulai works with fish, trains, clothes, money, pets, office spaces, sound sensors and much more. If there is data, we do ML (Machine Learning) on it. Our team consists of devoted ML engineers with strong track records from some of Sweden’s most successful startups. We work on project basis and take end-to-end responsibility. We love ML and we think that the best way for us to expand our knowledge is to be exposed to a diversified set of challenging and fun projects. MACHINE…',
-            occupation_label: 'Civilingenjör, systemutveckling',
           },
         ],
       },
@@ -74,33 +74,33 @@ export const compareThreeRolesScript: MockScript = {
       toolName: 'compareRoles',
       toolCallId: 'mock-compare-roles-call-2',
       input: {
-        ad_ids: ['31226420', '31027393'],
+        ad_ids: ['31343756', '31355712'],
       },
       output: {
         results: [
           {
-            ad_id: '31226420',
-            headline: 'Machine Learning Engineer',
-            employer_name: 'Nextory AB',
+            ad_id: '31343756',
+            headline: 'Machine Learning Engineer ',
+            employer_name: 'Modulai AB',
             municipality: 'Stockholm',
-            application_deadline: '2026-12-26T23:59:59',
+            application_deadline: '2027-02-11T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31226420',
+              'https://arbetsformedlingen.se/platsbanken/annonser/31343756',
             description_excerpt:
-              'You know that bit where every company says they’re “changing the world”? Yeah, it can feel a little forced. But we like to think our story actually has some realness to it. Our story begins with Shadi Bitar and Ninos Malki, who came to Sweden from Syria as kids and discovered that books could be a bridge - helping them learn the language, understand the culture, and explore new worlds. A thought emerged, what if everyone could have that? And just like that, Nextory was born -…',
-            occupation_label: 'Backend-utvecklare',
+              'Modulai works with fish, trains, clothes, money, pets, office spaces, sound sensors and much more. If there is data, we do ML (Machine Learning) on it. Our team consists of devoted ML engineers with strong track records from some of Sweden’s most successful startups. We work on project basis and take end-to-end responsibility. We love ML and we think that the best way for us to expand our knowledge is to be exposed to a diversified set of challenging and fun projects. MACHINE…',
+            occupation_label: 'Civilingenjör, systemutveckling',
           },
           {
-            ad_id: '31027393',
+            ad_id: '31355712',
             headline: 'Machine Learning Engineer',
-            employer_name: 'Leapit Nordics AB',
-            municipality: 'Malmö',
-            application_deadline: '2026-08-31T23:59:59',
+            employer_name: 'Lorex Labs AB',
+            municipality: 'Stockholm',
+            application_deadline: '2026-09-13T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31027393',
+              'https://arbetsformedlingen.se/platsbanken/annonser/31355712',
             description_excerpt:
-              'Machine Learning Engineer Leapit Consulting - Malmö, Sweden About the role Leapit is looking for experienced Machine Learning Engineers to join our growing engineering team in Sweden. We work with leading international companies across technology, finance, telecom, automotive, retail, and digital products. As a Machine Learning Engineer, you will design, build, and deploy machine learning solutions that solve real business problems at scale. You will work end-to-end, from dat…',
-            occupation_label: 'Dataingenjör',
+              'Company Description: Lorex Labs specializes in verification, validation, and value optimization for unique AI solutions. The company helps organizations build AI systems that outperform competitors by focusing on measurable impact and trustworthiness. Lorex Labs supports clients in accelerating development velocity and improving the reliability of machine learning models. By unlocking actionable insights, the company enables real-world performance gains across diverse AI appl…',
+            occupation_label: 'Systemutvecklare/Programmerare',
           },
         ],
       },
@@ -110,50 +110,50 @@ export const compareThreeRolesScript: MockScript = {
       toolName: 'pairAdsForCompare',
       toolCallId: 'mock-compare-roles-call-3',
       input: {
-        ad_id_a: '31226420',
-        ad_id_b: '31027393',
+        ad_id_a: '31343756',
+        ad_id_b: '31355712',
         diffs: [
           {
             field: 'Employer',
-            a: 'Nextory AB',
-            b: 'Leapit Nordics AB',
+            a: 'Modulai AB',
+            b: 'Lorex Labs AB',
             verdict: 'neither',
           },
           {
             field: 'Location',
             a: 'Stockholm',
-            b: 'Malmö',
+            b: 'Stockholm',
             verdict: 'neither',
           },
           {
             field: 'Deadline',
-            a: '2026-12-26',
-            b: '2026-08-31',
+            a: '2027-02-11',
+            b: '2026-09-13',
             verdict: 'a',
           },
         ],
       },
       output: {
         accepted: true,
-        ad_id_a: '31226420',
-        ad_id_b: '31027393',
+        ad_id_a: '31343756',
+        ad_id_b: '31355712',
         diffs: [
           {
             field: 'Employer',
-            a: 'Nextory AB',
-            b: 'Leapit Nordics AB',
+            a: 'Modulai AB',
+            b: 'Lorex Labs AB',
             verdict: 'neither',
           },
           {
             field: 'Location',
             a: 'Stockholm',
-            b: 'Malmö',
+            b: 'Stockholm',
             verdict: 'neither',
           },
           {
             field: 'Deadline',
-            a: '2026-12-26',
-            b: '2026-08-31',
+            a: '2027-02-11',
+            b: '2026-09-13',
             verdict: 'a',
           },
         ],
@@ -162,7 +162,7 @@ export const compareThreeRolesScript: MockScript = {
     {
       kind: 'text',
       content:
-        ' Compare view is up on the canvas. A third candidate from Modulai AB is also in the result set. Ask for a pair against it for a deeper bake-off.',
+        ' Compare view is up on the canvas. A third candidate from Nextory AB is also in the result set. Ask for a pair against it for a deeper bake-off.',
     },
   ],
 } as const

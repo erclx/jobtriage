@@ -66,28 +66,16 @@ export const stockholmAiEngineeringScript: MockScript = {
             occupation_label: 'Mjukvaruutvecklare',
           },
           {
-            ad_id: '31290812',
-            headline: 'AI Enablement Engineer',
-            employer_name: 'Extenda Retail AB',
-            municipality: 'Solna',
-            application_deadline: '2026-08-10T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31290812',
-            description_excerpt:
-              'We are looking for an AI Enablement Engineer. Your mission is to develop and improve our AI capabilities, and make these available across the company. As an AI Enablement Engineer, you will work with the design, implementation, and scaling of AI architecture and solutions. You will follow industry trends connecting the potential of AI with organizational functions. Working closely with senior stakeholders and cross-functional teams, you will ensure that technical solutions al…',
-            occupation_label: 'Mjukvaruutvecklare',
-          },
-          {
-            ad_id: '31288284',
-            headline: 'Founding AI Engineer',
-            employer_name: 'Spiich Labs AB',
+            ad_id: '31385277',
+            headline: 'Fullstack AI Engineer',
+            employer_name: 'Tendium AB',
             municipality: 'Stockholm',
-            application_deadline: '2026-08-21T23:59:59',
+            application_deadline: '2027-02-18T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31288284',
+              'https://arbetsformedlingen.se/platsbanken/annonser/31385277',
             description_excerpt:
-              "TL;DR We're looking for a founding AI Engineer to help build the AI colleague every sales professional wishes they had. You'll own the agent stack end-to-end - from model selection to database (knowledge graph) structure and search algorithm development. Must be curious, experimental, and obsessed with agentic systems. Why join We’re a small, talent-dense team of engineers building a generation-defining company from Stockholm. We value speed, rigour, and extreme ownership. If…",
-            occupation_label: 'Dataingenjör',
+              'Do you want to join the technological revolution? Tendium is looking for a Fullstack AI Engineer to join our team. About Tendium Tendium is the global pioneer in AI-driven public tender management, transforming how companies discover, analyse, and win government contracts. Our platform turns complex processes into something simple and transparent, empowering businesses to compete fairly for billions in public sector opportunities. We’ve been building our AI-native platform si…',
+            occupation_label: 'Fullstack-utvecklare',
           },
           {
             ad_id: '31284834',
@@ -113,6 +101,18 @@ export const stockholmAiEngineeringScript: MockScript = {
               'Sana is an AI lab building superintelligence for work. We believe organizations can accomplish their missions faster when teams can effortlessly access knowledge, automate repetitive work, and learn anything with the help of agentic AI. As part of Workday, we are committed to building AI that augments people - not replaces them. We bring this mission to life through two products. Sana Agents provide a seamless way to access all your company’s apps, knowledge, and data, enabli…',
             occupation_label: 'Backend-utvecklare',
           },
+          {
+            ad_id: '31220873',
+            headline: 'Edge AI Engineer',
+            employer_name: 'Sigma Connectivity AB',
+            municipality: 'Lund',
+            application_deadline: '2026-08-30T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31220873',
+            description_excerpt:
+              'Jobbeskrivning Sigma Connectivity’s Edge AI initiatives span multiple domains—computer vision, audio intelligence, sensor fusion, and embedded ML—delivering low‑latency, privacy‑preserving intelligence directly on devices across diverse hardware platforms. Projects routinely involve developing and optimizing ML models for tasks such as gesture recognition, defect detection, object tracking, and contextual human‑machine interaction, deployed on edge hardware including Qualcomm…',
+            occupation_label: 'Mjukvaruutvecklare',
+          },
         ],
       },
     },
@@ -121,13 +121,13 @@ export const stockholmAiEngineeringScript: MockScript = {
       toolName: 'placeAds',
       toolCallId: 'mock-sthlm-ai-call-3',
       input: {
-        ad_ids: ['30991050', '31290812', '31288284', '31284834', '31256366'],
+        ad_ids: ['30991050', '31385277', '31284834', '31256366', '31220873'],
         layout: 'grid',
         emphasis: 'none',
       },
       output: {
         accepted: true,
-        ad_ids: ['30991050', '31290812', '31288284', '31284834', '31256366'],
+        ad_ids: ['30991050', '31385277', '31284834', '31256366', '31220873'],
         layout: 'grid',
         emphasis: 'none',
       },
@@ -135,7 +135,7 @@ export const stockholmAiEngineeringScript: MockScript = {
     {
       kind: 'text',
       content:
-        ' Found 5 active roles. The strongest signal comes from AI Engineer at Umain AB, AI Enablement Engineer at Extenda Retail AB, Founding AI Engineer at Spiich Labs AB. Cards are on the canvas to the right. Click any card to expand the description.',
+        ' Found 5 active roles. The strongest signal comes from AI Engineer at Umain AB, Fullstack AI Engineer at Tendium AB, AI Enablement Engineer at Xensam AB. Cards are on the canvas to the right. Click any card to expand the description.',
     },
   ],
 } as const
