@@ -2,7 +2,7 @@
   "covers": ["governance", "tooling"],
   "domains": {
     "governance": {
-      "syncedAt": "2026-09-15T13:06:32.084Z",
+      "syncedAt": "2026-09-15T15:31:52.357Z",
       "files": {
         ".claude/rules/canon/ci/700-ci-workflow.md": "sha256:ee4b0988ef94dc92229004020dead689c0904176356e4caf7e83da0b1bbfc478",
         ".claude/rules/canon/claude/500-prose.md": "sha256:c1d40f1381c6f8c3838c9ea3469d91c8a5e42e9496690fc5b69945d162bad8d7",
@@ -23,6 +23,7 @@
         ".claude/rules/canon/claude/560-diagrams.md": "sha256:5821faaf3281e5c4e18502ec20593b81f61da1816c0f6f4475654cf94a76677d",
         ".claude/rules/canon/claude/561-teach.md": "sha256:7379aeef93f44372499bca811f1364316ff1095b52f706f72884395692589a75",
         ".claude/rules/canon/claude/562-session.md": "sha256:85fd4579f3756318a378ba7da3a7caad26f08ce63288f7734358048629300fcd",
+        ".claude/rules/canon/claude/563-ready.md": "sha256:0aa46b3f09a26a7937a369f4da1cec994d85d8dd5ebb2b8d8d203de8d4d8a41d",
         ".claude/rules/canon/claude/570-skill.md": "sha256:9d96b9c875ee9961975e67d314100df334ecc0b875faa30c87f1a368c02410ad",
         ".claude/rules/canon/claude/575-hooks.md": "sha256:9ab4c1b8297e0f43d8a80d53e7cb253b091f7ac8a8f260a1386cd439d2713a16",
         ".claude/rules/canon/claude/576-settings.md": "sha256:215c12abeda82d1aac95a6b8cbbb497ec0fbd437ea9624899c4cd33f52848381",
@@ -39,9 +40,9 @@
         ".claude/rules/canon/core/030-error-handling.md": "sha256:b3c028abf2229f245fe9a173b8bb84502843f1d73ac1940d10f48eebff0764b5",
         ".claude/rules/canon/core/035-tasks.md": "sha256:3485818b4c9c3c83640a0ab95d10d6f8c2630f2d870e82225290d111b062c7da",
         ".claude/rules/canon/core/040-performance.md": "sha256:174d2f9e6ad58b2b2ae43b7ab69d2efeaf344bc52ddebf9d38a47b2eb8882cda",
-        ".claude/rules/canon/core/045-memory.md": "sha256:a00c3641d47708bc3118733988fa6f547cdc2e247dd5bf059b05ae6fdf32d1e8",
+        ".claude/rules/canon/core/045-memory.md": "sha256:eba130e08ef83c14193edd813211d6efb8d504be777080ae5a167f9cc08e67a8",
         ".claude/rules/canon/core/050-logging.md": "sha256:6257b92add0effa81c034c3a220698dd77c107e8736205e0ddbe7fc53df16297",
-        ".claude/rules/canon/core/055-scratch.md": "sha256:0808ec0bd260f23395f63ddcdf15b3ce48594921d1f9aa0e4f8013b19f02ff94",
+        ".claude/rules/canon/core/055-scratch.md": "sha256:0bc452935c9f2dcb188ec84189eccd8a083fffc12659e711c58dbb8d66c295cb",
         ".claude/rules/canon/core/060-naming.md": "sha256:7b4bf67615c18078852b1e6fece426ba91689a5ac2842db031f580e13bba4481",
         ".claude/rules/canon/core/065-spelling.md": "sha256:962dfe121b45aeac8453dd28cfa2e7e1df07324a6ff7f6c75bd0f661051c2786",
         ".claude/rules/canon/core/070-planning.md": "sha256:591a365b57031f84936683df0e68812cab6909fab2c58d19cbf7abe165ed98d7",
