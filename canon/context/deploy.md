@@ -142,6 +142,6 @@ curl -sS -X POST "$URL/api/chat" \
 
 For a visual smoke, open the URL in a cold browser tab, paste a key in the BYOK gate, send a tool-warranted prompt like `Show me nursing roles in Stockholm`, confirm the trace shows `lookupConcept` then `searchJobs` and the canvas populates with ad nodes.
 
-For an automated visual smoke, run `bun run smoke:prod` from `web/`. The Playwright harness drives every canonical state against the deployed URL, captures PNGs to `.canon/review/screenshots/jobtriage.erclx.dev/`, and exits non-zero on any `console.error`. Eyeball the PNG set against `.claude/wireframes/<surface>.md` for drift.
+For an automated visual smoke, run `bun run smoke:prod` from `web/`. The Playwright harness drives every canonical state against the deployed URL, captures PNGs to `.canon/review/screenshots/jobtriage.erclx.dev/`, and exits non-zero on any `console.error`. Eyeball the PNG set against `canon/wireframes/<surface>.md` for drift.
 
 Validate the OG card via the [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/) once the custom domain is live.

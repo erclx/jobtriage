@@ -12,12 +12,12 @@ What belongs:
 What does not belong:
 
 - CSS classes, computed values, component filenames, and prop names. Those live in code.
-- UX copy and interaction flows, which live in `.claude/wireframes/`
+- UX copy and interaction flows, which live in `canon/wireframes/`
 - Anything that requires updating every time the code is refactored
 
 Use tables for token systems, one row per token. Use short bullets for component rules, one decision per line. Plain English over technical notation. If a section could be removed and the developer would still build it correctly from wireframes and code alone, remove it.
 
-The `aitk design render` command reads the tables below and writes an HTML plus CSS preview to `.canon/review/design/`. Keep table headers and role names intact so the parser can find them.
+The `canon design render` command reads the tables below and writes an HTML plus CSS preview to `.canon/review/design/`. Keep table headers and role names intact so the parser can find them.
 
 ## Personality
 

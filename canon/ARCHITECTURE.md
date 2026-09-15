@@ -1,6 +1,6 @@
 # Architecture
 
-Decisions and rationale. Operational wiring lives in `.claude/context/` per domain. Decision-level prose only here.
+Decisions and rationale. Operational wiring lives in `canon/context/` per domain. Decision-level prose only here.
 
 ## Overview
 
@@ -36,7 +36,7 @@ The boundary between Python and TypeScript is HTTP, not in-process imports. Work
 
 ### BYOK over a funded demo
 
-The maintainer cannot fund every visitor's API spend. End users supply their own Anthropic, OpenAI, or Gemini key at chat time, held in browser sessionStorage and sent with each request, never persisted server-side. The gate exposes a provider picker that defaults to Anthropic and surfaces Gemini's free tier as the lowest-friction onramp for first-time visitors. The maintainer-funded nightly LLM eval runs behind `workflow_dispatch` only so the cap stays intact. Tradeoff: lower demo conversion than a one-click flow. Operational wiring (header semantics, env var defaults, per-provider routing) lives in `.claude/context/agent.md`.
+The maintainer cannot fund every visitor's API spend. End users supply their own Anthropic, OpenAI, or Gemini key at chat time, held in browser sessionStorage and sent with each request, never persisted server-side. The gate exposes a provider picker that defaults to Anthropic and surfaces Gemini's free tier as the lowest-friction onramp for first-time visitors. The maintainer-funded nightly LLM eval runs behind `workflow_dispatch` only so the cap stays intact. Tradeoff: lower demo conversion than a one-click flow. Operational wiring (header semantics, env var defaults, per-provider routing) lives in `canon/context/agent.md`.
 
 ### Mock demo posture as a third provider
 
@@ -48,15 +48,15 @@ The four demo chips render as a persistent strip above the prompt input so a vis
 
 The deployed demo cannot ship a maintainer-curated SQLite corpus and still serve any visitor's profile, since a corpus pre-swept against AI engineering filters returns nothing for a nurse or a marketer. The deploy provider branch therefore excludes the corpus-dependent tools (`semanticSearch`, `triageBatch`, `deadlineWatch`) from the registered tool set and leans on `searchJobs` against JobTech live, plus `matchProfile` and `compareRoles` in-context over the returned ads. A `lookupConcept` tool resolves user-facing terms to JobTech taxonomy concept ids so the agent can map "nursing in Stockholm" to a real query without fabricating ids.
 
-Hybrid retrieval stays intact for the local CLI and the local browser dev surface, where the maintainer's own corpus is the right shape for daily personal triage. The README ablation table and the multilingual comparison continue to ship as the repo and CLI story. The deployed demo's pitch shifts from "hybrid retrieval over Swedish description text" to "agent-driven triage with spatial canvas", since recruiters who only click the live URL never see the retrieval path. Mode resolution, the `VERCEL` gate, and the `x-jobtriage-mode` override live in `.claude/context/agent.md`.
+Hybrid retrieval stays intact for the local CLI and the local browser dev surface, where the maintainer's own corpus is the right shape for daily personal triage. The README ablation table and the multilingual comparison continue to ship as the repo and CLI story. The deployed demo's pitch shifts from "hybrid retrieval over Swedish description text" to "agent-driven triage with spatial canvas", since recruiters who only click the live URL never see the retrieval path. Mode resolution, the `VERCEL` gate, and the `x-jobtriage-mode` override live in `canon/context/agent.md`.
 
 ### Local Ollama for development
 
-Ollama drives the entire agent loop in dev. Zero API spend during the bulk of the build. Anthropic only for the deployed demo and for nightly eval smoke tests on a capped maintainer key. Tradeoff: local model quality differs from Claude. The eval harness compares both runs to catch prompt-portability issues before deploy. Current model choice, the six-model bake-off history, and the `num_ctx` WSL2 workaround live in `.claude/context/evals.md` and `.claude/context/development.md`.
+Ollama drives the entire agent loop in dev. Zero API spend during the bulk of the build. Anthropic only for the deployed demo and for nightly eval smoke tests on a capped maintainer key. Tradeoff: local model quality differs from Claude. The eval harness compares both runs to catch prompt-portability issues before deploy. Current model choice, the six-model bake-off history, and the `num_ctx` WSL2 workaround live in `canon/context/evals.md` and `canon/context/development.md`.
 
 ### Tool decomposition over a single-prompt agent
 
-Seven distinct tools with focused responsibilities: `searchJobs`, `semanticSearch`, `matchProfile`, `triageBatch`, `compareRoles`, `deadlineWatch`, `trackStatus`. RAG lives only inside `semanticSearch` and `triageBatch`, where description-text semantics earn it. Other tools call the API or the matcher directly. Tool-call traces in the chat UI make reasoning auditable. The TypeScript-wrapper-to-endpoint mapping lives in `.claude/context/agent.md` and `.claude/context/python.md`.
+Seven distinct tools with focused responsibilities: `searchJobs`, `semanticSearch`, `matchProfile`, `triageBatch`, `compareRoles`, `deadlineWatch`, `trackStatus`. RAG lives only inside `semanticSearch` and `triageBatch`, where description-text semantics earn it. Other tools call the API or the matcher directly. Tool-call traces in the chat UI make reasoning auditable. The TypeScript-wrapper-to-endpoint mapping lives in `canon/context/agent.md` and `canon/context/python.md`.
 
 ### Per-session profile input over a hardcoded profile
 
@@ -64,7 +64,7 @@ Profile markdown is a tool input, not embedded in the deploy image. The web past
 
 ### Spatial tool layer over inline cards
 
-Retrieved ads render as nodes on a React Flow canvas to the right of the chat rail rather than as cards inline in the conversation. Eight spatial tools are registered with the AI SDK alongside the seven data tools. Spatial tools never call the FastAPI backend. They are server-defined echoes whose `output-available` parts the client `CanvasBridge` translates into reducer dispatches against `CanvasContext`. The agent picks a layout strategy and emphasis hint, never pixel coordinates. The data-spatial pairing rules, sessionStorage hydration, pinning policy, and `New chat` clearing semantics live in `.claude/context/canvas.md`.
+Retrieved ads render as nodes on a React Flow canvas to the right of the chat rail rather than as cards inline in the conversation. Eight spatial tools are registered with the AI SDK alongside the seven data tools. Spatial tools never call the FastAPI backend. They are server-defined echoes whose `output-available` parts the client `CanvasBridge` translates into reducer dispatches against `CanvasContext`. The agent picks a layout strategy and emphasis hint, never pixel coordinates. The data-spatial pairing rules, sessionStorage hydration, pinning policy, and `New chat` clearing semantics live in `canon/context/canvas.md`.
 
 ### Triage state in a local file, not in SQLite
 
@@ -79,9 +79,9 @@ The chat input ships a mic toggle in Chrome that streams partial transcripts int
 Resolved questions from prior versions, kept as a changelog.
 
 - **Tool-call trace UI density** (v4): cards always render above the trace tree, which collapses by default behind a one-line summary header. Recruiters get a clean transcript by default. Engineers expand per-tool.
-- **Multilingual embedding ablation timing** (v5.2): three-model comparison runs through a separate `evaluate-embeddings` CLI on a 50-query Swedish golden set. README publishes both tables side by side. See `.claude/context/evals.md`.
+- **Multilingual embedding ablation timing** (v5.2): three-model comparison runs through a separate `evaluate-embeddings` CLI on a 50-query Swedish golden set. README publishes both tables side by side. See `canon/context/evals.md`.
 - **Eval cadence** (v2): nightly via GitHub Actions cron at 03:00 UTC with a `workflow_dispatch` escape hatch. The LLM-eval subset is dispatch-only to cap the maintainer key.
 - **Ad corpus freshness in deploy** (v5): the Cloud Run image ships in slim mode and omits the SQLite corpus and sentence-transformers entirely. Corpus-dependent endpoints return 503 in slim mode.
 - **Reranker on or off by default** (v1): shipped off. The retrieval module exposes a clean seam so a cross-encoder rerank can land later without churn.
-- **RRF score floor** (v4.2): hybrid retrieval had no zero-result floor and adversarial queries returned tangentially-relevant ads at very low scores. A floor at the API boundary suppresses noise without changing ranking math, exposed via `JOBTRIAGE_RRF_FLOOR` (default 0.025), applied at `triageBatch` and `semanticSearch`. Details in `.claude/context/retrieval.md`.
-- **JobTech concept-id format validation** (v4.2): the agent fabricated ids on adversarial prompts and the upstream silently returned empty results. The fix validates the JobTech nanoid format at the request schema and returns a 422 with an actionable message. Details in `.claude/context/python.md`.
+- **RRF score floor** (v4.2): hybrid retrieval had no zero-result floor and adversarial queries returned tangentially-relevant ads at very low scores. A floor at the API boundary suppresses noise without changing ranking math, exposed via `JOBTRIAGE_RRF_FLOOR` (default 0.025), applied at `triageBatch` and `semanticSearch`. Details in `canon/context/retrieval.md`.
+- **JobTech concept-id format validation** (v4.2): the agent fabricated ids on adversarial prompts and the upstream silently returned empty results. The fix validates the JobTech nanoid format at the request schema and returns a 422 with an actionable message. Details in `canon/context/python.md`.

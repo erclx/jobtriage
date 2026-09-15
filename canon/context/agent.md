@@ -5,7 +5,7 @@ description: Tool registry, system prompt, provider switch, and deploy-vs-local 
 
 # Agent
 
-The agent loop is the project's core IP and the most-edited surface. This entry consolidates the wiring rules across `web/src/lib/agent/`, `web/src/app/api/chat/route.ts`, and `web/scripts/model-probe.ts`. Decision-level rationale lives in `.claude/ARCHITECTURE.md` under "BYOK over a funded demo", "Live JobTech path in deploy", "Local Ollama for development", and "Tool decomposition over a single-prompt agent". This entry holds the operational wiring those decisions imply.
+The agent loop is the project's core IP and the most-edited surface. This entry consolidates the wiring rules across `web/src/lib/agent/`, `web/src/app/api/chat/route.ts`, and `web/scripts/model-probe.ts`. Decision-level rationale lives in `canon/ARCHITECTURE.md` under "BYOK over a funded demo", "Live JobTech path in deploy", "Local Ollama for development", and "Tool decomposition over a single-prompt agent". This entry holds the operational wiring those decisions imply.
 
 ## Layer responsibilities
 

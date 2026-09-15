@@ -5,7 +5,7 @@ description: React Flow surface, reducer, view layouts, and tool-call-to-dispatc
 
 # Canvas
 
-Spatial workspace rendered to the right of the chat rail. Retrieved ads become React Flow nodes the agent drives via eight spatial tools. The architectural rationale (why spatial instead of inline cards) lives in `.claude/ARCHITECTURE.md` under "Spatial tool layer over inline cards". This entry holds the wiring.
+Spatial workspace rendered to the right of the chat rail. Retrieved ads become React Flow nodes the agent drives via eight spatial tools. The architectural rationale (why spatial instead of inline cards) lives in `canon/ARCHITECTURE.md` under "Spatial tool layer over inline cards". This entry holds the wiring.
 
 ## Layer responsibilities
 

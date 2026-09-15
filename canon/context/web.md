@@ -98,8 +98,8 @@ web/
 - Path alias `@` maps to `./src` (configured in `tsconfig.json`).
 - Server components by default. Add `'use client'` only when required.
 - Domain UI lives under `src/features/`. Shared, generic UI lives under `src/components/`.
-- Data tools live in `src/lib/agent/tools.ts`, spatial tools in `src/lib/agent/spatial-tools.ts`. Tool registry composition, mode resolution, and provider routing live in `.claude/context/agent.md`.
-- Canvas surface, reducer, bridge, and the eight spatial tools live in `.claude/context/canvas.md`.
+- Data tools live in `src/lib/agent/tools.ts`, spatial tools in `src/lib/agent/spatial-tools.ts`. Tool registry composition, mode resolution, and provider routing live in `canon/context/agent.md`.
+- Canvas surface, reducer, bridge, and the eight spatial tools live in `canon/context/canvas.md`.
 - Vendored shadcn and AI Elements primitives are not edited in place. Wrap them in feature components when extending behavior.
 - Tests colocate next to source as `*.test.ts` or `*.spec.ts`. Playwright specs live in `e2e/`.
 
@@ -114,7 +114,7 @@ web/
 
 | Command                 | Purpose                                                                                                                                                                                                                                                                                                                                                   |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `bun run dev`           | Disabled. Run `bun run restart:web` from the repo root instead. Rationale in `.claude/context/development.md`.                                                                                                                                                                                                                                            |
+| `bun run dev`           | Disabled. Run `bun run restart:web` from the repo root instead. Rationale in `canon/context/development.md`.                                                                                                                                                                                                                                              |
 | `bun run build`         | Production build                                                                                                                                                                                                                                                                                                                                          |
 | `bun run start`         | Serve the production build                                                                                                                                                                                                                                                                                                                                |
 | `bun run lint`          | ESLint, zero warnings                                                                                                                                                                                                                                                                                                                                     |
@@ -131,8 +131,8 @@ web/
 
 ## Provider switching
 
-The chat surface supports four providers (Anthropic, OpenAI, Gemini, local Ollama), chosen at the gate and persisted in browser sessionStorage. Header semantics, per-provider env var defaults, mode resolution, and the `VERCEL` gate live in `.claude/context/agent.md`. The model-probe smoke harness lives in `.claude/context/evals.md`.
+The chat surface supports four providers (Anthropic, OpenAI, Gemini, local Ollama), chosen at the gate and persisted in browser sessionStorage. Header semantics, per-provider env var defaults, mode resolution, and the `VERCEL` gate live in `canon/context/agent.md`. The model-probe smoke harness lives in `canon/context/evals.md`.
 
 ## Deploy
 
-Vercel free tier. Wired in v5. The deployed bundle does not carry any provider key. End users supply their own Anthropic, OpenAI, or Gemini key at chat time, held in browser sessionStorage and sent with each request. Platform gotchas live in `.claude/context/deploy.md`.
+Vercel free tier. Wired in v5. The deployed bundle does not carry any provider key. End users supply their own Anthropic, OpenAI, or Gemini key at chat time, held in browser sessionStorage and sent with each request. Platform gotchas live in `canon/context/deploy.md`.

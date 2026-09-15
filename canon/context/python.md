@@ -17,7 +17,7 @@ FastAPI backend, Python tools, and Typer CLI. The same Python modules power the 
 - `httpx` for the JobTech API client
 - `ruff` for lint and format, `mypy` for strict types, `pytest` for tests
 
-Typer, httpx, pydantic, and pydantic-settings shipped in v0. The hybrid retriever, embedder, and eval harness shipped in v1. FastAPI shipped in v2 per `.claude/ARCHITECTURE.md`.
+Typer, httpx, pydantic, and pydantic-settings shipped in v0. The hybrid retriever, embedder, and eval harness shipped in v1. FastAPI shipped in v2 per `canon/ARCHITECTURE.md`.
 
 ## Layout
 
@@ -60,9 +60,9 @@ The `storage/` schema reserves a nullable `embedding` BLOB column on `ad_chunks`
 - `storage/` owns the SQLite schema, paragraph-then-length chunker, and append-mostly ingest
 - `embeddings.py` owns the `multilingual-e5` wrapper with passage/query prefixes
 - `retrieval.py` owns BM25, dense cosine, and the RRF fusion that composes them
-- `evals/` owns the golden-set loader and four-configuration runner, details in `.claude/context/evals.md`
+- `evals/` owns the golden-set loader and four-configuration runner, details in `canon/context/evals.md`
 - `engagement.py` owns the markdown engagement log reader and writer
-- `cli/` owns the Typer commands (`sweep`, `index`, `search`, `mark-status`), plus `evaluate` and `evaluate-embeddings` covered in `.claude/context/evals.md`
+- `cli/` owns the Typer commands (`sweep`, `index`, `search`, `mark-status`), plus `evaluate` and `evaluate-embeddings` covered in `canon/context/evals.md`
 
 ## Decisions
 
@@ -72,7 +72,7 @@ The `storage/` schema reserves a nullable `embedding` BLOB column on `ad_chunks`
 
 ### RRF floor scoped to corpus endpoints
 
-`JOBTRIAGE_RRF_FLOOR` (default `0.025`) drops below-floor results at `/v1/jobs/triage` and `/v1/jobs/semantic` only. `/v1/jobs/search` and `/v1/jobs/live-search` are left untouched since they filter recent ads regardless of relevance score. Full rationale in `.claude/context/retrieval.md`.
+`JOBTRIAGE_RRF_FLOOR` (default `0.025`) drops below-floor results at `/v1/jobs/triage` and `/v1/jobs/semantic` only. `/v1/jobs/search` and `/v1/jobs/live-search` are left untouched since they filter recent ads regardless of relevance score. Full rationale in `canon/context/retrieval.md`.
 
 ### `/v1/jobs/live-details` returns partial results on per-ad failure
 
@@ -121,4 +121,4 @@ Run from `python/` after `cd python`.
 
 Google Cloud Run on the Always Free tier, region `europe-west1`. The image ships in slim mode (`JOBTRIAGE_DEPLOY_MODE=slim`): no SQLite corpus and no `sentence-transformers`/`torch` wheel, since the deploy posture only calls `live-search`, `live-details`, `taxonomy/lookup`, and `engagements/status`. Corpus-backed endpoints return 503 in slim mode. The deployed image carries no provider keys: visitors supply Anthropic, OpenAI, or Gemini keys at chat time.
 
-For the full deploy sequence (Cloud Run build, Vercel project setup, Cloudflare DNS) and the platform gotchas behind it, see `.claude/context/deploy.md`.
+For the full deploy sequence (Cloud Run build, Vercel project setup, Cloudflare DNS) and the platform gotchas behind it, see `canon/context/deploy.md`.
