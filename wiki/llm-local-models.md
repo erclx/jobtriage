@@ -57,7 +57,7 @@ The Vercel AI SDK's `ollama-ai-provider-v2` was historically tuned for Qwen 3 Co
 
 ## Smoke harness
 
-`web/scripts/model-probe.ts` runs probe fixtures from `.claude/evals/*.json` against the live Next.js stack with the real system prompt and tool schemas. The harness reads `PROBE_FIXTURE` from env and branches on the fixture's `kind` field. Restart of the web server between models is automatic. Output lands at `.claude/.tmp/ollama-model-research/smoke-<fixture>.md`.
+`web/scripts/model-probe.ts` runs probe fixtures from `.claude/evals/*.json` against the live Next.js stack with the real system prompt and tool schemas. The harness reads `PROBE_FIXTURE` from env and branches on the fixture's `kind` field. Restart of the web server between models is automatic. Output lands at `.canon/tmp/ollama-model-research/smoke-<fixture>.md`.
 
 Two fixtures ship today:
 

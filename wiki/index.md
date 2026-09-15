@@ -4,7 +4,7 @@ subtitle: Durable reusable technical knowledge that outlives single project deci
 auto: false
 ---
 
-Pages in this folder capture knowledge that holds value across project decisions, model versions, and architecture revisions. Plan files in `.claude/plans/` are deleted when tasks ship, so anything worth keeping past one PR cycle moves here.
+Pages in this folder capture knowledge that holds value across project decisions, model versions, and architecture revisions. Plan files in `.canon/plans/` are deleted when tasks ship, so anything worth keeping past one PR cycle moves here.
 
 ## Pages
 

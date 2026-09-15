@@ -122,5 +122,5 @@ jobs:
         with:
           name: agent-eval-${{ matrix.provider }}
           path: |
-            .claude/.tmp/ollama-model-research/smoke-*.md
-            .claude/.tmp/ollama-model-research/smoke-*.json
+            .canon/tmp/ollama-model-research/smoke-*.md
+            .canon/tmp/ollama-model-research/smoke-*.json

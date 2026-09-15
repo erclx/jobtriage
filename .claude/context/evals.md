@@ -73,7 +73,7 @@ Response is the AI SDK SSE stream. The harness walks each `data:` line, decodes 
 - Inputs: `providers` (comma-separated, default `gemini` for the free tier), `fixture` (default `.claude/evals/agent-discipline.json`).
 - Per-provider gating reads `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`. Providers without a configured secret emit a warning and skip.
 - Each run starts a local web server (`bun build && bun start`), polls health, then drives the harness three times: the dispatch-supplied fixture, then `agent-general-profile.json`, then `agent-conversation.json`.
-- Output lands at `.claude/.tmp/ollama-model-research/smoke-{provider}-{fixture-name}.md` plus a peer `.json` artifact and uploads both as a build artifact.
+- Output lands at `.canon/tmp/ollama-model-research/smoke-{provider}-{fixture-name}.md` plus a peer `.json` artifact and uploads both as a build artifact.
 
 ### Deploy posture override
 

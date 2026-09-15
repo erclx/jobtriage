@@ -53,7 +53,7 @@ Rule of thumb when a fact lives in two places: if an outside visitor needs it to
 ## Commands
 
 - `bun run check` runs the full verify cascade. Full script reference in `.claude/context/development.md`.
-- Do not run `bun run dev`. The script is disabled. Run `bun run restart:web` from the repo root for any local server need. It kills stale `next-server` and Playwright zombies, rebuilds, starts the server in the background with logs at `.claude/.tmp/restart/server.log`, and verifies the listening pid changed. Do not rely on `lsof -ti:3000`, it can miss `next-server`.
+- Do not run `bun run dev`. The script is disabled. Run `bun run restart:web` from the repo root for any local server need. It kills stale `next-server` and Playwright zombies, rebuilds, starts the server in the background with logs at `.canon/tmp/restart/server.log`, and verifies the listening pid changed. Do not rely on `lsof -ti:3000`, it can miss `next-server`.
 
 ## Output
 
@@ -72,7 +72,7 @@ Rule of thumb when a fact lives in two places: if an outside visitor needs it to
 - `.claude/context/`: per-domain narrative loaded when editing that domain. See `.claude/context/index.md` for the catalog. Entries cover agent loop, canvas, ci, web, python, retrieval, evals, development, deploy.
 - `.claude/wireframes/`: per-surface ASCII layouts loaded on demand, indexed via `.claude/wireframes/index.md`
 - `.claude/evals/`: structured JSON fixtures consumed by `web/scripts/model-probe.ts`. See `.claude/context/evals.md` for fixture shape, `kind` semantics, and the `workflow_dispatch` posture.
-- `.claude/review/`: gitignored scratch for review and UI-test output, overwritten on each run
+- `.canon/review/`: gitignored scratch for review and UI-test output, overwritten on each run
 - `wiki/`: durable reusable technical knowledge that outlives any single project decision (model landscapes, tool-stack notes, integration playbooks). Pages survive plan-file deletion when tasks ship.
 
 ## Spelling
@@ -91,24 +91,24 @@ Rule of thumb when a fact lives in two places: if an outside visitor needs it to
 - `.claude/TASKS.md` is gitignored local session scratch. Edit freely. No staging or revert before commits.
 - Only create a task for work that spans multiple sessions or has real dependencies. Handle small edits immediately without a task entry.
 - Do not add tasks retroactively for work already completed. Completed work is visible in git.
-- When a task needs execution detail beyond `.claude/TASKS.md`, create a plan in `.claude/plans/` and link to it from the task block's intro paragraph. When that task ships, delete its plan file.
+- When a task needs execution detail beyond `.claude/TASKS.md`, create a plan in `.canon/plans/` and link to it from the task block's intro paragraph. When that task ships, delete its plan file.
 - Write the plan in the same session as the task block. The session that executes the plan later inherits reasoning context it would otherwise have to re-derive.
 
 ## Memory
 
-- Write all memory files to `.claude/memory/`, not `~/.claude/projects/`.
+- Write all memory files to `.canon/memory/`, not `~/.claude/projects/`.
 - Save a feedback memory only when the same mistake happens twice in the session, or when the user explicitly corrects you. First-occurrence slips are noise.
 - Keep feedback memories to 3 lines: the rule, a one-line Why, and a one-line How to apply. Capture the pattern, not the recovery narrative.
 - Before creating a new memory file, check for an existing one on the same topic. Update rather than duplicate.
 
 ## Scratch
 
-- Write temporary files to `.claude/.tmp/<slug>/<file>.md` in the project root. Use a kebab-slug tied to the topic. Never use `/tmp` or a flat `<slug>-<file>.md`.
+- Write temporary files to `.canon/tmp/<slug>/<file>.md` in the project root. Use a kebab-slug tied to the topic. Never use `/tmp` or a flat `<slug>-<file>.md`.
 
 ## Worktrees
 
 - Default to working on the active branch in the main checkout. Reach for a linked worktree via `/claude-worktree` only when a concurrent session would otherwise fight over working-tree state.
-- Shared session scratch (`.claude/plans/`, `.claude/review/`, `.claude/memory/`, `.claude/TASKS.md`) lives at the main worktree root, not inside a linked worktree. From a linked worktree, resolve these paths against the main root via `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`. Fall back to `pwd` if not a git repo.
-- From a linked worktree, every `Edit` or `Write` to a tracked file (source, docs) must use a path starting with `pwd`. Only shared session scratch (`.claude/plans/`, `.claude/review/`, `.claude/memory/`, `.claude/TASKS.md`) resolves to the main worktree root.
+- Shared session scratch (`.canon/plans/`, `.canon/review/`, `.canon/memory/`, `.claude/TASKS.md`) lives at the main worktree root, not inside a linked worktree. From a linked worktree, resolve these paths against the main root via `git worktree list --porcelain | grep -m 1 '^worktree ' | cut -d' ' -f2-`. Fall back to `pwd` if not a git repo.
+- From a linked worktree, every `Edit` or `Write` to a tracked file (source, docs) must use a path starting with `pwd`. Only shared session scratch (`.canon/plans/`, `.canon/review/`, `.canon/memory/`, `.claude/TASKS.md`) resolves to the main worktree root.
 - The pre-push cspell check is blind to worktree changes because `useGitignore: true` walks up to the parent `.gitignore` that excludes `.claude/worktrees/`, and pushing from main scans `main`'s working tree, not the branch tip. Before pushing a worktree branch with new vocabulary (new product names, libs, jargon), spell-check the diff explicitly: `git diff --name-only main | grep -vE 'bun\.lock$|\.png$' | xargs bunx cspell --no-must-find-files --no-progress --no-gitignore`. Add unknown real words to the right `.cspell/<bucket>.txt` before pushing.
-- Push a worktree branch from the main checkout via `cd <main-root> && git push -u origin <branch>`, not `git -C <main-root> push`. The career-level CLAUDE.md documents the `git -C` form, but in this repo it triggers a phantom prettier failure under pre-push (`Unable to read file ".claude/.claude/review/..."`). The `cd` form runs the same hook cleanly.
+- Push a worktree branch from the main checkout via `cd <main-root> && git push -u origin <branch>`, not `git -C <main-root> push`. The career-level CLAUDE.md documents the `git -C` form, but in this repo it triggers a phantom prettier failure under pre-push (`Unable to read file ".claude/.canon/review/..."`). The `cd` form runs the same hook cleanly.

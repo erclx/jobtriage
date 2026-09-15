@@ -1,9 +1,5 @@
 {
-  "covers": [
-    "snippets",
-    "governance",
-    "tooling"
-  ],
+  "covers": ["snippets", "governance", "tooling"],
   "domains": {
     "snippets": {
       "syncedAt": "2026-08-06T07:38:26.025Z",
@@ -58,9 +54,7 @@
     "tooling": {
       "syncedAt": "2026-08-06T07:39:49.971Z",
       "files": {},
-      "chain": [
-        "base"
-      ]
+      "chain": ["base"]
     }
   }
 }
