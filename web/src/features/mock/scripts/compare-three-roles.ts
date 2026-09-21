@@ -26,6 +26,18 @@ export const compareThreeRolesScript: MockScript = {
       output: {
         results: [
           {
+            ad_id: '31486692',
+            headline: 'Machine Learning Engineer',
+            employer_name: 'Lorex Labs AB',
+            municipality: 'Stockholm',
+            application_deadline: '2026-10-16T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31486692',
+            description_excerpt:
+              'Company Description: Lorex Labs specializes in verification, validation, and value optimization for unique AI solutions. The company helps organizations build AI systems that outperform competitors by focusing on measurable impact and trustworthiness. Lorex Labs supports clients in accelerating development velocity and improving the reliability of machine learning models. By unlocking actionable insights, the company enables real-world performance gains across diverse AI appl…',
+            occupation_label: 'Systemutvecklare/Programmerare',
+          },
+          {
             ad_id: '31343756',
             headline: 'Machine Learning Engineer ',
             employer_name: 'Modulai AB',
@@ -48,18 +60,6 @@ export const compareThreeRolesScript: MockScript = {
             description_excerpt:
               'On behalf of a partner company, Nordic Investin is looking for a Senior Machine Learning Engineer. You are interested in models that perform after deployment, when data shifts, latency appears and users behave differently than the notebook assumed. The partner is moving machine learning capabilities into core products and workflows. You will develop models and the production systems around them, working with data scientists, platform engineers and product teams. The partner w…',
             occupation_label: 'Data scientist',
-          },
-          {
-            ad_id: '31383950',
-            headline: 'Senior Machine Learning Engineer',
-            employer_name: 'Voi Technology AB',
-            municipality: 'Stockholm',
-            application_deadline: '2027-02-17T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31383950',
-            description_excerpt:
-              "YOUR MISSION AT VOI You will be joining a team focused on predicting the near-future demand for our vehicles. Specifically, where and when they will be needed, and how to handle this at scale for a fleet of 150 thousand vehicles spread across over more than 100 cities. This is a complex and meaningful problem from both an analytical as well as an engineering perspective, and you'll be handed ambiguous, high-leverage problems and are expected to reason from first principles ab…",
-            occupation_label: 'Systemutvecklare/Programmerare',
           },
         ],
       },
@@ -67,17 +67,29 @@ export const compareThreeRolesScript: MockScript = {
     {
       kind: 'text',
       content:
-        ' Comparing the two strongest candidates. The first is Machine Learning Engineer and the second is Senior Machine Learning Engineer.',
+        ' Comparing the two strongest candidates. The first is Machine Learning Engineer and the second is Machine Learning Engineer.',
     },
     {
       kind: 'tool',
       toolName: 'compareRoles',
       toolCallId: 'mock-compare-roles-call-2',
       input: {
-        ad_ids: ['31343756', '31469855'],
+        ad_ids: ['31486692', '31343756'],
       },
       output: {
         results: [
+          {
+            ad_id: '31486692',
+            headline: 'Machine Learning Engineer',
+            employer_name: 'Lorex Labs AB',
+            municipality: 'Stockholm',
+            application_deadline: '2026-10-16T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31486692',
+            description_excerpt:
+              'Company Description: Lorex Labs specializes in verification, validation, and value optimization for unique AI solutions. The company helps organizations build AI systems that outperform competitors by focusing on measurable impact and trustworthiness. Lorex Labs supports clients in accelerating development velocity and improving the reliability of machine learning models. By unlocking actionable insights, the company enables real-world performance gains across diverse AI appl…',
+            occupation_label: 'Systemutvecklare/Programmerare',
+          },
           {
             ad_id: '31343756',
             headline: 'Machine Learning Engineer ',
@@ -89,18 +101,6 @@ export const compareThreeRolesScript: MockScript = {
             description_excerpt:
               'Modulai works with fish, trains, clothes, money, pets, office spaces, sound sensors and much more. If there is data, we do ML (Machine Learning) on it. Our team consists of devoted ML engineers with strong track records from some of Sweden’s most successful startups. We work on project basis and take end-to-end responsibility. We love ML and we think that the best way for us to expand our knowledge is to be exposed to a diversified set of challenging and fun projects. MACHINE…',
             occupation_label: 'Civilingenjör, systemutveckling',
-          },
-          {
-            ad_id: '31469855',
-            headline: 'Senior Machine Learning Engineer',
-            employer_name: 'Nordic Investin Group Aktiebolag',
-            municipality: 'Stockholm',
-            application_deadline: '2027-03-11T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31469855',
-            description_excerpt:
-              'On behalf of a partner company, Nordic Investin is looking for a Senior Machine Learning Engineer. You are interested in models that perform after deployment, when data shifts, latency appears and users behave differently than the notebook assumed. The partner is moving machine learning capabilities into core products and workflows. You will develop models and the production systems around them, working with data scientists, platform engineers and product teams. The partner w…',
-            occupation_label: 'Data scientist',
           },
         ],
       },
@@ -110,13 +110,13 @@ export const compareThreeRolesScript: MockScript = {
       toolName: 'pairAdsForCompare',
       toolCallId: 'mock-compare-roles-call-3',
       input: {
-        ad_id_a: '31343756',
-        ad_id_b: '31469855',
+        ad_id_a: '31486692',
+        ad_id_b: '31343756',
         diffs: [
           {
             field: 'Employer',
-            a: 'Modulai AB',
-            b: 'Nordic Investin Group Aktiebolag',
+            a: 'Lorex Labs AB',
+            b: 'Modulai AB',
             verdict: 'neither',
           },
           {
@@ -127,21 +127,21 @@ export const compareThreeRolesScript: MockScript = {
           },
           {
             field: 'Deadline',
-            a: '2027-02-11',
-            b: '2027-03-11',
+            a: '2026-10-16',
+            b: '2027-02-11',
             verdict: 'b',
           },
         ],
       },
       output: {
         accepted: true,
-        ad_id_a: '31343756',
-        ad_id_b: '31469855',
+        ad_id_a: '31486692',
+        ad_id_b: '31343756',
         diffs: [
           {
             field: 'Employer',
-            a: 'Modulai AB',
-            b: 'Nordic Investin Group Aktiebolag',
+            a: 'Lorex Labs AB',
+            b: 'Modulai AB',
             verdict: 'neither',
           },
           {
@@ -152,8 +152,8 @@ export const compareThreeRolesScript: MockScript = {
           },
           {
             field: 'Deadline',
-            a: '2027-02-11',
-            b: '2027-03-11',
+            a: '2026-10-16',
+            b: '2027-02-11',
             verdict: 'b',
           },
         ],
@@ -162,7 +162,7 @@ export const compareThreeRolesScript: MockScript = {
     {
       kind: 'text',
       content:
-        ' Compare view is up on the canvas. A third candidate from Voi Technology AB is also in the result set. Ask for a pair against it for a deeper bake-off.',
+        ' Compare view is up on the canvas. A third candidate from Nordic Investin Group Aktiebolag is also in the result set. Ask for a pair against it for a deeper bake-off.',
     },
   ],
 } as const

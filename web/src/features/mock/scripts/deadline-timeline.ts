@@ -26,26 +26,6 @@ export const deadlineTimelineScript: MockScript = {
       output: {
         results: [
           {
-            ad_id: '31440715',
-            headline: 'Graduate AI Engineer - ADAS AI Agents',
-            employer_name: 'Luxoft Sweden AB',
-            municipality: 'Göteborg',
-            application_deadline: '2026-09-14T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31440715',
-            days_until_deadline: 1,
-          },
-          {
-            ad_id: '31469989',
-            headline: 'Senior AI Engineer',
-            employer_name: 'Rasulson Consulting AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-09-16T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31469989',
-            days_until_deadline: 3,
-          },
-          {
             ad_id: '31466329',
             headline: 'AI Engineer - ADAS AI Agents',
             employer_name: 'Luxoft Sweden AB',
@@ -53,27 +33,37 @@ export const deadlineTimelineScript: MockScript = {
             application_deadline: '2026-09-21T23:59:59',
             webpage_url:
               'https://arbetsformedlingen.se/platsbanken/annonser/31466329',
-            days_until_deadline: 8,
+            days_until_deadline: 1,
           },
           {
-            ad_id: '31379145',
-            headline: 'AI Engineer - Euromaster',
-            employer_name: 'EUROMASTER AKTIEBOLAG',
-            municipality: 'Varberg',
-            application_deadline: '2026-09-21T23:59:59',
+            ad_id: '31472123',
+            headline: 'AI Platform Engineer',
+            employer_name: 'Nordea Bank Abp, filial i Sverige',
+            municipality: 'Stockholm',
+            application_deadline: '2026-09-24T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31379145',
-            days_until_deadline: 8,
+              'https://arbetsformedlingen.se/platsbanken/annonser/31472123',
+            days_until_deadline: 4,
           },
           {
-            ad_id: '31417598',
-            headline: 'Embedded AI Engineer, Lund',
-            employer_name: 'Axis Communications Aktiebolag',
-            municipality: 'Lund',
-            application_deadline: '2026-09-21T23:59:59',
+            ad_id: '31420374',
+            headline: 'AI Software Engineer',
+            employer_name: 'Jobway AB',
+            municipality: 'Stockholm',
+            application_deadline: '2026-09-25T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31417598',
-            days_until_deadline: 8,
+              'https://arbetsformedlingen.se/platsbanken/annonser/31420374',
+            days_until_deadline: 5,
+          },
+          {
+            ad_id: '30900515',
+            headline: 'AI Engineer till Axfood IT',
+            employer_name: 'Ants Akademiskt Nätverk av Tekniska Studenter AB',
+            municipality: 'Stockholm',
+            application_deadline: '2026-10-11T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/30900515',
+            days_until_deadline: 21,
           },
         ],
       },
@@ -83,19 +73,19 @@ export const deadlineTimelineScript: MockScript = {
       toolName: 'placeAdsOnTimeline',
       toolCallId: 'mock-deadline-ai-call-2',
       input: {
-        ad_ids: ['31440715', '31469989', '31466329', '31379145', '31417598'],
-        today_cursor: '2026-09-14',
+        ad_ids: ['31466329', '31472123', '31420374', '30900515'],
+        today_cursor: '2026-09-21',
       },
       output: {
         accepted: true,
-        ad_ids: ['31440715', '31469989', '31466329', '31379145', '31417598'],
-        today_cursor: '2026-09-14',
+        ad_ids: ['31466329', '31472123', '31420374', '30900515'],
+        today_cursor: '2026-09-21',
       },
     },
     {
       kind: 'text',
       content:
-        ' 5 roles laid on the date axis. The soonest is Graduate AI Engineer - ADAS AI Agents at Luxoft Sweden AB, 1 day out.',
+        ' 4 roles laid on the date axis. The soonest is AI Engineer - ADAS AI Agents at Luxoft Sweden AB, 1 day out.',
     },
   ],
 } as const
