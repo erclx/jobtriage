@@ -85,23 +85,11 @@ export const stockholmNursingScript: MockScript = {
             occupation_label: 'Sjuksköterska, grundutbildad',
           },
           {
-            ad_id: '31339409',
-            headline: 'Sjuksköterska till kranskommun till Stockholm',
-            employer_name: 'OFELIA VÅRD AB',
-            municipality: 'Södertälje',
-            application_deadline: '2026-09-14T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31339409',
-            description_excerpt:
-              'Ofelia Vård AB är tillsammans med Skandinavisk Hälsovård, Svensk Närsjukvård, Doc Care, HLR Landslaget och Linguacom, en del av Skandinavisk Hälsovård Group. Vi söker för kunds räkning sjuksköterska. Uppdraget gäller från omgående och under hösten. Ofelia Vård är ett auktoriserat bemanningsföretag med medlemskap i Kompetensföretagen. Med detta följer en garanti på att vi följer arbetsmarknadens lagar och regler. Vi har kollektivavtal med Vårdförbundet, Läkarförbundet och Unio…',
-            occupation_label: 'Sjuksköterska, grundutbildad',
-          },
-          {
             ad_id: '30879803',
             headline: 'Legitimerad Sjuksköterska Sökes till Stockholm',
             employer_name: 'Omsorg & Behandling 1 AB',
             municipality: 'Stockholm',
-            application_deadline: '2026-09-17T23:59:59',
+            application_deadline: '2026-09-24T23:59:59',
             webpage_url:
               'https://arbetsformedlingen.se/platsbanken/annonser/30879803',
             description_excerpt:
@@ -109,13 +97,25 @@ export const stockholmNursingScript: MockScript = {
             occupation_label: 'Sjuksköterska, grundutbildad',
           },
           {
-            ad_id: '31441913',
+            ad_id: '31484463',
+            headline: 'Sjuksköterska till avdelning 4, Psykosvård Stockholm',
+            employer_name: 'REGION STOCKHOLM',
+            municipality: 'Stockholm',
+            application_deadline: '2026-09-30T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31484463',
+            description_excerpt:
+              'Psykosvård Stockholm är en nystartad verksamhet inom Stockholms länssjukvårdsområde. Här samlar vi vården för patienter över 18 år med psykossjukdom i en organisatorisk enhet. Vi erbjuder bedömning, utredning och behandling enligt nationella riktlinjer och regionala vårdprogram. Inom Psykosvård Stockholm bedriver vi utvecklingsarbete, utbildning och forskning kring psykossjukdom. Vi arbetar i multiprofessionella team för att göra vården och behandlingen runt patienten så god…',
+            occupation_label: 'Sjuksköterska, grundutbildad',
+          },
+          {
+            ad_id: '31480005',
             headline: 'Vi söker sjuksköterska till HSL/LSS-teamet Stockholm',
             employer_name: 'Attendo Sverige AB',
             municipality: 'Stockholm',
-            application_deadline: '2027-03-03T23:59:59',
+            application_deadline: '2027-03-14T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31441913',
+              'https://arbetsformedlingen.se/platsbanken/annonser/31480005',
             description_excerpt:
               'Välkommen till en värderingsstyrd organisation Vill du vara med och bygga framtidens LSS-vård? Nu har du chansen att bli en del av vårt kompetenta och engagerade team! Vi är ett arbetslag med sjuksköterskor och ett eget rehabteam – och nu söker vi en sjuksköterska till våra LSS boenden i Stockholm. Beskrivning av tjänsten: Tillsammans med kollegor inom olika professioner och externa vårdkontakter arbetar du för att skapa den bästa möjliga vården – alltid med patienten i fokus…',
             occupation_label: 'Sjuksköterska, grundutbildad',
@@ -143,11 +143,11 @@ export const stockholmNursingScript: MockScript = {
         groups: [
           {
             label: 'Strong fit',
-            ad_ids: ['31422642', '31339409'],
+            ad_ids: ['31422642', '30879803'],
           },
           {
             label: 'Consider',
-            ad_ids: ['30879803', '31441913'],
+            ad_ids: ['31484463', '31480005'],
           },
           {
             label: 'Worth a look',
@@ -160,11 +160,11 @@ export const stockholmNursingScript: MockScript = {
         groups: [
           {
             label: 'Strong fit',
-            ad_ids: ['31422642', '31339409'],
+            ad_ids: ['31422642', '30879803'],
           },
           {
             label: 'Consider',
-            ad_ids: ['30879803', '31441913'],
+            ad_ids: ['31484463', '31480005'],
           },
           {
             label: 'Worth a look',
@@ -186,19 +186,19 @@ export const stockholmNursingScript: MockScript = {
               'Cardiology specialist scope aligns with the profile training.',
           },
           {
-            ad_id: '31339409',
+            ad_id: '30879803',
             score: 0.8,
             rationale:
               'Acute-ward responsibility matches the experience in the profile.',
           },
           {
-            ad_id: '30879803',
+            ad_id: '31484463',
             score: 0.68,
             rationale:
               'Generalist nursing role that the profile experience covers.',
           },
           {
-            ad_id: '31441913',
+            ad_id: '31480005',
             score: 0.56,
             rationale:
               'Generalist nursing role that the profile experience covers.',
@@ -215,19 +215,19 @@ export const stockholmNursingScript: MockScript = {
               'Cardiology specialist scope aligns with the profile training.',
           },
           {
-            ad_id: '31339409',
+            ad_id: '30879803',
             score: 0.8,
             rationale:
               'Acute-ward responsibility matches the experience in the profile.',
           },
           {
-            ad_id: '30879803',
+            ad_id: '31484463',
             score: 0.68,
             rationale:
               'Generalist nursing role that the profile experience covers.',
           },
           {
-            ad_id: '31441913',
+            ad_id: '31480005',
             score: 0.56,
             rationale:
               'Generalist nursing role that the profile experience covers.',
