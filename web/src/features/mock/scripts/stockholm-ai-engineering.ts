@@ -54,6 +54,42 @@ export const stockholmAiEngineeringScript: MockScript = {
       output: {
         results: [
           {
+            ad_id: '31582053',
+            headline: 'AI Engineer',
+            employer_name: 'Combitech Aktiebolag',
+            municipality: 'Skövde',
+            application_deadline: '2026-11-09T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31582053',
+            description_excerpt:
+              'Vill du arbeta med AI och mjukvaruutveckling i framkant och samtidigt bidra till vårt totalförsvar? Som Senior AI Engineer på Combitech i Skövde blir du en del av vårt AI-team och arbetar i olika kundprojekt som expert inom AI och mjukvaruutveckling. Här får du möjlighet att utveckla lösningar inom bland annat generativ AI, LLM, RAG och maskininlärning, samtidigt som du får möjlighet att utvecklas inom ditt eget intresseområde. Din roll som AI Engineer I den här rollen får du…',
+            occupation_label: 'Dataingenjör',
+          },
+          {
+            ad_id: '31519307',
+            headline: 'AI Engineer',
+            employer_name: 'Norrminds AB',
+            municipality: 'Linköping',
+            application_deadline: '2026-12-25T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31519307',
+            description_excerpt:
+              'Vi söker en AI Engineer som vill bygga lösningar som faktiskt används i verksamheten. För dig är AI inte en demo vid sidan av, utan ett verktyg för att lösa riktiga problem, automatisera arbete och skapa bättre sätt att jobba. Du gillar att bygga, testa och få saker i produktion. Hos oss arbetar du nära både kunden och tekniken och behöver därför vara lika nyfiken på problemet som på modellen, arkitekturen eller verktyget som kan lösa det. Vad du kommer att göra Du kommer bla…',
+            occupation_label: 'Applikationsutvecklare',
+          },
+          {
+            ad_id: '31555420',
+            headline: 'AI Engineer',
+            employer_name: 'Swedbank AB',
+            municipality: 'Stockholm',
+            application_deadline: '2026-10-31T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31555420',
+            description_excerpt:
+              "Are you passionate about turning AI capabilities into real business value? We are looking for an AI Solutions Engineer who can bridge the gap between business and technology. You'll help identify opportunities, design AI and automation solutions, build prototypes, and guide stakeholders through the rapidly evolving AI landscape. This role is ideal for someone who enjoys both technology and people: strong enough technically to design solutions, but equally comfortable explaini…",
+            occupation_label: 'Mjukvaruutvecklare',
+          },
+          {
             ad_id: '31429441',
             headline: 'AI Engineer',
             employer_name: 'SAVR AB',
@@ -77,42 +113,6 @@ export const stockholmAiEngineeringScript: MockScript = {
               "At Umain, we're not just creating software; we're crafting the future, one innovative project at a time. With our motto \"Shape, Ship, Scale,\" we empower our team to not only envision the future but also play a pivotal role in building it. We're a dynamic team where you can shape the future, ship groundbreaking solutions, and scale your abilities in many different ways. We're on the lookout for developers ready to join us in this journey, bringing passion, creativity, and dedi…",
             occupation_label: 'Mjukvaruutvecklare',
           },
-          {
-            ad_id: '31420374',
-            headline: 'AI Software Engineer',
-            employer_name: 'Jobway AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-09-25T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31420374',
-            description_excerpt:
-              'Är du en utvecklare som gärna bygger hela lösningen från idé till färdig produkt? Brinner du för AI, modern teknik och att ligga i framkant av utvecklingen? Då kan detta vara möjligheten för dig! Ansök redan idag! I rollen som AI Software Engineer hos Qrendo blir du en viktig del av ett litet, snabbfotat produktteam där du får arbeta med den senaste tekniken inom AI och mjukvaruutveckling. Du kommer att vara med och vidareutveckla ReqAI, ett AI-drivet kravhanteringssystem som…',
-            occupation_label: 'Systemutvecklare/Programmerare',
-          },
-          {
-            ad_id: '31472123',
-            headline: 'AI Platform Engineer',
-            employer_name: 'Nordea Bank Abp, filial i Sverige',
-            municipality: 'Stockholm',
-            application_deadline: '2026-09-24T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31472123',
-            description_excerpt:
-              'Job ID: 3525 We are looking for an AI Platform Engineer to drive the development and adoption of AI-powered solutions that strengthen our ability to detect and investigate financial crime. The role is permanent and can be based in Helsinki, Tallinn, Poland or Stockholm. About our team Meet the Data and Platform Team. Our role is to improve how we detect and investigate financial crime with the help of AI and machine learning to keep our customers, Nordea and society safe. Our…',
-            occupation_label: 'IT-arkitekt',
-          },
-          {
-            ad_id: '31469989',
-            headline: 'Senior AI Engineer',
-            employer_name: 'Rasulson Consulting AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-09-16T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31469989',
-            description_excerpt:
-              "Role We're looking for a senior AI Engineer for a consulting assignment focused on building AI-driven capabilities in a business-critical, quality-sensitive setting for a company within healthcare/medtech. Responsibilities Build AI functions that turn clinical content into practical, actionable suggestions for therapists in their daily work. Design end-to-end pipelines, including prompt and chain architectures, with structured outputs broken into clear, independently testable…",
-            occupation_label: 'Systemansvarig',
-          },
         ],
       },
     },
@@ -121,13 +121,13 @@ export const stockholmAiEngineeringScript: MockScript = {
       toolName: 'placeAds',
       toolCallId: 'mock-sthlm-ai-call-3',
       input: {
-        ad_ids: ['31429441', '30991050', '31420374', '31472123', '31469989'],
+        ad_ids: ['31582053', '31519307', '31555420', '31429441', '30991050'],
         layout: 'grid',
         emphasis: 'none',
       },
       output: {
         accepted: true,
-        ad_ids: ['31429441', '30991050', '31420374', '31472123', '31469989'],
+        ad_ids: ['31582053', '31519307', '31555420', '31429441', '30991050'],
         layout: 'grid',
         emphasis: 'none',
       },
@@ -135,7 +135,7 @@ export const stockholmAiEngineeringScript: MockScript = {
     {
       kind: 'text',
       content:
-        ' Found 5 active roles. The strongest signal comes from AI Engineer at SAVR AB, AI Engineer at Umain AB, AI Software Engineer at Jobway AB. Cards are on the canvas to the right. Click any card to expand the description.',
+        ' Found 5 active roles. The strongest signal comes from AI Engineer at Combitech Aktiebolag, AI Engineer at Norrminds AB, AI Engineer at Swedbank AB. Cards are on the canvas to the right. Click any card to expand the description.',
     },
   ],
 } as const
