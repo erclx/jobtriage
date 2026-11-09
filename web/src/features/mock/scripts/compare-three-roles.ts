@@ -26,40 +26,40 @@ export const compareThreeRolesScript: MockScript = {
       output: {
         results: [
           {
-            ad_id: '31343756',
-            headline: 'Machine Learning Engineer ',
-            employer_name: 'Modulai AB',
+            ad_id: '31698987',
+            headline: 'Machine Learning Engineer',
+            employer_name: 'Sellhelp AB',
             municipality: 'Stockholm',
-            application_deadline: '2027-02-11T23:59:59',
+            application_deadline: '2026-12-06T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31343756',
+              'https://arbetsformedlingen.se/platsbanken/annonser/31698987',
             description_excerpt:
-              'Modulai works with fish, trains, clothes, money, pets, office spaces, sound sensors and much more. If there is data, we do ML (Machine Learning) on it. Our team consists of devoted ML engineers with strong track records from some of Sweden’s most successful startups. We work on project basis and take end-to-end responsibility. We love ML and we think that the best way for us to expand our knowledge is to be exposed to a diversified set of challenging and fun projects. MACHINE…',
-            occupation_label: 'Civilingenjör, systemutveckling',
+              'Sellpy’s vision is to empower everyone to live circularly. We believe that every item deserves a second life, and we see huge financial, social and environmental value in making sure this happens. Join us in building technology that drives real change. Machine Learning Engineer at Sellpy We look for you who want to be part of our journey to make sustainable shopping the first-hand choice by building great product recommendations, creating clever pricing algorithms and optimiz…',
+            occupation_label: 'Systemutvecklare/Programmerare',
           },
           {
-            ad_id: '31469855',
-            headline: 'Senior Machine Learning Engineer',
-            employer_name: 'Nordic Investin Group Aktiebolag',
+            ad_id: '31696898',
+            headline: 'Machine Learning Engineer',
+            employer_name: 'Safemind AB',
             municipality: 'Stockholm',
-            application_deadline: '2027-03-11T23:59:59',
+            application_deadline: '2026-12-31T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31469855',
+              'https://arbetsformedlingen.se/platsbanken/annonser/31696898',
             description_excerpt:
-              'On behalf of a partner company, Nordic Investin is looking for a Senior Machine Learning Engineer. You are interested in models that perform after deployment, when data shifts, latency appears and users behave differently than the notebook assumed. The partner is moving machine learning capabilities into core products and workflows. You will develop models and the production systems around them, working with data scientists, platform engineers and product teams. The partner w…',
+              'At MedHelp Care, we’re shaping the future of workplace health management. As a leading Nordic B2B SaaS company, we build intelligent AI-powered platforms that help organizations create healthier workplaces. Our platform uses advanced health data analytics and machine learning to detect early signals of health risk, enabling companies to take proactive, preventive action. Our mission is clear: to make workplaces healthier, more resilient, and better equipped to support both em…',
             occupation_label: 'Data scientist',
           },
           {
-            ad_id: '31383950',
-            headline: 'Senior Machine Learning Engineer',
-            employer_name: 'Voi Technology AB',
-            municipality: 'Stockholm',
-            application_deadline: '2027-02-17T23:59:59',
+            ad_id: '31696242',
+            headline: 'MACHINE LEARNING ENGINEER',
+            employer_name: 'Scandinavian Airlines System Denmark -Norway-Swe',
+            municipality: 'Solna',
+            application_deadline: '2026-11-16T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31383950',
+              'https://arbetsformedlingen.se/platsbanken/annonser/31696242',
             description_excerpt:
-              "YOUR MISSION AT VOI You will be joining a team focused on predicting the near-future demand for our vehicles. Specifically, where and when they will be needed, and how to handle this at scale for a fleet of 150 thousand vehicles spread across over more than 100 cities. This is a complex and meaningful problem from both an analytical as well as an engineering perspective, and you'll be handed ambiguous, high-leverage problems and are expected to reason from first principles ab…",
-            occupation_label: 'Systemutvecklare/Programmerare',
+              'Company description: Scandinavian Airlines System SAS Job description: Challenges you will work on At SAS, machine learning has moved well beyond experimentation. As part of our ongoing Digital & IT transformation, we are expanding our investments in machine learning, automation, data platforms, and Generative AI. We design, deploy, and operate production models that support pricing decisions, personalize customer experiences, and make our operations smarter every day. As a M…',
+            occupation_label: 'Civilingenjör, systemutveckling',
           },
         ],
       },
@@ -67,39 +67,39 @@ export const compareThreeRolesScript: MockScript = {
     {
       kind: 'text',
       content:
-        ' Comparing the two strongest candidates. The first is Machine Learning Engineer and the second is Senior Machine Learning Engineer.',
+        ' Comparing the two strongest candidates. The first is Machine Learning Engineer and the second is Machine Learning Engineer.',
     },
     {
       kind: 'tool',
       toolName: 'compareRoles',
       toolCallId: 'mock-compare-roles-call-2',
       input: {
-        ad_ids: ['31343756', '31469855'],
+        ad_ids: ['31698987', '31696898'],
       },
       output: {
         results: [
           {
-            ad_id: '31343756',
-            headline: 'Machine Learning Engineer ',
-            employer_name: 'Modulai AB',
+            ad_id: '31698987',
+            headline: 'Machine Learning Engineer',
+            employer_name: 'Sellhelp AB',
             municipality: 'Stockholm',
-            application_deadline: '2027-02-11T23:59:59',
+            application_deadline: '2026-12-06T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31343756',
+              'https://arbetsformedlingen.se/platsbanken/annonser/31698987',
             description_excerpt:
-              'Modulai works with fish, trains, clothes, money, pets, office spaces, sound sensors and much more. If there is data, we do ML (Machine Learning) on it. Our team consists of devoted ML engineers with strong track records from some of Sweden’s most successful startups. We work on project basis and take end-to-end responsibility. We love ML and we think that the best way for us to expand our knowledge is to be exposed to a diversified set of challenging and fun projects. MACHINE…',
-            occupation_label: 'Civilingenjör, systemutveckling',
+              'Sellpy’s vision is to empower everyone to live circularly. We believe that every item deserves a second life, and we see huge financial, social and environmental value in making sure this happens. Join us in building technology that drives real change. Machine Learning Engineer at Sellpy We look for you who want to be part of our journey to make sustainable shopping the first-hand choice by building great product recommendations, creating clever pricing algorithms and optimiz…',
+            occupation_label: 'Systemutvecklare/Programmerare',
           },
           {
-            ad_id: '31469855',
-            headline: 'Senior Machine Learning Engineer',
-            employer_name: 'Nordic Investin Group Aktiebolag',
+            ad_id: '31696898',
+            headline: 'Machine Learning Engineer',
+            employer_name: 'Safemind AB',
             municipality: 'Stockholm',
-            application_deadline: '2027-03-11T23:59:59',
+            application_deadline: '2026-12-31T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31469855',
+              'https://arbetsformedlingen.se/platsbanken/annonser/31696898',
             description_excerpt:
-              'On behalf of a partner company, Nordic Investin is looking for a Senior Machine Learning Engineer. You are interested in models that perform after deployment, when data shifts, latency appears and users behave differently than the notebook assumed. The partner is moving machine learning capabilities into core products and workflows. You will develop models and the production systems around them, working with data scientists, platform engineers and product teams. The partner w…',
+              'At MedHelp Care, we’re shaping the future of workplace health management. As a leading Nordic B2B SaaS company, we build intelligent AI-powered platforms that help organizations create healthier workplaces. Our platform uses advanced health data analytics and machine learning to detect early signals of health risk, enabling companies to take proactive, preventive action. Our mission is clear: to make workplaces healthier, more resilient, and better equipped to support both em…',
             occupation_label: 'Data scientist',
           },
         ],
@@ -110,13 +110,13 @@ export const compareThreeRolesScript: MockScript = {
       toolName: 'pairAdsForCompare',
       toolCallId: 'mock-compare-roles-call-3',
       input: {
-        ad_id_a: '31343756',
-        ad_id_b: '31469855',
+        ad_id_a: '31698987',
+        ad_id_b: '31696898',
         diffs: [
           {
             field: 'Employer',
-            a: 'Modulai AB',
-            b: 'Nordic Investin Group Aktiebolag',
+            a: 'Sellhelp AB',
+            b: 'Safemind AB',
             verdict: 'neither',
           },
           {
@@ -127,21 +127,21 @@ export const compareThreeRolesScript: MockScript = {
           },
           {
             field: 'Deadline',
-            a: '2027-02-11',
-            b: '2027-03-11',
+            a: '2026-12-06',
+            b: '2026-12-31',
             verdict: 'b',
           },
         ],
       },
       output: {
         accepted: true,
-        ad_id_a: '31343756',
-        ad_id_b: '31469855',
+        ad_id_a: '31698987',
+        ad_id_b: '31696898',
         diffs: [
           {
             field: 'Employer',
-            a: 'Modulai AB',
-            b: 'Nordic Investin Group Aktiebolag',
+            a: 'Sellhelp AB',
+            b: 'Safemind AB',
             verdict: 'neither',
           },
           {
@@ -152,8 +152,8 @@ export const compareThreeRolesScript: MockScript = {
           },
           {
             field: 'Deadline',
-            a: '2027-02-11',
-            b: '2027-03-11',
+            a: '2026-12-06',
+            b: '2026-12-31',
             verdict: 'b',
           },
         ],
@@ -162,7 +162,7 @@ export const compareThreeRolesScript: MockScript = {
     {
       kind: 'text',
       content:
-        ' Compare view is up on the canvas. A third candidate from Voi Technology AB is also in the result set. Ask for a pair against it for a deeper bake-off.',
+        ' Compare view is up on the canvas. A third candidate from Scandinavian Airlines System Denmark -Norway-Swe is also in the result set. Ask for a pair against it for a deeper bake-off.',
     },
   ],
 } as const
