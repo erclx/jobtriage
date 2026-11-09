@@ -73,63 +73,64 @@ export const stockholmNursingScript: MockScript = {
       output: {
         results: [
           {
-            ad_id: '31422642',
-            headline: 'Sjuksköterska sökes till hemsjukvård Stockholm',
+            ad_id: '31695381',
+            headline: 'Sjuksköterska sökes till Stockholm!',
+            employer_name: 'Viva Bemanning AB',
+            municipality: 'Stockholm',
+            application_deadline: '2026-11-20T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31695381',
+            description_excerpt:
+              'Sjuksköterska sökes till Stockholm! Viva Bemanning söker legitimerad sjuksköterska under perioden: v.1-14 2027 Vi söker dig som: är legitimerad sjuksköterska har relevant erfarenhet inom hälso- och sjukvård har goda kunskaper i svenska kan lämna referenser som styrker din kompetens Du är ansvarstagande, trygg i din yrkesroll och har ett professionellt bemötande. Som anställd hos Viva Bemanning erbjuds du tjänstepension, försäkringar och en personlig kontaktperson. Vi hjälper…',
+            occupation_label: 'Sjuksköterska, grundutbildad',
+          },
+          {
+            ad_id: '31694472',
+            headline: 'Sjuksköterska till Ortopedi Stockholm',
+            employer_name: 'Praktikertjänst Aktiebolag',
+            municipality: 'Stockholm',
+            application_deadline: '2026-12-06T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31694472',
+            description_excerpt:
+              'Om verksamheten Ortopedi Stockholm är en klinik som arbetar i det ortopediska vårdvalet. Vi utför närmare 3000 stycken operationer per år. Vi har ca 10 000 st besök per år. Den huvudsakliga kirurgiska verksamheten är artroskopisk kirurgi i axel- och knäled. Vi utför tex ca 300 st korsbandsoperationer per år. I övrigt kirurgi på axel såsom cuffsuturer, bankart o dekompressioner . Vi har två operationssalar samt en uppvaknings avdelning med åtta sängplatser. Vi arbetar nära var…',
+            occupation_label: 'Sjuksköterska, grundutbildad',
+          },
+          {
+            ad_id: '31703729',
+            headline: 'Almia söker sjuksköterska till Stockholm',
+            employer_name: 'Almia AB',
+            municipality: 'Stockholm',
+            application_deadline: '2026-11-19T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31703729',
+            description_excerpt:
+              'Gör det som du älskar, som konsult! Kvalifikationer Vi söker dig med minst två års erfarenhet. Vi ser gärna att du som konsult har god samarbetsförmåga, är noggrann, och ansvarstagande. Arbetsuppgifter Som sjuksköterska hos Almia får du möjlighet att arbeta ute hos våra kunder med varierande arbetsuppgifter inom hälso- och sjukvård. Du kommer att vårda och bedöma patienter, administrera läkemedel och samarbeta med läkare och övriga vårdteam. Arbetsmiljön är omväxlande och ski…',
+            occupation_label: 'Sjuksköterska, grundutbildad',
+          },
+          {
+            ad_id: '31686741',
+            headline: 'Leg. Sjuksköterska - Akutsjukvård i Stockholm',
+            employer_name: 'Palmelind Konsult AB',
+            municipality: 'Stockholm',
+            application_deadline: '2026-11-13T23:59:59',
+            webpage_url:
+              'https://arbetsformedlingen.se/platsbanken/annonser/31686741',
+            description_excerpt:
+              'Vi söker dig som är legitimerad sjuksköterska och har några års erfarenhet av yrket. Uppdraget sträcker sig över vintern 2026 - 2027 och bokas enligt överenskommelse. Skicka in din ansökan redan idag – vi ser fram emot att höra från dig! Om Magnifiq Kompetens Vi är ett bemanningsföretag inom vård och omsorg som sätter kvalitet, trygghet och omtanke först. Vi värdesätter våra konsulter högt och arbetar för att du ska känna dig sedd, stöttad och uppskattad under hela din resa h…',
+            occupation_label: 'Sjuksköterska, grundutbildad',
+          },
+          {
+            ad_id: '31630683',
+            headline:
+              'Sjuksköterska sökes till äldreomsorgen i Stockholm (omgående)',
             employer_name: 'Dedicare AB (publ)',
             municipality: 'Stockholm',
-            application_deadline: '2026-09-30T23:59:59',
+            application_deadline: '2026-11-21T23:59:59',
             webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31422642',
+              'https://arbetsformedlingen.se/platsbanken/annonser/31630683',
             description_excerpt:
               'Dedicare är ett av Nordens största rekryterings- och bemanningsföretag inom vård och socialt arbete med verksamhet i Sverige, Norge, Finland och Danmark. Dedicare bemannar och rekryterar läkare, sjuksköterskor och socionomer till kunder i både privat och offentlig verksamhet. Koncernen är noterat på Nasdaq Stockholm sedan maj 2011. Dedicare är medlem i Almega Kompetensföretagen och har därmed kollektivavtal för alla anställda. Dedicare är kvalitetscertifierat enligt ISO 9001:…',
-            occupation_label: 'Sjuksköterska, grundutbildad',
-          },
-          {
-            ad_id: '31339409',
-            headline: 'Sjuksköterska till kranskommun till Stockholm',
-            employer_name: 'OFELIA VÅRD AB',
-            municipality: 'Södertälje',
-            application_deadline: '2026-09-14T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31339409',
-            description_excerpt:
-              'Ofelia Vård AB är tillsammans med Skandinavisk Hälsovård, Svensk Närsjukvård, Doc Care, HLR Landslaget och Linguacom, en del av Skandinavisk Hälsovård Group. Vi söker för kunds räkning sjuksköterska. Uppdraget gäller från omgående och under hösten. Ofelia Vård är ett auktoriserat bemanningsföretag med medlemskap i Kompetensföretagen. Med detta följer en garanti på att vi följer arbetsmarknadens lagar och regler. Vi har kollektivavtal med Vårdförbundet, Läkarförbundet och Unio…',
-            occupation_label: 'Sjuksköterska, grundutbildad',
-          },
-          {
-            ad_id: '30879803',
-            headline: 'Legitimerad Sjuksköterska Sökes till Stockholm',
-            employer_name: 'Omsorg & Behandling 1 AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-09-17T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/30879803',
-            description_excerpt:
-              'Välkommen till Omsorg & Behandling! Just nu söker vi leg.sjuksköterskor men även ni som är specialistutbildade till vårat team. Omsorg & Behandling är ett auktoriserat bemanningsföretag för Sveriges regioner, kommuner och privata vårdgivare. Vi är ett bemanningsföretag som är aktiva i hela Sverige . Våra konsultchefer i företaget är Sjuksköterskor med lång erfarenhet från vården och arbetar aktivt ute hos våra kunder.Kollektivavtal: Vi är medlem i Tjänsteföretagens Arbetsgiva…',
-            occupation_label: 'Sjuksköterska, grundutbildad',
-          },
-          {
-            ad_id: '31441913',
-            headline: 'Vi söker sjuksköterska till HSL/LSS-teamet Stockholm',
-            employer_name: 'Attendo Sverige AB',
-            municipality: 'Stockholm',
-            application_deadline: '2027-03-03T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31441913',
-            description_excerpt:
-              'Välkommen till en värderingsstyrd organisation Vill du vara med och bygga framtidens LSS-vård? Nu har du chansen att bli en del av vårt kompetenta och engagerade team! Vi är ett arbetslag med sjuksköterskor och ett eget rehabteam – och nu söker vi en sjuksköterska till våra LSS boenden i Stockholm. Beskrivning av tjänsten: Tillsammans med kollegor inom olika professioner och externa vårdkontakter arbetar du för att skapa den bästa möjliga vården – alltid med patienten i fokus…',
-            occupation_label: 'Sjuksköterska, grundutbildad',
-          },
-          {
-            ad_id: '31441198',
-            headline: 'Sjuksköterska till privat vårdcentral i Stockholm',
-            employer_name: 'Medcura AB',
-            municipality: 'Stockholm',
-            application_deadline: '2026-10-03T23:59:59',
-            webpage_url:
-              'https://arbetsformedlingen.se/platsbanken/annonser/31441198',
-            description_excerpt:
-              'Om Jobbet Nu söker vi erfaren sjuksköterska till uppdrag på privat vårdcentral i Stockholm under vecka 37-40 på 50%. Flexibelt upplägg. Ex 4 timmar per dag eller 2-3 dagar i veckan. Du bör ha erfarenhet av Take Care journalsystem Är du intresserad eller har du frågor? Tveka inte att höra av dig! Vad erbjuder Medcura? Vi har ett brett utbud inom alla områden både hos privata aktörer och region, kommun och stat. Hos oss får du en konsultchef som vet hur du vill arbeta och som k…',
             occupation_label: 'Sjuksköterska, grundutbildad',
           },
         ],
@@ -143,15 +144,15 @@ export const stockholmNursingScript: MockScript = {
         groups: [
           {
             label: 'Strong fit',
-            ad_ids: ['31422642', '31339409'],
+            ad_ids: ['31695381', '31694472'],
           },
           {
             label: 'Consider',
-            ad_ids: ['30879803', '31441913'],
+            ad_ids: ['31703729', '31686741'],
           },
           {
             label: 'Worth a look',
-            ad_ids: ['31441198'],
+            ad_ids: ['31630683'],
           },
         ],
       },
@@ -160,15 +161,15 @@ export const stockholmNursingScript: MockScript = {
         groups: [
           {
             label: 'Strong fit',
-            ad_ids: ['31422642', '31339409'],
+            ad_ids: ['31695381', '31694472'],
           },
           {
             label: 'Consider',
-            ad_ids: ['30879803', '31441913'],
+            ad_ids: ['31703729', '31686741'],
           },
           {
             label: 'Worth a look',
-            ad_ids: ['31441198'],
+            ad_ids: ['31630683'],
           },
         ],
       },
@@ -180,25 +181,25 @@ export const stockholmNursingScript: MockScript = {
       input: {
         links: [
           {
-            ad_id: '31422642',
+            ad_id: '31695381',
             score: 0.92,
             rationale:
               'Cardiology specialist scope aligns with the profile training.',
           },
           {
-            ad_id: '31339409',
+            ad_id: '31694472',
             score: 0.8,
             rationale:
               'Acute-ward responsibility matches the experience in the profile.',
           },
           {
-            ad_id: '30879803',
+            ad_id: '31703729',
             score: 0.68,
             rationale:
               'Generalist nursing role that the profile experience covers.',
           },
           {
-            ad_id: '31441913',
+            ad_id: '31686741',
             score: 0.56,
             rationale:
               'Generalist nursing role that the profile experience covers.',
@@ -209,25 +210,25 @@ export const stockholmNursingScript: MockScript = {
         accepted: true,
         links: [
           {
-            ad_id: '31422642',
+            ad_id: '31695381',
             score: 0.92,
             rationale:
               'Cardiology specialist scope aligns with the profile training.',
           },
           {
-            ad_id: '31339409',
+            ad_id: '31694472',
             score: 0.8,
             rationale:
               'Acute-ward responsibility matches the experience in the profile.',
           },
           {
-            ad_id: '30879803',
+            ad_id: '31703729',
             score: 0.68,
             rationale:
               'Generalist nursing role that the profile experience covers.',
           },
           {
-            ad_id: '31441913',
+            ad_id: '31686741',
             score: 0.56,
             rationale:
               'Generalist nursing role that the profile experience covers.',
